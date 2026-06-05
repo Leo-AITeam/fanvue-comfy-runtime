@@ -12,6 +12,15 @@ Upload the contents of this folder as the repository root:
 outputs/fanvue-comfy-runtime-repo/
 ```
 
+This folder is already initialized as a local git repository on branch `main`.
+
+If you create an empty GitHub repo manually, connect it with:
+
+```bash
+git remote add origin https://github.com/YOUR_USERNAME/fanvue-comfy-runtime.git
+git push -u origin main
+```
+
 After upload, RunPod should receive:
 
 ```text
