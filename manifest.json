@@ -1,0 +1,74 @@
+{
+  "bundle": "fanvue",
+  "version": "phase1-2026-06-06",
+  "runtime": {
+    "comfyui_port": 8188,
+    "mode": "ephemeral_runpod",
+    "persistent_runpod_storage": false,
+    "results_storage": "external"
+  },
+  "default_workflows": {
+    "photo": {
+      "name": "OFMTechNSFW++",
+      "file": "workflows/OFMTechNSFW++.json",
+      "input_mode": "text_to_image",
+      "first_real_test": true
+    },
+    "ppv_photo": {
+      "name": "OFMTechNSFW++",
+      "file": "workflows/OFMTechNSFW++.json",
+      "input_mode": "text_to_image"
+    },
+    "face_variations": {
+      "name": "QWEN Edit Consistent Face",
+      "file": "workflows/QWEN Edit Consistent Face.json",
+      "input_mode": "image_edit"
+    },
+    "face_swap": {
+      "name": "OFM-LAB_faceswap_CLOUD_READY",
+      "file": "workflows/OFM-LAB_faceswap_CLOUD_READY.json",
+      "input_mode": "image_to_image"
+    },
+    "quality_check": {
+      "name": "Face_Detailer",
+      "file": "workflows/Face_Detailer.json",
+      "input_mode": "image_to_image"
+    },
+    "video": {
+      "name": "WAN2.2 Text to Video NSFW",
+      "file": "workflows/WAN2.2-Text_to_Video_NSFW.json",
+      "input_mode": "text_to_video",
+      "phase": "later"
+    }
+  },
+  "first_test_chain": [
+    "photo",
+    "quality_check"
+  ],
+  "required_inputs": {
+    "photo": [
+      "positive_prompt",
+      "negative_prompt",
+      "seed",
+      "width",
+      "height",
+      "batch_size"
+    ],
+    "face_swap": [
+      "source_face_image",
+      "target_image",
+      "seed"
+    ],
+    "quality_check": [
+      "input_image",
+      "positive_prompt",
+      "negative_prompt"
+    ]
+  },
+  "storage_contract": {
+    "download_inputs_to": "/workspace/fanvue/input",
+    "write_outputs_to": "/workspace/fanvue/output",
+    "n8n_collects_outputs": true,
+    "runpod_storage_retention": "none"
+  }
+}

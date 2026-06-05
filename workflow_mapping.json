@@ -1,0 +1,44 @@
+{
+  "job_type_to_workflow": {
+    "face_options": [
+      "Instagirl-portrait (2.5 workflow).json",
+      "Instagirlv2.5.json",
+      "Z-Image workflow 2.json"
+    ],
+    "face_variations": [
+      "QWEN Edit Consistent Face.json",
+      "СменаЛицаФотки - HeadSwap_Workflow_2511V2.json",
+      "Face Swap.json"
+    ],
+    "photo": [
+      "OFMTechNSFW++.json",
+      "Flux-Photoshope-NSFW.json",
+      "LUSTIFY!.json",
+      "OFMTechZITGen.json"
+    ],
+    "ppv_photo": [
+      "OFMTechNSFW++.json",
+      "OFM TECH MILLION DOLLARS WORKFLOW.json",
+      "LUSTIFY!.json"
+    ],
+    "quality_check": [
+      "Face_Detailer.json",
+      "Улучшение Лица - Детейлер.json",
+      "skin-details.json"
+    ],
+    "captioning": [
+      "Florence2_Promt.json",
+      "Florence2_BatchPromptingV2.json",
+      "daurenbekof_dataset_captioner.json"
+    ],
+    "video": [
+      "WAN2.2-Text to Video-NSFW.json",
+      "Wan2.2_Animate_workflow.json",
+      "ANIMATOR V2.5.json",
+      "Animate X PrivateKI.json"
+    ],
+    "lora_train": [
+      "external_trainer_required"
+    ]
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "generated_at": "2026-06-06",
+  "install_policy": "clone_on_pod_start",
+  "nodes": [
+    {
+      "name": "ComfyUI-Manager",
+      "repo_url": "https://github.com/ltdrdata/ComfyUI-Manager.git",
+      "required_for_first_test": true
+    },
+    {
+      "name": "rgthree-comfy",
+      "repo_url": "https://github.com/rgthree/rgthree-comfy.git",
+      "required_for_first_test": true,
+      "node_type_hints": [
+        "Fast Groups Bypasser (rgthree)",
+        "Image Comparer (rgthree)",
+        "Label (rgthree)"
+      ]
+    },
+    {
+      "name": "ComfyUI-Impact-Pack",
+      "repo_url": "https://github.com/ltdrdata/ComfyUI-Impact-Pack.git",
+      "required_for_first_test": true,
+      "node_type_hints": [
+        "FaceDetailer",
+        "SAMLoader",
+        "UltralyticsDetectorProvider",
+        "ImpactWildcardProcessor"
+      ]
+    },
+    {
+      "name": "ComfyUI-KJNodes",
+      "repo_url": "https://github.com/kijai/ComfyUI-KJNodes.git",
+      "required_for_first_test": false,
+      "node_type_hints": [
+        "PathchSageAttentionKJ"
+      ]
+    },
+    {
+      "name": "ComfyUI-Crystools",
+      "repo_url": "https://github.com/crystian/ComfyUI-Crystools.git",
+      "required_for_first_test": false,
+      "node_type_hints": [
+        "GetImageSize"
+      ]
+    }
+  ],
+  "unresolved_node_type_hints": [
+    "CFGGuider",
+    "CR Aspect Ratio",
+    "ConditioningZeroOut",
+    "DarkHubVideoToBase64",
+    "INSTARAW_BooleanBypass",
+    "INSTARAW_ImageResizeFill",
+    "ImageColorMatch+",
+    "ImageScaleToTotalPixels",
+    "ModelSamplingSD3",
+    "ReferenceLatent",
+    "UpscaleModelLoader"
+  ]
+}

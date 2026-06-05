@@ -79,14 +79,6 @@ workflows/Face_Detailer.json
 
 Before a real GPU test, this bundle needs a GitHub repo URL and a bootstrap script path that RunPod can execute.
 
-This folder is prepared to be uploaded as a GitHub repository. See:
-
-```text
-docs/CONNECT_GITHUB_REMOTE.md
-docs/GITHUB_UPLOAD.md
-docs/RUNPOD_ENV.md
-```
-
 Also fill:
 
 ```text
