@@ -40,15 +40,20 @@ Dry-run mode checks the bundle and prints what would be installed/downloaded.
 
 ## First Test
 
-Use:
+Use the smoke profile first:
 
 ```text
-workflows/OFMTechNSFW++.json
+FANVUE_TEST_PROFILE=smoke
+workflows/OFM-LAB_faceswap_CLOUD_READY.json
 ```
 
-Then run face cleanup:
+This profile downloads only public HuggingFace models and verifies the GitHub -> RunPod -> ComfyUI bootstrap path.
+
+After the private/custom model URLs are filled, switch to the full first test:
 
 ```text
+FANVUE_TEST_PROFILE=first_full
+workflows/OFMTechNSFW++.json
 workflows/Face_Detailer.json
 ```
 
@@ -93,4 +98,4 @@ Also fill:
 models_manifest.json
 ```
 
-Each model, LoRA, VAE, detector, and upscale file needs a `source_url` before a real GPU run.
+The `smoke` profile already includes public model URLs. The `first_full` profile still needs custom/private `source_url` values for the full Fanvue workflow.

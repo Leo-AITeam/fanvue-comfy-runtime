@@ -10,8 +10,14 @@ COMFY_DIR=/workspace/ComfyUI
 BUNDLE_DIR=/workspace/fanvue/bootstrap
 FANVUE_PREFLIGHT_MODE=real
 FANVUE_FIRST_TEST_ONLY=true
+FANVUE_TEST_PROFILE=smoke
 COMFYUI_PORT=8188
 ```
+
+Profiles:
+
+- `smoke`: first public-download test for GitHub/RunPod/ComfyUI wiring.
+- `first_full`: full Fanvue first-test bundle, requires private/custom model URLs in `models_manifest.json`.
 
 Dry-run test:
 

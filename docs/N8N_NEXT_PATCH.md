@@ -8,7 +8,8 @@ Once this repository is uploaded to GitHub, patch `Fanvue RunPod Manager` so cre
     "FANVUE_BOOTSTRAP_REPO_URL": "https://github.com/YOUR_USERNAME/fanvue-comfy-runtime.git",
     "FANVUE_BOOTSTRAP_REPO_REF": "main",
     "FANVUE_PREFLIGHT_MODE": "real",
-    "FANVUE_FIRST_TEST_ONLY": "true"
+    "FANVUE_FIRST_TEST_ONLY": "true",
+    "FANVUE_TEST_PROFILE": "smoke"
   }
 }
 ```
@@ -16,3 +17,5 @@ Once this repository is uploaded to GitHub, patch `Fanvue RunPod Manager` so cre
 Keep `confirm_create:false` until the dry-run and preflight are clean.
 
 Switch to `confirm_create:true` only for the real paid GPU test.
+
+Use `FANVUE_TEST_PROFILE=first_full` only after every full-workflow model has a valid `source_url`.

@@ -4,6 +4,7 @@ import path from 'node:path';
 const bundleDir = process.env.BUNDLE_DIR || path.resolve('.');
 const mode = process.env.FANVUE_PREFLIGHT_MODE || 'real';
 const firstTestOnly = process.env.FANVUE_FIRST_TEST_ONLY !== 'false';
+const testProfile = process.env.FANVUE_TEST_PROFILE || (firstTestOnly ? 'smoke' : 'all');
 
 function readJson(name) {
   const file = path.join(bundleDir, name);
@@ -17,9 +18,14 @@ const manifest = readJson('manifest.json');
 const models = readJson('models_manifest.json');
 const nodes = readJson('custom_nodes_manifest.json');
 
-const selectedModels = (models.models || []).filter((item) =>
-  firstTestOnly ? item.required_for_first_test : true
-);
+function matchesProfile(item) {
+  if (testProfile === 'all') return true;
+  if (Array.isArray(item.test_profiles)) return item.test_profiles.includes(testProfile);
+  if (testProfile === 'first_full') return Boolean(item.required_for_first_test);
+  return !firstTestOnly;
+}
+
+const selectedModels = (models.models || []).filter((item) => matchesProfile(item));
 const missingModelUrls = selectedModels.filter((item) => !item.source_url);
 const selectedNodes = (nodes.nodes || []).filter((item) =>
   firstTestOnly ? item.required_for_first_test : true
@@ -29,6 +35,7 @@ const missingNodeRepos = selectedNodes.filter((item) => !item.repo_url);
 const result = {
   ok: true,
   mode,
+  test_profile: testProfile,
   bundle: manifest.bundle,
   version: manifest.version,
   first_test_only: firstTestOnly,

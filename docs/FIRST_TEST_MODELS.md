@@ -1,5 +1,19 @@
 # First GPU Test Model URLs
 
+## Smoke profile
+
+The first RunPod smoke test uses `FANVUE_TEST_PROFILE=smoke` and only public HuggingFace model URLs:
+
+| File | Target dir |
+|---|---|
+| `flux-2-klein-4b.safetensors` | `ComfyUI/models/checkpoints` |
+| `qwen_3_4b.safetensors` | `ComfyUI/models/text_encoders` |
+| `flux2-vae.safetensors` | `ComfyUI/models/vae` |
+
+This verifies bootstrap wiring before the private/custom model set is complete.
+
+## Full first test
+
 Fill source_url in models_manifest.json for these files before real RunPod creation.
 
 | # | File | Type | Target dir |

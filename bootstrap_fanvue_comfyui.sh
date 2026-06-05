@@ -11,6 +11,7 @@ OUTPUT_DIR="${OUTPUT_DIR:-$FANVUE_DIR/output}"
 INPUT_DIR="${INPUT_DIR:-$FANVUE_DIR/input}"
 FANVUE_PREFLIGHT_MODE="${FANVUE_PREFLIGHT_MODE:-real}"
 FANVUE_FIRST_TEST_ONLY="${FANVUE_FIRST_TEST_ONLY:-true}"
+FANVUE_TEST_PROFILE="${FANVUE_TEST_PROFILE:-smoke}"
 
 mkdir -p "$FANVUE_DIR" "$OUTPUT_DIR" "$INPUT_DIR"
 
@@ -29,6 +30,7 @@ echo "[fanvue-bootstrap] Running preflight"
 BUNDLE_DIR="$BUNDLE_DIR" \
 FANVUE_PREFLIGHT_MODE="$FANVUE_PREFLIGHT_MODE" \
 FANVUE_FIRST_TEST_ONLY="$FANVUE_FIRST_TEST_ONLY" \
+FANVUE_TEST_PROFILE="$FANVUE_TEST_PROFILE" \
 node "$BUNDLE_DIR/scripts/preflight.mjs"
 
 echo "[fanvue-bootstrap] Installing custom nodes"
@@ -41,6 +43,7 @@ echo "[fanvue-bootstrap] Downloading models"
 BUNDLE_DIR="$BUNDLE_DIR" \
 WORKSPACE_DIR="$WORKSPACE_DIR" \
 FANVUE_FIRST_TEST_ONLY="$FANVUE_FIRST_TEST_ONLY" \
+FANVUE_TEST_PROFILE="$FANVUE_TEST_PROFILE" \
 node "$BUNDLE_DIR/scripts/download_models.mjs"
 
 mkdir -p "$COMFY_DIR/user/default/workflows"

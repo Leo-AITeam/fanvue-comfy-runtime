@@ -13,28 +13,40 @@
       "type": "detector_or_upscale",
       "source_url": null,
       "target_dir": "ComfyUI/models",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "4x_NMKD-Superscale-SP_178000_G.pth",
       "type": "detector_or_upscale",
       "source_url": null,
       "target_dir": "ComfyUI/models",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "AIKOZIMAGE_000002700.safetensors",
       "type": "model",
       "source_url": null,
       "target_dir": "ComfyUI/models/checkpoints",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "Detailed Nipples XL v1.0.safetensors",
       "type": "lora",
       "source_url": null,
       "target_dir": "ComfyUI/models/loras",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "QWEN\\Qwen-Image-Lightning-8steps-V1.0.safetensors",
@@ -55,84 +67,121 @@
       "type": "lora",
       "source_url": null,
       "target_dir": "ComfyUI/models/loras",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "Wan22_A14B_T2V_LOW_Lightning_4steps_lora_250928_rank64_fp16.safetensors",
       "type": "lora",
       "source_url": null,
       "target_dir": "ComfyUI/models/loras",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "ae.safetensors",
       "type": "model",
       "source_url": null,
       "target_dir": "ComfyUI/models/checkpoints",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "bbox/face_yolov8m.pt",
       "type": "detector_or_upscale",
       "source_url": null,
       "target_dir": "ComfyUI/models",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "bbox/nipple.pt",
       "type": "detector_or_upscale",
       "source_url": null,
       "target_dir": "ComfyUI/models",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "bbox/pussyV2.pt",
       "type": "detector_or_upscale",
       "source_url": null,
       "target_dir": "ComfyUI/models",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "controlnet-union-sdxl-promax.safetensors",
       "type": "model",
       "source_url": null,
       "target_dir": "ComfyUI/models/checkpoints",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "depth_anything_v2_vitl.pth",
       "type": "detector_or_upscale",
       "source_url": null,
       "target_dir": "ComfyUI/models",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "dmd2_sdxl_4step_lora_fp16.safetensors",
       "type": "lora",
       "source_url": null,
       "target_dir": "ComfyUI/models/loras",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "flux-2-klein-9b.safetensors",
       "type": "model",
       "source_url": null,
       "target_dir": "ComfyUI/models/checkpoints",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "flux2-vae.safetensors",
       "type": "vae",
-      "source_url": null,
+      "source_url": "https://huggingface.co/Comfy-Org/flux2-dev/resolve/main/split_files/vae/flux2-vae.safetensors",
       "target_dir": "ComfyUI/models/vae",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "smoke",
+        "first_full"
+      ]
     },
     {
       "name": "lustifySDXLNSFW_ggwpV7.safetensors",
       "type": "model",
       "source_url": null,
       "target_dir": "ComfyUI/models/checkpoints",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
@@ -144,16 +193,23 @@
     {
       "name": "qwen_3_4b.safetensors",
       "type": "text_encoder",
-      "source_url": null,
+      "source_url": "https://huggingface.co/Comfy-Org/flux2-klein-4B/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors",
       "target_dir": "ComfyUI/models/text_encoders",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "smoke",
+        "first_full"
+      ]
     },
     {
       "name": "qwen_3_8b.safetensors",
       "type": "text_encoder",
       "source_url": null,
       "target_dir": "ComfyUI/models/text_encoders",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "qwen_image_edit_2509_fp8_e4m3fn.safetensors",
@@ -174,7 +230,10 @@
       "type": "detector_or_upscale",
       "source_url": null,
       "target_dir": "ComfyUI/models",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "segm/person_yolov8m-seg.pt",
@@ -188,56 +247,90 @@
       "type": "text_encoder",
       "source_url": null,
       "target_dir": "ComfyUI/models/text_encoders",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors",
       "type": "model",
       "source_url": null,
       "target_dir": "ComfyUI/models/checkpoints",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "wan2.2_t2v_highnoise_sidemissionary_v1.0.safetensors",
       "type": "model",
       "source_url": null,
       "target_dir": "ComfyUI/models/checkpoints",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors",
       "type": "model",
       "source_url": null,
       "target_dir": "ComfyUI/models/checkpoints",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "wan2.2_t2v_lownoise_sidemissionary_v1.0.safetensors",
       "type": "model",
       "source_url": null,
       "target_dir": "ComfyUI/models/checkpoints",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "wan_2.1_vae.safetensors",
       "type": "vae",
       "source_url": null,
       "target_dir": "ComfyUI/models/vae",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "x1_ITF_SkinDiffDetail_Lite_v1.pth",
       "type": "detector_or_upscale",
       "source_url": null,
       "target_dir": "ComfyUI/models",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "z_image_turbo_bf16.safetensors",
       "type": "model",
       "source_url": null,
       "target_dir": "ComfyUI/models/checkpoints",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
+    },
+    {
+      "name": "flux-2-klein-4b.safetensors",
+      "type": "model",
+      "source_url": "https://huggingface.co/Comfy-Org/flux2-klein-4B/resolve/main/split_files/diffusion_models/flux-2-klein-4b.safetensors",
+      "target_dir": "ComfyUI/models/checkpoints",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "smoke"
+      ]
     }
   ],
   "custom_node_type_hints": [
@@ -266,5 +359,14 @@
     "source_url is intentionally null until the GitHub/model source is confirmed.",
     "target_dir may need adjustment after the final RunPod image is selected.",
     "custom_node_type_hints are node type names, not guaranteed GitHub repositories."
-  ]
+  ],
+  "test_profiles": {
+    "smoke": {
+      "description": "Minimal public-download bootstrap test for RunPod/ComfyUI wiring.",
+      "workflow": "OFM-LAB_faceswap_CLOUD_READY.json"
+    },
+    "first_full": {
+      "description": "Original first production-oriented Fanvue workflow set. Requires private/custom model URLs."
+    }
+  }
 }

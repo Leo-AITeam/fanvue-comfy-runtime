@@ -5,13 +5,19 @@ import { spawnSync } from 'node:child_process';
 const bundleDir = process.env.BUNDLE_DIR || path.resolve('.');
 const workspaceDir = process.env.WORKSPACE_DIR || '/workspace';
 const firstTestOnly = process.env.FANVUE_FIRST_TEST_ONLY !== 'false';
+const testProfile = process.env.FANVUE_TEST_PROFILE || (firstTestOnly ? 'smoke' : 'all');
 const dryRun = process.env.FANVUE_DOWNLOAD_DRY_RUN === 'true';
 
 const manifestPath = path.join(bundleDir, 'models_manifest.json');
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-const models = (manifest.models || []).filter((item) =>
-  firstTestOnly ? item.required_for_first_test : true
-);
+function matchesProfile(item) {
+  if (testProfile === 'all') return true;
+  if (Array.isArray(item.test_profiles)) return item.test_profiles.includes(testProfile);
+  if (testProfile === 'first_full') return Boolean(item.required_for_first_test);
+  return !firstTestOnly;
+}
+
+const models = (manifest.models || []).filter((item) => matchesProfile(item));
 
 function targetPath(item) {
   const cleanName = String(item.name).replaceAll('\\', '/');
