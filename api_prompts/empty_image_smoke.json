@@ -1,0 +1,24 @@
+{
+  "description": "Minimal ComfyUI API smoke prompt. It creates a blank image and saves it without loading models.",
+  "prompt": {
+    "1": {
+      "class_type": "EmptyImage",
+      "inputs": {
+        "width": 512,
+        "height": 512,
+        "batch_size": 1,
+        "color": 0
+      }
+    },
+    "2": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "images": [
+          "1",
+          0
+        ],
+        "filename_prefix": "fanvue_api_smoke"
+      }
+    }
+  }
+}
