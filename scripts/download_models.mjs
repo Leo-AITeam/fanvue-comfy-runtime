@@ -7,6 +7,7 @@ const workspaceDir = process.env.WORKSPACE_DIR || '/workspace';
 const firstTestOnly = process.env.FANVUE_FIRST_TEST_ONLY !== 'false';
 const testProfile = process.env.FANVUE_TEST_PROFILE || (firstTestOnly ? 'smoke' : 'all');
 const dryRun = process.env.FANVUE_DOWNLOAD_DRY_RUN === 'true';
+const reportPath = process.env.FANVUE_DOWNLOAD_REPORT || path.join(workspaceDir, 'fanvue', 'download_models_report.json');
 
 const manifestPath = path.join(bundleDir, 'models_manifest.json');
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
@@ -33,7 +34,8 @@ for (const item of models) {
     continue;
   }
   if (fs.existsSync(destination)) {
-    results.push({ name: item.name, status: 'already_exists', destination });
+    const stat = fs.statSync(destination);
+    results.push({ name: item.name, status: 'already_exists', destination, bytes: stat.size });
     continue;
   }
   if (dryRun) {
@@ -47,8 +49,21 @@ for (const item of models) {
     name: item.name,
     status: curl.status === 0 ? 'downloaded' : 'failed',
     destination,
+    bytes: curl.status === 0 && fs.existsSync(destination) ? fs.statSync(destination).size : 0,
   });
   if (curl.status !== 0) process.exit(curl.status || 41);
 }
 
-console.log(JSON.stringify({ ok: true, downloaded_plan: results }, null, 2));
+const report = {
+  ok: results.every((item) => !['failed'].includes(item.status)),
+  generated_at: new Date().toISOString(),
+  workspace_dir: workspaceDir,
+  test_profile: testProfile,
+  first_test_only: firstTestOnly,
+  selected_model_count: models.length,
+  downloaded_plan: results,
+};
+
+fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+console.log(JSON.stringify(report, null, 2));
