@@ -326,7 +326,7 @@
       "name": "flux-2-klein-4b.safetensors",
       "type": "model",
       "source_url": "https://huggingface.co/Comfy-Org/flux2-klein-4B/resolve/main/split_files/diffusion_models/flux-2-klein-4b.safetensors",
-      "target_dir": "ComfyUI/models/checkpoints",
+      "target_dir": "ComfyUI/models/diffusion_models",
       "required_for_first_test": false,
       "test_profiles": [
         "smoke"

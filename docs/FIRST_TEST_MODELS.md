@@ -6,7 +6,7 @@ The first RunPod smoke test uses `FANVUE_TEST_PROFILE=smoke` and only public Hug
 
 | File | Target dir |
 |---|---|
-| `flux-2-klein-4b.safetensors` | `ComfyUI/models/checkpoints` |
+| `flux-2-klein-4b.safetensors` | `ComfyUI/models/diffusion_models` |
 | `qwen_3_4b.safetensors` | `ComfyUI/models/text_encoders` |
 | `flux2-vae.safetensors` | `ComfyUI/models/vae` |
 
