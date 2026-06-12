@@ -35,3 +35,21 @@ size: 243 kB
 ```
 
 Use this prompt before testing the heavier Flux/Klein smoke profile.
+
+## Flux2 Klein 4B Smoke Prompt
+
+This bundle includes `api_prompts/flux2_klein_4b_smoke.json` for the public-model Klein smoke profile.
+
+It uses:
+
+- `flux-2-klein-4b.safetensors`
+- `qwen_3_4b.safetensors`
+- `flux2-vae.safetensors`
+
+Expected output prefix:
+
+```text
+fanvue_flux2_klein_4b_smoke
+```
+
+Use this prompt to verify the public Flux2 Klein bootstrap before testing private 9B/faceswap workflows.
