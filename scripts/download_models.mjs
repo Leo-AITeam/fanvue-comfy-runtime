@@ -8,6 +8,7 @@ const firstTestOnly = process.env.FANVUE_FIRST_TEST_ONLY !== 'false';
 const testProfile = process.env.FANVUE_TEST_PROFILE || (firstTestOnly ? 'smoke' : 'all');
 const dryRun = process.env.FANVUE_DOWNLOAD_DRY_RUN === 'true';
 const reportPath = process.env.FANVUE_DOWNLOAD_REPORT || path.join(workspaceDir, 'fanvue', 'download_models_report.json');
+const mirrorReportPath = process.env.FANVUE_DOWNLOAD_REPORT_MIRROR || '';
 
 const manifestPath = path.join(bundleDir, 'models_manifest.json');
 const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
@@ -66,4 +67,8 @@ const report = {
 
 fs.mkdirSync(path.dirname(reportPath), { recursive: true });
 fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+if (mirrorReportPath) {
+  fs.mkdirSync(path.dirname(mirrorReportPath), { recursive: true });
+  fs.writeFileSync(mirrorReportPath, JSON.stringify(report, null, 2));
+}
 console.log(JSON.stringify(report, null, 2));

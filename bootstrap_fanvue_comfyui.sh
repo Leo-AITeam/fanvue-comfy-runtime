@@ -44,6 +44,8 @@ BUNDLE_DIR="$BUNDLE_DIR" \
 WORKSPACE_DIR="$WORKSPACE_DIR" \
 FANVUE_FIRST_TEST_ONLY="$FANVUE_FIRST_TEST_ONLY" \
 FANVUE_TEST_PROFILE="$FANVUE_TEST_PROFILE" \
+FANVUE_DOWNLOAD_REPORT="$FANVUE_DIR/download_models_report.json" \
+FANVUE_DOWNLOAD_REPORT_MIRROR="$COMFY_DIR/output/fanvue_download_models_report.json" \
 node "$BUNDLE_DIR/scripts/download_models.mjs"
 
 mkdir -p "$COMFY_DIR/user/default/workflows"
