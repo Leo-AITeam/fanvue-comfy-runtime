@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-WORKSPACE_DIR="${WORKSPACE_DIR:-/workspace}"
-COMFY_DIR="${COMFY_DIR:-$WORKSPACE_DIR/ComfyUI}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC1091
+source "$SCRIPT_DIR/resolve_runtime_paths.sh"
+
+WORKSPACE_DIR="$(resolve_workspace_dir)"
+COMFY_DIR="$(resolve_comfy_dir)"
 COMFYUI_PORT="${COMFYUI_PORT:-8188}"
 
 cd "$COMFY_DIR"

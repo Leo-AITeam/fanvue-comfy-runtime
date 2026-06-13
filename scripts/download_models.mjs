@@ -4,6 +4,7 @@ import { spawnSync } from 'node:child_process';
 
 const bundleDir = process.env.BUNDLE_DIR || path.resolve('.');
 const workspaceDir = process.env.WORKSPACE_DIR || '/workspace';
+const comfyDir = process.env.COMFY_DIR || path.join(workspaceDir, 'ComfyUI');
 const firstTestOnly = process.env.FANVUE_FIRST_TEST_ONLY !== 'false';
 const testProfile = process.env.FANVUE_TEST_PROFILE || (firstTestOnly ? 'smoke' : 'all');
 const dryRun = process.env.FANVUE_DOWNLOAD_DRY_RUN === 'true';
@@ -23,7 +24,12 @@ const models = (manifest.models || []).filter((item) => matchesProfile(item));
 
 function targetPath(item) {
   const cleanName = String(item.name).replaceAll('\\', '/');
-  return path.join(workspaceDir, item.target_dir, cleanName);
+  const targetDir = String(item.target_dir || '').replaceAll('\\', '/');
+  if (targetDir === 'ComfyUI') return path.join(comfyDir, cleanName);
+  if (targetDir.startsWith('ComfyUI/')) {
+    return path.join(comfyDir, targetDir.slice('ComfyUI/'.length), cleanName);
+  }
+  return path.join(workspaceDir, targetDir, cleanName);
 }
 
 const results = [];
@@ -59,6 +65,7 @@ const report = {
   ok: results.every((item) => !['failed'].includes(item.status)),
   generated_at: new Date().toISOString(),
   workspace_dir: workspaceDir,
+  comfy_dir: comfyDir,
   test_profile: testProfile,
   first_test_only: firstTestOnly,
   selected_model_count: models.length,

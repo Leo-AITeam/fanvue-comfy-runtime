@@ -3,9 +3,13 @@ set -euo pipefail
 
 echo "[fanvue-bootstrap] Starting ephemeral ComfyUI bootstrap"
 
-WORKSPACE_DIR="${WORKSPACE_DIR:-/workspace}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC1091
+source "$SCRIPT_DIR/scripts/resolve_runtime_paths.sh"
+
+WORKSPACE_DIR="$(resolve_workspace_dir)"
 FANVUE_DIR="${FANVUE_DIR:-$WORKSPACE_DIR/fanvue}"
-COMFY_DIR="${COMFY_DIR:-$WORKSPACE_DIR/ComfyUI}"
+COMFY_DIR="$(resolve_comfy_dir)"
 BUNDLE_DIR="${BUNDLE_DIR:-$FANVUE_DIR/bootstrap}"
 OUTPUT_DIR="${OUTPUT_DIR:-$FANVUE_DIR/output}"
 INPUT_DIR="${INPUT_DIR:-$FANVUE_DIR/input}"
@@ -14,6 +18,7 @@ FANVUE_FIRST_TEST_ONLY="${FANVUE_FIRST_TEST_ONLY:-true}"
 FANVUE_TEST_PROFILE="${FANVUE_TEST_PROFILE:-smoke}"
 
 mkdir -p "$FANVUE_DIR" "$OUTPUT_DIR" "$INPUT_DIR"
+mkdir -p "$COMFY_DIR/output"
 
 if [ ! -d "$COMFY_DIR" ]; then
   echo "[fanvue-bootstrap] ComfyUI directory not found: $COMFY_DIR"
@@ -28,6 +33,8 @@ fi
 
 echo "[fanvue-bootstrap] Running preflight"
 BUNDLE_DIR="$BUNDLE_DIR" \
+WORKSPACE_DIR="$WORKSPACE_DIR" \
+COMFY_DIR="$COMFY_DIR" \
 FANVUE_PREFLIGHT_MODE="$FANVUE_PREFLIGHT_MODE" \
 FANVUE_FIRST_TEST_ONLY="$FANVUE_FIRST_TEST_ONLY" \
 FANVUE_TEST_PROFILE="$FANVUE_TEST_PROFILE" \
@@ -36,12 +43,14 @@ node "$BUNDLE_DIR/scripts/preflight.mjs"
 echo "[fanvue-bootstrap] Installing custom nodes"
 BUNDLE_DIR="$BUNDLE_DIR" \
 COMFY_DIR="$COMFY_DIR" \
+WORKSPACE_DIR="$WORKSPACE_DIR" \
 FANVUE_FIRST_TEST_ONLY="$FANVUE_FIRST_TEST_ONLY" \
 node "$BUNDLE_DIR/scripts/install_custom_nodes.mjs"
 
 echo "[fanvue-bootstrap] Downloading models"
 BUNDLE_DIR="$BUNDLE_DIR" \
 WORKSPACE_DIR="$WORKSPACE_DIR" \
+COMFY_DIR="$COMFY_DIR" \
 FANVUE_FIRST_TEST_ONLY="$FANVUE_FIRST_TEST_ONLY" \
 FANVUE_TEST_PROFILE="$FANVUE_TEST_PROFILE" \
 FANVUE_DOWNLOAD_REPORT="$FANVUE_DIR/download_models_report.json" \

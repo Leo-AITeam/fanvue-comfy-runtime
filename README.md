@@ -17,6 +17,23 @@ At pod start:
 7. let n8n upload outputs to external storage;
 8. stop/delete the pod.
 
+## Preferred RunPod Image
+
+Use the project image after GitHub Actions builds it:
+
+```text
+ghcr.io/Leo-AITeam/fanvue-comfy-runtime:latest
+```
+
+This image extends the current ComfyUI base image and sets the Fanvue entrypoint directly. This is more reliable than passing `dockerStartCmd` to the base image, because some base images keep their own entrypoint and ignore a replacement CMD.
+
+The runtime auto-detects ComfyUI in common RunPod paths, including:
+
+```text
+/workspace/ComfyUI
+/runpod-slim/ComfyUI
+```
+
 ## Bootstrap Modes
 
 Real mode:

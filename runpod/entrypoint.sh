@@ -3,11 +3,22 @@ set -euo pipefail
 
 echo "[fanvue-runpod] Booting Fanvue ComfyUI runtime"
 
-WORKSPACE_DIR="${WORKSPACE_DIR:-/workspace}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DEFAULT_BUNDLE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+if [ -f "$DEFAULT_BUNDLE_DIR/scripts/resolve_runtime_paths.sh" ]; then
+  # shellcheck disable=SC1091
+  source "$DEFAULT_BUNDLE_DIR/scripts/resolve_runtime_paths.sh"
+fi
+
+WORKSPACE_DIR="$(resolve_workspace_dir)"
 FANVUE_DIR="${FANVUE_DIR:-$WORKSPACE_DIR/fanvue}"
 BUNDLE_DIR="${BUNDLE_DIR:-$FANVUE_DIR/bootstrap}"
 REPO_URL="${FANVUE_BOOTSTRAP_REPO_URL:-${FANVUE_BOOTSTRAP_REPO:-}}"
 REPO_REF="${FANVUE_BOOTSTRAP_REPO_REF:-${FANVUE_BOOTSTRAP_REF:-main}}"
+COMFY_DIR="$(resolve_comfy_dir)"
+
+export WORKSPACE_DIR FANVUE_DIR BUNDLE_DIR COMFY_DIR
 
 mkdir -p "$FANVUE_DIR"
 
@@ -21,7 +32,9 @@ if [ -n "$REPO_URL" ]; then
   git clone --depth 1 --branch "$REPO_REF" "$CLONE_URL" "$BUNDLE_DIR"
 else
   echo "[fanvue-runpod] FANVUE_BOOTSTRAP_REPO_URL is empty"
-  echo "[fanvue-runpod] Assuming bundle already exists at: $BUNDLE_DIR"
+  echo "[fanvue-runpod] Using bundled runtime at: $DEFAULT_BUNDLE_DIR"
+  BUNDLE_DIR="$DEFAULT_BUNDLE_DIR"
+  export BUNDLE_DIR
 fi
 
 chmod +x "$BUNDLE_DIR/bootstrap_fanvue_comfyui.sh"
