@@ -22,7 +22,7 @@ At pod start:
 Use the project image after GitHub Actions builds it:
 
 ```text
-ghcr.io/Leo-AITeam/fanvue-comfy-runtime:latest
+ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest
 ```
 
 This image extends the current ComfyUI base image and sets the Fanvue entrypoint directly. This is more reliable than passing `dockerStartCmd` to the base image, because some base images keep their own entrypoint and ignore a replacement CMD.

@@ -21,7 +21,7 @@ Observed:
 Use the dedicated runtime image after it is built:
 
 ```text
-ghcr.io/Leo-AITeam/fanvue-comfy-runtime:latest
+ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest
 ```
 
 This image sets `/opt/fanvue-comfy-runtime/runpod/entrypoint.sh` as its Docker entrypoint, so the bootstrap no longer depends on `dockerStartCmd`.
@@ -33,7 +33,7 @@ In future `run_next_queued` payloads, use:
 ```json
 {
   "pod": {
-    "image_name": "ghcr.io/Leo-AITeam/fanvue-comfy-runtime:latest",
+    "image_name": "ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest",
     "container_disk_gb": 50,
     "volume_gb": 0,
     "ports": ["8188/http", "8888/http"]

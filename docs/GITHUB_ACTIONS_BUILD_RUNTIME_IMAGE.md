@@ -3,7 +3,7 @@
 The runtime code is ready for a dedicated RunPod image:
 
 ```text
-ghcr.io/Leo-AITeam/fanvue-comfy-runtime:latest
+ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest
 ```
 
 The current Git token used by local push cannot create `.github/workflows/*` because it does not have the `workflow` scope. Add the workflow below manually in GitHub, or update the token scope and push it.
@@ -62,8 +62,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/fanvue-comfy-runtime:latest
-            ghcr.io/${{ github.repository_owner }}/fanvue-comfy-runtime:${{ github.sha }}
+            ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest
+            ghcr.io/leo-aiteam/fanvue-comfy-runtime:${{ github.sha }}
 ```
 
 After the workflow succeeds, use this image in n8n RunPod payloads:
@@ -71,7 +71,7 @@ After the workflow succeeds, use this image in n8n RunPod payloads:
 ```json
 {
   "pod": {
-    "image_name": "ghcr.io/Leo-AITeam/fanvue-comfy-runtime:latest"
+    "image_name": "ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest"
   }
 }
 ```
