@@ -38,7 +38,22 @@ else
 fi
 
 chmod +x "$BUNDLE_DIR/bootstrap_fanvue_comfyui.sh"
-"$BUNDLE_DIR/bootstrap_fanvue_comfyui.sh"
 
-echo "[fanvue-runpod] Starting ComfyUI"
-exec "$BUNDLE_DIR/scripts/start_comfyui.sh"
+if [ "${FANVUE_START_COMFYUI_EARLY:-true}" = "true" ]; then
+  echo "[fanvue-runpod] Running pre-model bootstrap before ComfyUI start"
+  FANVUE_BOOTSTRAP_STAGE=pre_models "$BUNDLE_DIR/bootstrap_fanvue_comfyui.sh"
+
+  echo "[fanvue-runpod] Starting ComfyUI before model download for observable readiness"
+  "$BUNDLE_DIR/scripts/start_comfyui.sh" &
+  COMFY_PID="$!"
+
+  echo "[fanvue-runpod] Downloading models while ComfyUI is reachable"
+  FANVUE_BOOTSTRAP_STAGE=models_only "$BUNDLE_DIR/bootstrap_fanvue_comfyui.sh"
+
+  echo "[fanvue-runpod] Bootstrap complete; keeping ComfyUI process alive"
+  wait "$COMFY_PID"
+else
+  "$BUNDLE_DIR/bootstrap_fanvue_comfyui.sh"
+  echo "[fanvue-runpod] Starting ComfyUI"
+  exec "$BUNDLE_DIR/scripts/start_comfyui.sh"
+fi

@@ -16,6 +16,7 @@ INPUT_DIR="${INPUT_DIR:-$FANVUE_DIR/input}"
 FANVUE_PREFLIGHT_MODE="${FANVUE_PREFLIGHT_MODE:-real}"
 FANVUE_FIRST_TEST_ONLY="${FANVUE_FIRST_TEST_ONLY:-true}"
 FANVUE_TEST_PROFILE="${FANVUE_TEST_PROFILE:-smoke}"
+FANVUE_BOOTSTRAP_STAGE="${FANVUE_BOOTSTRAP_STAGE:-all}"
 
 mkdir -p "$FANVUE_DIR" "$OUTPUT_DIR" "$INPUT_DIR"
 mkdir -p "$COMFY_DIR/output"
@@ -31,21 +32,28 @@ if [ ! -f "$BUNDLE_DIR/manifest.json" ]; then
   exit 21
 fi
 
-echo "[fanvue-bootstrap] Running preflight"
-BUNDLE_DIR="$BUNDLE_DIR" \
-WORKSPACE_DIR="$WORKSPACE_DIR" \
-COMFY_DIR="$COMFY_DIR" \
-FANVUE_PREFLIGHT_MODE="$FANVUE_PREFLIGHT_MODE" \
-FANVUE_FIRST_TEST_ONLY="$FANVUE_FIRST_TEST_ONLY" \
-FANVUE_TEST_PROFILE="$FANVUE_TEST_PROFILE" \
-node "$BUNDLE_DIR/scripts/preflight.mjs"
+if [ "$FANVUE_BOOTSTRAP_STAGE" = "all" ] || [ "$FANVUE_BOOTSTRAP_STAGE" = "pre_models" ]; then
+  echo "[fanvue-bootstrap] Running preflight"
+  BUNDLE_DIR="$BUNDLE_DIR" \
+  WORKSPACE_DIR="$WORKSPACE_DIR" \
+  COMFY_DIR="$COMFY_DIR" \
+  FANVUE_PREFLIGHT_MODE="$FANVUE_PREFLIGHT_MODE" \
+  FANVUE_FIRST_TEST_ONLY="$FANVUE_FIRST_TEST_ONLY" \
+  FANVUE_TEST_PROFILE="$FANVUE_TEST_PROFILE" \
+  node "$BUNDLE_DIR/scripts/preflight.mjs"
 
-echo "[fanvue-bootstrap] Installing custom nodes"
-BUNDLE_DIR="$BUNDLE_DIR" \
-COMFY_DIR="$COMFY_DIR" \
-WORKSPACE_DIR="$WORKSPACE_DIR" \
-FANVUE_FIRST_TEST_ONLY="$FANVUE_FIRST_TEST_ONLY" \
-node "$BUNDLE_DIR/scripts/install_custom_nodes.mjs"
+  echo "[fanvue-bootstrap] Installing custom nodes"
+  BUNDLE_DIR="$BUNDLE_DIR" \
+  COMFY_DIR="$COMFY_DIR" \
+  WORKSPACE_DIR="$WORKSPACE_DIR" \
+  FANVUE_FIRST_TEST_ONLY="$FANVUE_FIRST_TEST_ONLY" \
+  node "$BUNDLE_DIR/scripts/install_custom_nodes.mjs"
+fi
+
+if [ "$FANVUE_BOOTSTRAP_STAGE" = "pre_models" ]; then
+  echo "[fanvue-bootstrap] Pre-model bootstrap complete"
+  exit 0
+fi
 
 echo "[fanvue-bootstrap] Downloading models"
 BUNDLE_DIR="$BUNDLE_DIR" \
