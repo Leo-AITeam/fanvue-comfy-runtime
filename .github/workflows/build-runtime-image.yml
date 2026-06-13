@@ -43,5 +43,5 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/fanvue-comfy-runtime:latest
-            ghcr.io/${{ github.repository_owner }}/fanvue-comfy-runtime:${{ github.sha }}
+            ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest
+            ghcr.io/leo-aiteam/fanvue-comfy-runtime:${{ github.sha }}
