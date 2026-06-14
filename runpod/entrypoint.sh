@@ -24,13 +24,15 @@ export WORKSPACE_DIR FANVUE_DIR BUNDLE_DIR COMFY_DIR
 
 mkdir -p "$FANVUE_DIR"
 LOG_FILE="$FANVUE_DIR/fanvue_runtime.log"
-exec > >(tee -a "$LOG_FILE") 2>&1
-echo "[fanvue-runpod] Runtime log: $LOG_FILE"
+touch "$LOG_FILE"
 
 if [ "${FANVUE_DIAGNOSTIC_HTTP:-true}" = "true" ]; then
-  echo "[fanvue-runpod] Starting diagnostic HTTP server on port 8888"
   python3 -m http.server "${FANVUE_DIAGNOSTIC_PORT:-8888}" --directory "$FANVUE_DIR" &
 fi
+
+exec >> "$LOG_FILE" 2>&1
+echo "[fanvue-runpod] Runtime log: $LOG_FILE"
+echo "[fanvue-runpod] Diagnostic HTTP server requested on port ${FANVUE_DIAGNOSTIC_PORT:-8888}"
 
 if [ -n "$REPO_URL" ]; then
   echo "[fanvue-runpod] Cloning bootstrap repo: $REPO_URL ($REPO_REF)"
