@@ -53,3 +53,23 @@ fanvue_flux2_klein_4b_smoke
 ```
 
 Use this prompt to verify the public Flux2 Klein bootstrap before testing private 9B/faceswap workflows.
+
+## Face Detailer Smoke Template
+
+This bundle now includes `api_prompts/face_detailer_smoke_template.json` as the first post-generation adapter candidate.
+
+It uses:
+
+- `z_image_turbo_bf16.safetensors`
+- `qwen_3_4b.safetensors`
+- `ae.safetensors`
+- `sam_vit_b_01ec64.pth`
+- `segm/person_yolov8m-seg.pt`
+
+Important: this is a template, not a standalone text-to-image prompt. It contains:
+
+```text
+__INPUT_IMAGE__
+```
+
+n8n must replace that placeholder with the filename uploaded to the ComfyUI input folder before submitting the prompt. Use it after the native Klein path can upload or reuse an input image inside the active pod.

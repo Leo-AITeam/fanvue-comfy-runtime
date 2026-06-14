@@ -73,6 +73,14 @@ api_prompts/flux2_klein_4b_smoke.json
 
 This profile downloads only public HuggingFace models and verifies the GitHub -> RunPod -> ComfyUI bootstrap path.
 
+The first post-generation adapter candidate is:
+
+```text
+api_prompts/face_detailer_smoke_template.json
+```
+
+This prompt is not standalone. It requires n8n to upload an input image to ComfyUI and replace `__INPUT_IMAGE__` with that filename before prompt submission.
+
 After the private/custom model URLs are filled, switch to the full first test:
 
 ```text
