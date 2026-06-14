@@ -16,4 +16,5 @@ ENV BUNDLE_DIR=/opt/fanvue-comfy-runtime \
     FANVUE_START_COMFYUI_EARLY=true \
     COMFYUI_PORT=8188
 
+ENTRYPOINT []
 CMD ["/opt/fanvue-comfy-runtime/runpod/entrypoint.sh"]
