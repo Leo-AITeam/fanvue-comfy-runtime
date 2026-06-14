@@ -5,10 +5,12 @@ import { spawnSync } from 'node:child_process';
 const bundleDir = process.env.BUNDLE_DIR || path.resolve('.');
 const comfyDir = process.env.COMFY_DIR || '/workspace/ComfyUI';
 const firstTestOnly = process.env.FANVUE_FIRST_TEST_ONLY !== 'false';
+const testProfile = process.env.FANVUE_TEST_PROFILE || (firstTestOnly ? 'smoke' : 'all');
 const dryRun = process.env.FANVUE_NODE_INSTALL_DRY_RUN === 'true';
 
 const manifest = JSON.parse(fs.readFileSync(path.join(bundleDir, 'custom_nodes_manifest.json'), 'utf8'));
 const nodes = (manifest.nodes || []).filter((item) =>
+  testProfile === 'api_smoke' ? false :
   firstTestOnly ? item.required_for_first_test : true
 );
 const customNodesDir = path.join(comfyDir, 'custom_nodes');

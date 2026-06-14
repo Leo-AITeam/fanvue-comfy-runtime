@@ -57,11 +57,18 @@ Dry-run mode checks the bundle and prints what would be installed/downloaded.
 
 ## First Test
 
-Use the smoke profile first:
+Use the API smoke profile first. It starts ComfyUI without custom-node or model downloads, then validates the proxy/API path with a built-in prompt:
+
+```text
+FANVUE_TEST_PROFILE=api_smoke
+api_prompts/empty_image_smoke.json
+```
+
+Use the Klein smoke profile after the API path is reachable:
 
 ```text
 FANVUE_TEST_PROFILE=smoke
-workflows/OFM-LAB_faceswap_CLOUD_READY.json
+api_prompts/flux2_klein_4b_smoke.json
 ```
 
 This profile downloads only public HuggingFace models and verifies the GitHub -> RunPod -> ComfyUI bootstrap path.

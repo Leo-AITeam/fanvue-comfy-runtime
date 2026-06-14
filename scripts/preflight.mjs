@@ -19,6 +19,7 @@ const models = readJson('models_manifest.json');
 const nodes = readJson('custom_nodes_manifest.json');
 
 function matchesProfile(item) {
+  if (testProfile === 'api_smoke') return false;
   if (testProfile === 'all') return true;
   if (Array.isArray(item.test_profiles)) return item.test_profiles.includes(testProfile);
   if (testProfile === 'first_full') return Boolean(item.required_for_first_test);
@@ -28,6 +29,7 @@ function matchesProfile(item) {
 const selectedModels = (models.models || []).filter((item) => matchesProfile(item));
 const missingModelUrls = selectedModels.filter((item) => !item.source_url);
 const selectedNodes = (nodes.nodes || []).filter((item) =>
+  testProfile === 'api_smoke' ? false :
   firstTestOnly ? item.required_for_first_test : true
 );
 const missingNodeRepos = selectedNodes.filter((item) => !item.repo_url);
