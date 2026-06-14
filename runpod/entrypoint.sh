@@ -5,25 +5,11 @@ echo "[fanvue-runpod] Booting Fanvue ComfyUI runtime"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEFAULT_BUNDLE_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-
-if [ -f "$DEFAULT_BUNDLE_DIR/scripts/resolve_runtime_paths.sh" ]; then
-  # shellcheck disable=SC1091
-  source "$DEFAULT_BUNDLE_DIR/scripts/resolve_runtime_paths.sh"
-fi
-
-WORKSPACE_DIR="$(resolve_workspace_dir)"
-FANVUE_DIR="${FANVUE_DIR:-$WORKSPACE_DIR/fanvue}"
-BUNDLE_DIR="${BUNDLE_DIR:-$FANVUE_DIR/bootstrap}"
-REPO_URL="${FANVUE_BOOTSTRAP_REPO_URL:-${FANVUE_BOOTSTRAP_REPO:-}}"
-REPO_REF="${FANVUE_BOOTSTRAP_REPO_REF:-${FANVUE_BOOTSTRAP_REF:-main}}"
-if ! COMFY_DIR="$(resolve_comfy_dir)"; then
-  COMFY_DIR="${COMFY_DIR:-$WORKSPACE_DIR/ComfyUI}"
-fi
-
-export WORKSPACE_DIR FANVUE_DIR BUNDLE_DIR COMFY_DIR
+EARLY_WORKSPACE_DIR="${RUNPOD_VOLUME_PATH:-${WORKSPACE_DIR:-/workspace}}"
+FANVUE_DIR="${FANVUE_DIR:-$EARLY_WORKSPACE_DIR/fanvue}"
+LOG_FILE="$FANVUE_DIR/fanvue_runtime.log"
 
 mkdir -p "$FANVUE_DIR"
-LOG_FILE="$FANVUE_DIR/fanvue_runtime.log"
 touch "$LOG_FILE"
 
 if [ "${FANVUE_DIAGNOSTIC_HTTP:-true}" = "true" ]; then
@@ -33,6 +19,21 @@ fi
 exec >> "$LOG_FILE" 2>&1
 echo "[fanvue-runpod] Runtime log: $LOG_FILE"
 echo "[fanvue-runpod] Diagnostic HTTP server requested on port ${FANVUE_DIAGNOSTIC_PORT:-8888}"
+
+if [ -f "$DEFAULT_BUNDLE_DIR/scripts/resolve_runtime_paths.sh" ]; then
+  # shellcheck disable=SC1091
+  source "$DEFAULT_BUNDLE_DIR/scripts/resolve_runtime_paths.sh"
+fi
+
+WORKSPACE_DIR="$(resolve_workspace_dir)"
+BUNDLE_DIR="${BUNDLE_DIR:-$FANVUE_DIR/bootstrap}"
+REPO_URL="${FANVUE_BOOTSTRAP_REPO_URL:-${FANVUE_BOOTSTRAP_REPO:-}}"
+REPO_REF="${FANVUE_BOOTSTRAP_REPO_REF:-${FANVUE_BOOTSTRAP_REF:-main}}"
+if ! COMFY_DIR="$(resolve_comfy_dir)"; then
+  COMFY_DIR="${COMFY_DIR:-$WORKSPACE_DIR/ComfyUI}"
+fi
+
+export WORKSPACE_DIR FANVUE_DIR BUNDLE_DIR COMFY_DIR
 
 if [ -n "$REPO_URL" ]; then
   echo "[fanvue-runpod] Cloning bootstrap repo: $REPO_URL ($REPO_REF)"
