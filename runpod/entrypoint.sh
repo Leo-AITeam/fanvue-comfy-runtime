@@ -16,14 +16,28 @@ FANVUE_DIR="${FANVUE_DIR:-$WORKSPACE_DIR/fanvue}"
 BUNDLE_DIR="${BUNDLE_DIR:-$FANVUE_DIR/bootstrap}"
 REPO_URL="${FANVUE_BOOTSTRAP_REPO_URL:-${FANVUE_BOOTSTRAP_REPO:-}}"
 REPO_REF="${FANVUE_BOOTSTRAP_REPO_REF:-${FANVUE_BOOTSTRAP_REF:-main}}"
-COMFY_DIR="$(resolve_comfy_dir)"
+if ! COMFY_DIR="$(resolve_comfy_dir)"; then
+  COMFY_DIR="${COMFY_DIR:-$WORKSPACE_DIR/ComfyUI}"
+fi
 
 export WORKSPACE_DIR FANVUE_DIR BUNDLE_DIR COMFY_DIR
 
 mkdir -p "$FANVUE_DIR"
+LOG_FILE="$FANVUE_DIR/fanvue_runtime.log"
+exec > >(tee -a "$LOG_FILE") 2>&1
+echo "[fanvue-runpod] Runtime log: $LOG_FILE"
+
+if [ "${FANVUE_DIAGNOSTIC_HTTP:-true}" = "true" ]; then
+  echo "[fanvue-runpod] Starting diagnostic HTTP server on port 8888"
+  python3 -m http.server "${FANVUE_DIAGNOSTIC_PORT:-8888}" --directory "$FANVUE_DIR" &
+fi
 
 if [ -n "$REPO_URL" ]; then
   echo "[fanvue-runpod] Cloning bootstrap repo: $REPO_URL ($REPO_REF)"
+  if [ "$BUNDLE_DIR" = "$DEFAULT_BUNDLE_DIR" ]; then
+    BUNDLE_DIR="$FANVUE_DIR/bootstrap"
+    export BUNDLE_DIR
+  fi
   rm -rf "$BUNDLE_DIR"
   CLONE_URL="$REPO_URL"
   if [ -n "${GITHUB_TOKEN:-}" ] && [[ "$CLONE_URL" == https://github.com/* ]]; then
