@@ -5,6 +5,7 @@ RUN apt-get update \
     ca-certificates \
     curl \
     git \
+    nodejs \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt/fanvue-comfy-runtime
