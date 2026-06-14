@@ -9,7 +9,9 @@ source "$SCRIPT_DIR/scripts/resolve_runtime_paths.sh"
 
 WORKSPACE_DIR="$(resolve_workspace_dir)"
 FANVUE_DIR="${FANVUE_DIR:-$WORKSPACE_DIR/fanvue}"
-COMFY_DIR="$(resolve_comfy_dir)"
+if ! COMFY_DIR="$(resolve_comfy_dir)"; then
+  COMFY_DIR="${COMFY_DIR:-$WORKSPACE_DIR/ComfyUI}"
+fi
 BUNDLE_DIR="${BUNDLE_DIR:-$FANVUE_DIR/bootstrap}"
 OUTPUT_DIR="${OUTPUT_DIR:-$FANVUE_DIR/output}"
 INPUT_DIR="${INPUT_DIR:-$FANVUE_DIR/input}"
@@ -19,13 +21,14 @@ FANVUE_TEST_PROFILE="${FANVUE_TEST_PROFILE:-smoke}"
 FANVUE_BOOTSTRAP_STAGE="${FANVUE_BOOTSTRAP_STAGE:-all}"
 
 mkdir -p "$FANVUE_DIR" "$OUTPUT_DIR" "$INPUT_DIR"
-mkdir -p "$COMFY_DIR/output"
 
 if [ ! -d "$COMFY_DIR" ]; then
   echo "[fanvue-bootstrap] ComfyUI directory not found: $COMFY_DIR"
   echo "[fanvue-bootstrap] The base image must include ComfyUI or clone it before running this script."
   exit 20
 fi
+
+mkdir -p "$COMFY_DIR/output"
 
 if [ ! -f "$BUNDLE_DIR/manifest.json" ]; then
   echo "[fanvue-bootstrap] manifest.json not found in $BUNDLE_DIR"

@@ -12,7 +12,9 @@ resolve_comfy_dir() {
     /workspace/ComfyUI \
     /runpod-slim/ComfyUI \
     /ComfyUI \
-    /opt/ComfyUI; do
+    /opt/ComfyUI \
+    /opt/comfyui-baked/ComfyUI \
+    /opt/comfyui-baked; do
     if [ -d "$candidate" ]; then
       printf '%s\n' "$candidate"
       return 0
