@@ -81,6 +81,19 @@ api_prompts/face_detailer_smoke_template.json
 
 This prompt is not standalone. It requires n8n to upload an input image to ComfyUI and replace `__INPUT_IMAGE__` with that filename before prompt submission.
 
+If n8n executions are exhausted, use the direct RunPod test harness instead:
+
+```bash
+node scripts/runpod_direct_test.mjs create --dry-run --profile smoke
+```
+
+See:
+
+```text
+docs/DIRECT_RUNPOD_TESTS.md
+docs/N8N_EXECUTION_OPTIMIZATION.md
+```
+
 After the private/custom model URLs are filled, switch to the full first test:
 
 ```text
