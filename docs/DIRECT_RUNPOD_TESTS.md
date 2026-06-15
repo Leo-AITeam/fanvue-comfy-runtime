@@ -22,6 +22,18 @@ This does not create a pod:
 node scripts/runpod_direct_test.mjs create --dry-run --profile smoke
 ```
 
+The create command validates the runtime bundle before building the pod payload. Run it directly when you only want the preflight:
+
+```bash
+node scripts/runpod_direct_test.mjs validate
+```
+
+Only bypass this check when you are deliberately debugging a broken bundle:
+
+```bash
+node scripts/runpod_direct_test.mjs create --dry-run --profile smoke --skip-bundle-validate
+```
+
 Default image:
 
 ```text

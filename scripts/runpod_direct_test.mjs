@@ -2,6 +2,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 
 const args = process.argv.slice(2);
 
@@ -50,6 +51,35 @@ function redactedCreatePayload(payload) {
 const command = argValue('command', args[0] || 'help');
 const apiBase = process.env.RUNPOD_REST_BASE_URL || 'https://rest.runpod.io/v1';
 const bundleDir = path.resolve(argValue('bundle-dir', process.env.BUNDLE_DIR || '.'));
+
+function validateBundle({ print = true } = {}) {
+  const validator = path.join(bundleDir, 'scripts', 'validate_runtime_bundle.mjs');
+  if (!fs.existsSync(validator)) {
+    throw new Error(`Runtime bundle validator not found: ${validator}`);
+  }
+  const result = spawnSync(process.execPath, [validator, bundleDir], {
+    encoding: 'utf8',
+  });
+  const stdout = result.stdout.trim();
+  const stderr = result.stderr.trim();
+  let body;
+  try {
+    body = stdout ? JSON.parse(stdout) : {};
+  } catch {
+    body = { raw: stdout };
+  }
+  if (print && stdout) console.log(stdout);
+  if (result.status !== 0) {
+    throw new Error(JSON.stringify({
+      ok: false,
+      status: 'bundle_validation_failed',
+      exit_code: result.status,
+      stderr,
+      result: body,
+    }, null, 2));
+  }
+  return body;
+}
 
 async function runpodFetch(pathname, options = {}) {
   const apiKey = requireEnv('RUNPOD_API_KEY');
@@ -150,10 +180,19 @@ async function checkPod() {
 }
 
 async function createPod() {
+  if (!hasFlag('skip-bundle-validate')) {
+    const validation = validateBundle({ print: false });
+    if (!validation.ok) throw new Error('Runtime bundle validation failed');
+  }
   const payloadPath = argValue('payload');
   const payload = payloadPath ? readJson(payloadPath) : buildCreatePayload();
   if (hasFlag('dry-run')) {
-    output({ ok: true, status: 'create_dry_run', payload: redactedCreatePayload(payload) });
+    output({
+      ok: true,
+      status: 'create_dry_run',
+      bundle_validation: hasFlag('skip-bundle-validate') ? 'skipped' : 'passed',
+      payload: redactedCreatePayload(payload),
+    });
     return;
   }
   const result = await runpodFetch('/pods', {
@@ -387,8 +426,10 @@ function help() {
   output({
     ok: true,
     commands: {
+      validate: 'node scripts/runpod_direct_test.mjs validate',
       list: 'RUNPOD_API_KEY=... node scripts/runpod_direct_test.mjs list',
       create_dry_run: 'node scripts/runpod_direct_test.mjs create --dry-run --profile smoke',
+      create_dry_run_skip_validation: 'node scripts/runpod_direct_test.mjs create --dry-run --profile smoke --skip-bundle-validate',
       create: 'RUNPOD_API_KEY=... node scripts/runpod_direct_test.mjs create --profile smoke',
       create_auto_run: 'RUNPOD_API_KEY=... node scripts/runpod_direct_test.mjs create --profile smoke --auto-run --workflow-name "Flux Klein 4B Smoke"',
       create_face_detailer_auto_run: 'RUNPOD_API_KEY=... node scripts/runpod_direct_test.mjs create --auto-run --workflow-name "Face Detailer Smoke" --input-image-name fanvue/direct/source.png',
@@ -405,6 +446,7 @@ function help() {
 
 try {
   if (command === 'help' || command === '--help' || command === '-h') help();
+  else if (command === 'validate') validateBundle();
   else if (command === 'list') await listPods();
   else if (command === 'check') await checkPod();
   else if (command === 'create') await createPod();

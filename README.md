@@ -90,6 +90,7 @@ This prompt is not standalone. It requires n8n to upload an input image to Comfy
 If n8n executions are exhausted, use the direct RunPod test harness instead:
 
 ```bash
+node scripts/runpod_direct_test.mjs validate
 node scripts/runpod_direct_test.mjs create --dry-run --profile smoke
 ```
 
