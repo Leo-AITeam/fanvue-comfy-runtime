@@ -47,6 +47,19 @@ node scripts/validate_runtime_bundle.mjs .
 The importer matches by exact model filename, reports unknown or duplicate rows,
 and can fail in `--strict` mode until all `first_full` sources are filled.
 
+Runtime preflight also fails `FANVUE_TEST_PROFILE=first_full` in real mode while
+any selected model is missing a `source_url`. Use `smoke` or
+`face_detailer_smoke` for safe GPU checks until the list below is empty.
+
+### Remaining Source Gaps
+
+- `AIKOZIMAGE_000002700.safetensors` — OFMTechNSFW++ checkpoint; source not verified yet.
+- `Detailed Nipples XL v1.0.safetensors` — OFMTechNSFW++ LoRA; similar files exist with different filenames, source not verified yet.
+- `Wan22_A14B_T2V_HIGH_Lightning_4steps_lora_250928_rank128_fp16.safetensors` — WAN2.2 text-to-video LoRA; searched candidate repo was empty.
+- `Wan22_A14B_T2V_LOW_Lightning_4steps_lora_250928_rank64_fp16.safetensors` — WAN2.2 text-to-video LoRA; no verified direct source yet.
+- `wan2.2_t2v_highnoise_sidemissionary_v1.0.safetensors` — WAN2.2 text-to-video checkpoint; no verified direct source yet.
+- `wan2.2_t2v_lownoise_sidemissionary_v1.0.safetensors` — WAN2.2 text-to-video checkpoint; no verified direct source yet.
+
 | # | File | Type | Target dir | Source URL |
 |---:|---|---|---|---|
 | 1 | `4x-UltraSharpV2.pth` | detector_or_upscale | `ComfyUI/models` | ready |
@@ -76,4 +89,3 @@ and can fail in `--strict` mode until all `first_full` sources are filled.
 | 25 | `wan_2.1_vae.safetensors` | vae | `ComfyUI/models/vae` | ready |
 | 26 | `x1_ITF_SkinDiffDetail_Lite_v1.pth` | detector_or_upscale | `ComfyUI/models` | ready |
 | 27 | `z_image_turbo_bf16.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |
-
