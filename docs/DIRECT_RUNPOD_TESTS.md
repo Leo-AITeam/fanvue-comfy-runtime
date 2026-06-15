@@ -48,6 +48,24 @@ comfyui_url
 diagnostics_url
 ```
 
+Create a pod that auto-runs the Klein smoke prompt inside the container:
+
+```bash
+node scripts/runpod_direct_test.mjs create \
+  --profile smoke \
+  --auto-run \
+  --workflow-name "Flux Klein 4B Smoke"
+```
+
+Create a pod that auto-runs Face Detailer against an image already present in ComfyUI input storage:
+
+```bash
+node scripts/runpod_direct_test.mjs create \
+  --auto-run \
+  --workflow-name "Face Detailer Smoke" \
+  --input-image-name fanvue/direct/source.png
+```
+
 ## 3. Wait For ComfyUI
 
 ```bash

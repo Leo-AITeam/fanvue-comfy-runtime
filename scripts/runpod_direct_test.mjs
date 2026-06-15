@@ -82,9 +82,14 @@ function buildCreatePayload() {
   );
   const ref = argValue('ref', process.env.FANVUE_BOOTSTRAP_REPO_REF || process.env.FANVUE_BOOTSTRAP_REF || 'main');
   const profile = argValue('profile', process.env.FANVUE_TEST_PROFILE || 'smoke');
+  const workflowName = argValue('workflow-name', process.env.FANVUE_WORKFLOW_NAME || '');
   const imageName = argValue('image', process.env.RUNPOD_IMAGE_NAME || 'ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest');
   const gpu = argValue('gpu', process.env.RUNPOD_GPU_TYPE || 'NVIDIA L40S');
   const name = argValue('name', `fanvue-direct-${profile}-${Date.now()}`);
+  const autoRun = hasFlag('auto-run') || process.env.FANVUE_AUTO_RUN_PROMPT === 'true';
+  const inputImageName = argValue('input-image-name', process.env.FANVUE_INPUT_IMAGE_NAME || '');
+  const inputSubfolder = argValue('input-subfolder', process.env.FANVUE_INPUT_SUBFOLDER || 'fanvue/runtime');
+  const filenamePrefix = argValue('filename-prefix', process.env.FANVUE_FILENAME_PREFIX || `fanvue_direct_${profile}`);
 
   return {
     name,
@@ -104,6 +109,11 @@ function buildCreatePayload() {
       FANVUE_DOWNLOAD_DRY_RUN: String(argValue('download-dry-run', process.env.FANVUE_DOWNLOAD_DRY_RUN || 'false')),
       FANVUE_NODE_INSTALL_DRY_RUN: String(argValue('node-install-dry-run', process.env.FANVUE_NODE_INSTALL_DRY_RUN || 'false')),
       COMFYUI_PORT: '8188',
+      FANVUE_AUTO_RUN_PROMPT: String(autoRun),
+      FANVUE_WORKFLOW_NAME: workflowName || (inputImageName ? 'Face Detailer Smoke' : 'Flux Klein 4B Smoke'),
+      FANVUE_INPUT_IMAGE_NAME: inputImageName,
+      FANVUE_INPUT_SUBFOLDER: inputSubfolder,
+      FANVUE_FILENAME_PREFIX: filenamePrefix,
     },
   };
 }
@@ -359,6 +369,8 @@ function help() {
       list: 'RUNPOD_API_KEY=... node scripts/runpod_direct_test.mjs list',
       create_dry_run: 'node scripts/runpod_direct_test.mjs create --dry-run --profile smoke',
       create: 'RUNPOD_API_KEY=... node scripts/runpod_direct_test.mjs create --profile smoke',
+      create_auto_run: 'RUNPOD_API_KEY=... node scripts/runpod_direct_test.mjs create --profile smoke --auto-run --workflow-name "Flux Klein 4B Smoke"',
+      create_face_detailer_auto_run: 'RUNPOD_API_KEY=... node scripts/runpod_direct_test.mjs create --auto-run --workflow-name "Face Detailer Smoke" --input-image-name fanvue/direct/source.png',
       wait: 'node scripts/runpod_direct_test.mjs wait --pod-id POD_ID',
       submit_klein: 'node scripts/runpod_direct_test.mjs submit --pod-id POD_ID --prompt api_prompts/flux2_klein_4b_smoke.json',
       submit_face_detailer: 'node scripts/runpod_direct_test.mjs submit --pod-id POD_ID --input-file ./source.png --input-subfolder fanvue/direct',

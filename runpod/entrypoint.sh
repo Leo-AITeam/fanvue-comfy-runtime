@@ -67,6 +67,13 @@ if [ "${FANVUE_START_COMFYUI_EARLY:-true}" = "true" ]; then
   echo "[fanvue-runpod] Downloading models while ComfyUI is reachable"
   FANVUE_BOOTSTRAP_STAGE=models_only "$BUNDLE_DIR/bootstrap_fanvue_comfyui.sh"
 
+  if [ "${FANVUE_AUTO_RUN_PROMPT:-false}" = "true" ]; then
+    echo "[fanvue-runpod] Starting runtime worker"
+    FANVUE_WORKER_REPORT="$FANVUE_DIR/fanvue_worker_report.json" \
+    FANVUE_WORKER_REPORT_MIRROR="$COMFY_DIR/output/fanvue_worker_report.json" \
+    node "$BUNDLE_DIR/scripts/comfy_runtime_worker.mjs" &
+  fi
+
   echo "[fanvue-runpod] Bootstrap complete; keeping ComfyUI process alive"
   wait "$COMFY_PID"
 else
