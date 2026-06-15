@@ -58,7 +58,8 @@
       "load_image_placeholder": "__INPUT_IMAGE__",
       "upload_command": "upload_input",
       "expected_load_image_name": "<input_subfolder>/<filename>",
-      "native_orchestrator_status": "prepared_not_gpu_validated",
+      "native_orchestrator_status": "direct_gpu_validated",
+      "validated_prompt_id": "3ab4632e-2b76-4086-a0d7-116391f9da96",
       "model_blockers": [
         "z_image_turbo_bf16.safetensors",
         "ae.safetensors",
@@ -71,7 +72,8 @@
       "source_workflow": "workflows/QWEN Edit Consistent Face.json",
       "api_prompt": "api_prompts/qwen_image_smoke.json",
       "input_mode": "text_to_image",
-      "native_orchestrator_status": "prepared_not_gpu_validated",
+      "native_orchestrator_status": "direct_gpu_validated",
+      "validated_prompt_id": "e03b5767-f2ea-496c-a695-d6931af9514f",
       "model_profile": "qwen_edit_smoke",
       "model_blockers": [
         "qwen_image_edit_2509_fp8_e4m3fn.safetensors",

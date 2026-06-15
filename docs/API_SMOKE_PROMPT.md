@@ -18,20 +18,22 @@ This is not a real Fanvue generation workflow. Real generation starts after the 
 
 ## Qwen Image Smoke Prompt
 
-This bundle also includes `api_prompts/qwen_image_smoke.json` for the first real GPU generation test on the current Qwen RunPod image.
+This bundle also includes `api_prompts/qwen_image_smoke.json` for the first real GPU generation test on the Qwen RunPod profile.
 
-It uses the preloaded model stack:
+It downloads and uses this model stack through `FANVUE_TEST_PROFILE=qwen_edit_smoke`:
 
 - `qwen_image_edit_2509_fp8_e4m3fn.safetensors`
 - `qwen_2.5_vl_7b_fp8_scaled.safetensors`
 - `qwen_image_vae.safetensors`
 
-Known successful output from the first live test:
+Known successful direct RunPod output:
 
 ```text
-prompt_id: e54f8ac6-6d3e-4c04-8012-6024e8df3b1e
+pod_id: 3eqg8xn1hit8sp
+gpu: NVIDIA L40S
+prompt_id: e03b5767-f2ea-496c-a695-d6931af9514f
 filename: fanvue_qwen_smoke_00001_.png
-size: 243 kB
+size: 512x512 PNG
 ```
 
 Use this prompt before testing the heavier Flux/Klein smoke profile.
@@ -64,7 +66,7 @@ It uses:
 - `qwen_3_4b.safetensors`
 - `ae.safetensors`
 - `sam_vit_b_01ec64.pth`
-- `segm/person_yolov8m-seg.pt`
+- `ComfyUI-CLIPSeg` through the patched `CLIPSegDetectorProvider`
 
 Important: this is a template, not a standalone text-to-image prompt. It contains:
 
