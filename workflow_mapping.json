@@ -62,10 +62,9 @@
       "model_blockers": [
         "z_image_turbo_bf16.safetensors",
         "ae.safetensors",
-        "sam_vit_b_01ec64.pth",
-        "segm/person_yolov8m-seg.pt"
+        "sam_vit_b_01ec64.pth"
       ],
-      "notes": "Use Job Runner upload_input first, replace __INPUT_IMAGE__, then submit the template prompt."
+      "notes": "Use Job Runner upload_input first, replace __INPUT_IMAGE__, then submit the template prompt. The smoke adapter uses CLIPSegDetectorProvider because the current Impact Pack build does not expose UltralyticsDetectorProvider."
     }
   }
 }

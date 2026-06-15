@@ -28,9 +28,12 @@
     }
   },
   "5": {
-    "class_type": "UltralyticsDetectorProvider",
+    "class_type": "CLIPSegDetectorProvider",
     "inputs": {
-      "model_name": "segm/person_yolov8m-seg.pt"
+      "text": "face",
+      "blur": 7,
+      "threshold": 0.35,
+      "dilation_factor": 4
     }
   },
   "6": {

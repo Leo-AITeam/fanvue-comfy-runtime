@@ -7,7 +7,7 @@ Generated from `models_manifest.json`.
 | Profile | Selected models | Missing source_url |
 |---|---:|---:|
 | smoke | 3 | 0 |
-| face_detailer_smoke | 5 | 0 |
+| face_detailer_smoke | 4 | 0 |
 | first_full | 27 | 22 |
 
 ## Smoke Profile
@@ -29,8 +29,7 @@ This is the current safe GPU image-to-image profile for the Face Detailer adapte
 | 1 | `ae.safetensors` | model | `ComfyUI/models/vae` | ready |
 | 2 | `qwen_3_4b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready |
 | 3 | `sam_vit_b_01ec64.pth` | detector_or_upscale | `ComfyUI/models/sams` | ready |
-| 4 | `segm/person_yolov8m-seg.pt` | detector_or_upscale | `ComfyUI/models/ultralytics` | ready |
-| 5 | `z_image_turbo_bf16.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |
+| 4 | `z_image_turbo_bf16.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |
 
 ## First Full Profile
 

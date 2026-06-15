@@ -243,10 +243,7 @@
       "type": "detector_or_upscale",
       "source_url": "https://huggingface.co/Bingsu/adetailer/resolve/main/person_yolov8m-seg.pt",
       "target_dir": "ComfyUI/models/ultralytics",
-      "required_for_first_test": false,
-      "test_profiles": [
-        "face_detailer_smoke"
-      ]
+      "required_for_first_test": false
     },
     {
       "name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",

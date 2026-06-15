@@ -29,6 +29,15 @@
       ]
     },
     {
+      "name": "ComfyUI-CLIPSeg",
+      "repo_url": "https://github.com/biegert/ComfyUI-CLIPSeg.git",
+      "required_for_first_test": true,
+      "node_type_hints": [
+        "CLIPSegDetectorProvider",
+        "CLIPSegToBboxDetector"
+      ]
+    },
+    {
       "name": "ComfyUI-KJNodes",
       "repo_url": "https://github.com/kijai/ComfyUI-KJNodes.git",
       "required_for_first_test": false,
