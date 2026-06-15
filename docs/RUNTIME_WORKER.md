@@ -146,6 +146,34 @@ FANVUE_INPUT_IMAGE_NAME="fanvue/direct/source.png" \
 node scripts/comfy_runtime_worker.mjs
 ```
 
+Job-file dry-run:
+
+```bash
+FANVUE_WORKER_DRY_RUN=true \
+BUNDLE_DIR="$PWD" \
+FANVUE_DIR="$PWD/.dryrun_workspace/fanvue-job-file" \
+COMFY_DIR="$PWD/.dryrun_workspace/ComfyUI-job-file" \
+FANVUE_JOB_FILE="$PWD/job_templates/face_detailer_smoke_job.json" \
+node scripts/comfy_runtime_worker.mjs
+```
+
+Qwen job-file dry-run:
+
+```bash
+FANVUE_WORKER_DRY_RUN=true \
+BUNDLE_DIR="$PWD" \
+FANVUE_DIR="$PWD/.dryrun_workspace/fanvue-qwen-job-file" \
+COMFY_DIR="$PWD/.dryrun_workspace/ComfyUI-qwen-job-file" \
+FANVUE_JOB_FILE="$PWD/job_templates/qwen_image_smoke_job.json" \
+node scripts/comfy_runtime_worker.mjs
+```
+
+The chain job is handled by the direct chain runner:
+
+```bash
+node scripts/direct_image_chain_smoke.mjs --dry-run
+```
+
 ## Production Shape Later
 
 The worker can later call one final n8n callback:

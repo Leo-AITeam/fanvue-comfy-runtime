@@ -142,6 +142,19 @@ const checks = [
       FANVUE_WORKER_REPORT_MIRROR: path.join(workerRoot, 'ComfyUI', 'output', 'fanvue_worker_report.json'),
     },
   }),
+  run('worker.face_detailer_job_file_dry_run', ['scripts/comfy_runtime_worker.mjs'], {
+    env: {
+      BUNDLE_DIR: root,
+      FANVUE_DIR: path.join(workerRoot, 'fanvue-job-file'),
+      COMFY_DIR: path.join(workerRoot, 'ComfyUI-job-file'),
+      OUTPUT_DIR: path.join(workerRoot, 'fanvue-job-file', 'output'),
+      FANVUE_WORKER_DRY_RUN: 'true',
+      FANVUE_JOB_FILE: path.join(root, 'job_templates', 'face_detailer_smoke_job.json'),
+      FANVUE_CALLBACK_DRY_RUN: 'true',
+      FANVUE_WORKER_REPORT: path.join(workerRoot, 'fanvue-job-file', 'fanvue_worker_report.json'),
+      FANVUE_WORKER_REPORT_MIRROR: path.join(workerRoot, 'ComfyUI-job-file', 'output', 'fanvue_worker_report.json'),
+    },
+  }),
 ];
 
 const failed = checks.filter((check) => !check.ok);

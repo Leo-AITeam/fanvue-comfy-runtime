@@ -22,6 +22,46 @@ function readJson(file) {
   return JSON.parse(fs.readFileSync(file, 'utf8'));
 }
 
+function loadGenerationJob() {
+  const jobFile = env('FANVUE_JOB_FILE', env('FANVUE_GENERATION_JOB_FILE'));
+  if (!jobFile) return null;
+  const resolved = path.resolve(jobFile);
+  return {
+    file: resolved,
+    payload: readJson(resolved),
+  };
+}
+
+const generationJob = loadGenerationJob();
+
+function jobAt(keys) {
+  if (!generationJob) return undefined;
+  let value = generationJob.payload;
+  for (const key of keys) {
+    if (!value || typeof value !== 'object' || !(key in value)) return undefined;
+    value = value[key];
+  }
+  return value;
+}
+
+function jobString(paths, fallback = '') {
+  for (const keys of paths) {
+    const value = jobAt(keys);
+    if (typeof value === 'string' && value.length > 0) return value;
+    if (typeof value === 'number') return String(value);
+  }
+  return fallback;
+}
+
+function jobNumber(paths, fallback = undefined) {
+  for (const keys of paths) {
+    const value = jobAt(keys);
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    if (typeof value === 'string' && value.trim() && Number.isFinite(Number(value))) return Number(value);
+  }
+  return fallback;
+}
+
 const workspaceDir = env('WORKSPACE_DIR', '/workspace');
 const bundleDir = env('BUNDLE_DIR', path.resolve('.'));
 const comfyDir = env('COMFY_DIR', path.join(workspaceDir, 'ComfyUI'));
@@ -31,13 +71,22 @@ const reportPath = env('FANVUE_WORKER_REPORT', path.join(fanvueDir, 'fanvue_work
 const mirrorReportPath = env('FANVUE_WORKER_REPORT_MIRROR', path.join(comfyDir, 'output', 'fanvue_worker_report.json'));
 const baseUrl = env('COMFYUI_BASE_URL', `http://127.0.0.1:${env('COMFYUI_PORT', '8188')}`);
 const dryRun = boolEnv('FANVUE_WORKER_DRY_RUN', false);
-const callbackUrl = env('FANVUE_CALLBACK_URL');
+const callbackUrl = env(
+  'FANVUE_CALLBACK_URL',
+  jobAt(['callback', 'enabled']) && jobString([['callback', 'url_env']])
+    ? env(jobString([['callback', 'url_env']]))
+    : ''
+);
 const callbackDryRun = boolEnv('FANVUE_CALLBACK_DRY_RUN', dryRun);
-const callbackFailsJob = boolEnv('FANVUE_CALLBACK_FAILS_JOB', false);
+const callbackFailsJob = boolEnv('FANVUE_CALLBACK_FAILS_JOB', Boolean(jobAt(['callback', 'fails_job'])));
 const fetchRetries = Number(env('FANVUE_WORKER_FETCH_RETRIES', '3'));
 const fetchRetryDelayMs = Number(env('FANVUE_WORKER_FETCH_RETRY_DELAY_MS', '5000'));
 const callbackRetries = Number(env('FANVUE_CALLBACK_RETRIES', '3'));
 const callbackRetryDelayMs = Number(env('FANVUE_CALLBACK_RETRY_DELAY_MS', '5000'));
+const workflowName = env(
+  'FANVUE_WORKFLOW_NAME',
+  jobString([['workflow', 'name'], ['workflow', 'adapter']], env('FANVUE_TEST_PROFILE', 'smoke'))
+);
 
 function bundlePath(value) {
   if (!value) return value;
@@ -46,11 +95,13 @@ function bundlePath(value) {
 
 function resultBase() {
   return {
-    job_id: env('FANVUE_JOB_ID'),
-    character_id: env('FANVUE_CHARACTER_ID'),
-    job_type: env('FANVUE_JOB_TYPE', 'photo'),
-    workflow_name: env('FANVUE_WORKFLOW_NAME', env('FANVUE_TEST_PROFILE', 'smoke')),
+    job_id: env('FANVUE_JOB_ID', jobString([['job_id']])),
+    character_id: env('FANVUE_CHARACTER_ID', jobString([['character_id']])),
+    job_type: env('FANVUE_JOB_TYPE', jobString([['job_type']], 'photo')),
+    content_tier: env('FANVUE_CONTENT_TIER', jobString([['content_tier']], 'sfw')),
+    workflow_name: workflowName,
     test_profile: env('FANVUE_TEST_PROFILE', 'smoke'),
+    generation_job_file: generationJob?.file || null,
     base_url: baseUrl,
     generated_at: new Date().toISOString(),
   };
@@ -110,8 +161,11 @@ async function waitForComfy() {
 }
 
 async function uploadInputImage() {
-  const inputPath = env('FANVUE_INPUT_IMAGE_PATH');
-  const inputName = env('FANVUE_INPUT_IMAGE_NAME');
+  const inputPath = env('FANVUE_INPUT_IMAGE_PATH', jobString([['inputs', 'input_image_path']]));
+  const inputName = env('FANVUE_INPUT_IMAGE_NAME', jobString([
+    ['inputs', 'input_image'],
+    ['inputs', 'source_image_name'],
+  ]));
   if (!inputPath && inputName) return inputName;
   if (!inputPath) return '';
 
@@ -152,14 +206,48 @@ function buildFaceDetailerPrompt(loadImageName) {
     }
   }
   if (!replaced) throw new Error('Face Detailer prompt placeholder __INPUT_IMAGE__ was not found');
-  if (prompt['9']?.inputs) prompt['9'].inputs.seed = Number(env('FANVUE_SEED', String(Date.now())));
-  if (prompt['10']?.inputs) prompt['10'].inputs.filename_prefix = env('FANVUE_FILENAME_PREFIX', 'fanvue_runtime_face_detailer');
+  if (prompt['9']?.inputs) {
+    prompt['9'].inputs.seed = Number(env(
+      'FANVUE_SEED',
+      String(jobNumber([['inputs', 'seed']], Date.now()))
+    ));
+  }
+  if (prompt['10']?.inputs) {
+    prompt['10'].inputs.filename_prefix = env(
+      'FANVUE_FILENAME_PREFIX',
+      jobString([['output', 'filename_prefix']], 'fanvue_runtime_face_detailer')
+    );
+  }
   return { prompt, replaced, templatePath: resolvedTemplatePath };
 }
 
 function buildPrompt(uploadedInputName) {
-  if (uploadedInputName || env('FANVUE_WORKFLOW_NAME') === 'Face Detailer Smoke') {
-    return buildFaceDetailerPrompt(uploadedInputName || env('FANVUE_INPUT_IMAGE_NAME'));
+  if (workflowName === 'Qwen to Face Detailer Chain') {
+    throw new Error('Qwen to Face Detailer Chain requires scripts/direct_image_chain_smoke.mjs, not comfy_runtime_worker.mjs');
+  }
+  if (uploadedInputName || workflowName === 'Face Detailer Smoke') {
+    return buildFaceDetailerPrompt(uploadedInputName || env('FANVUE_INPUT_IMAGE_NAME', jobString([['inputs', 'input_image']])));
+  }
+  if (workflowName === 'Qwen Image Edit Smoke') {
+    const promptPath = bundlePath(env('FANVUE_API_PROMPT', path.join(bundleDir, 'api_prompts', 'qwen_image_smoke.json')));
+    const prompt = readJson(promptPath);
+    if (prompt['8']?.inputs) {
+      prompt['8'].inputs.seed = Number(env(
+        'FANVUE_SEED',
+        String(jobNumber([['inputs', 'seed']], prompt['8'].inputs.seed || Date.now()))
+      ));
+    }
+    if (prompt['10']?.inputs) {
+      prompt['10'].inputs.filename_prefix = env(
+        'FANVUE_FILENAME_PREFIX',
+        jobString([['output', 'filename_prefix']], prompt['10'].inputs.filename_prefix || 'fanvue_qwen_smoke')
+      );
+    }
+    return {
+      prompt,
+      replaced: 0,
+      templatePath: promptPath,
+    };
   }
   const promptPath = bundlePath(env('FANVUE_API_PROMPT', path.join(bundleDir, 'api_prompts', 'flux2_klein_4b_smoke.json')));
   return {
@@ -255,8 +343,14 @@ async function sendCallback(report) {
   }
 
   const headers = { 'Content-Type': 'application/json' };
-  const authHeader = env('FANVUE_CALLBACK_AUTH_HEADER');
-  const authValue = env('FANVUE_CALLBACK_AUTH_VALUE');
+  const authHeader = env(
+    'FANVUE_CALLBACK_AUTH_HEADER',
+    jobString([['callback', 'auth_header_env']]) ? env(jobString([['callback', 'auth_header_env']])) : ''
+  );
+  const authValue = env(
+    'FANVUE_CALLBACK_AUTH_VALUE',
+    jobString([['callback', 'auth_value_env']]) ? env(jobString([['callback', 'auth_value_env']])) : ''
+  );
   if (authHeader && authValue) headers[authHeader] = authValue;
 
   const { response, attempt } = await fetchWithRetry(callbackUrl, {

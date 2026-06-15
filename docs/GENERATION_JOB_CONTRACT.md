@@ -94,3 +94,23 @@ When n8n executions are available again, n8n should:
 5. update Supabase job/media status.
 
 The key point: n8n should orchestrate, not redefine the generation contract.
+
+## Worker Job File
+
+`scripts/comfy_runtime_worker.mjs` can read a job payload directly:
+
+```bash
+FANVUE_WORKER_DRY_RUN=true \
+BUNDLE_DIR="$PWD" \
+FANVUE_JOB_FILE="$PWD/job_templates/face_detailer_smoke_job.json" \
+node scripts/comfy_runtime_worker.mjs
+```
+
+Supported single-prompt adapters:
+
+```text
+Qwen Image Edit Smoke
+Face Detailer Smoke
+```
+
+`Qwen to Face Detailer Chain` is handled by `scripts/direct_image_chain_smoke.mjs`.
