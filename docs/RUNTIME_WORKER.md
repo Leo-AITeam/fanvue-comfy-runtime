@@ -74,6 +74,31 @@ The report includes:
 - downloaded output file paths;
 - error details when failed.
 
+## Optional Final Callback
+
+Set a callback URL when n8n is available again:
+
+```text
+FANVUE_CALLBACK_URL=https://example.app.n8n.cloud/webhook/fanvue-generation-callback
+FANVUE_CALLBACK_AUTH_HEADER=x-fanvue-callback-secret
+FANVUE_CALLBACK_AUTH_VALUE=...
+FANVUE_CALLBACK_FAILS_JOB=false
+```
+
+The worker sends one final JSON report after completion or failure. Keep this endpoint compact:
+
+1. update the `generation_jobs` row;
+2. create/update the `media_assets` row;
+3. send one Telegram notification;
+4. do not poll RunPod or ComfyUI from n8n.
+
+For dry-run validation without network calls:
+
+```text
+FANVUE_CALLBACK_URL=https://example.app.n8n.cloud/webhook/fanvue-generation-callback
+FANVUE_CALLBACK_DRY_RUN=true
+```
+
 ## Local Dry Run
 
 From the repo root:

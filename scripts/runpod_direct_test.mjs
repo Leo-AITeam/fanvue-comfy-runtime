@@ -37,6 +37,16 @@ function output(value) {
   console.log(JSON.stringify(value, null, 2));
 }
 
+function redactedCreatePayload(payload) {
+  return {
+    ...payload,
+    env: {
+      ...(payload.env || {}),
+      FANVUE_CALLBACK_AUTH_VALUE: payload.env?.FANVUE_CALLBACK_AUTH_VALUE ? '***' : '',
+    },
+  };
+}
+
 const command = argValue('command', args[0] || 'help');
 const apiBase = process.env.RUNPOD_REST_BASE_URL || 'https://rest.runpod.io/v1';
 const bundleDir = path.resolve(argValue('bundle-dir', process.env.BUNDLE_DIR || '.'));
@@ -90,6 +100,8 @@ function buildCreatePayload() {
   const inputImageName = argValue('input-image-name', process.env.FANVUE_INPUT_IMAGE_NAME || '');
   const inputSubfolder = argValue('input-subfolder', process.env.FANVUE_INPUT_SUBFOLDER || 'fanvue/runtime');
   const filenamePrefix = argValue('filename-prefix', process.env.FANVUE_FILENAME_PREFIX || `fanvue_direct_${profile}`);
+  const callbackUrl = argValue('callback-url', process.env.FANVUE_CALLBACK_URL || '');
+  const callbackAuthHeader = argValue('callback-auth-header', process.env.FANVUE_CALLBACK_AUTH_HEADER || '');
 
   return {
     name,
@@ -114,6 +126,11 @@ function buildCreatePayload() {
       FANVUE_INPUT_IMAGE_NAME: inputImageName,
       FANVUE_INPUT_SUBFOLDER: inputSubfolder,
       FANVUE_FILENAME_PREFIX: filenamePrefix,
+      FANVUE_CALLBACK_URL: callbackUrl,
+      FANVUE_CALLBACK_DRY_RUN: String(argValue('callback-dry-run', process.env.FANVUE_CALLBACK_DRY_RUN || 'false')),
+      FANVUE_CALLBACK_FAILS_JOB: String(argValue('callback-fails-job', process.env.FANVUE_CALLBACK_FAILS_JOB || 'false')),
+      FANVUE_CALLBACK_AUTH_HEADER: callbackAuthHeader,
+      FANVUE_CALLBACK_AUTH_VALUE: process.env.FANVUE_CALLBACK_AUTH_VALUE || '',
     },
   };
 }
@@ -132,7 +149,7 @@ async function createPod() {
   const payloadPath = argValue('payload');
   const payload = payloadPath ? readJson(payloadPath) : buildCreatePayload();
   if (hasFlag('dry-run')) {
-    output({ ok: true, status: 'create_dry_run', payload });
+    output({ ok: true, status: 'create_dry_run', payload: redactedCreatePayload(payload) });
     return;
   }
   const result = await runpodFetch('/pods', {
@@ -371,6 +388,7 @@ function help() {
       create: 'RUNPOD_API_KEY=... node scripts/runpod_direct_test.mjs create --profile smoke',
       create_auto_run: 'RUNPOD_API_KEY=... node scripts/runpod_direct_test.mjs create --profile smoke --auto-run --workflow-name "Flux Klein 4B Smoke"',
       create_face_detailer_auto_run: 'RUNPOD_API_KEY=... node scripts/runpod_direct_test.mjs create --auto-run --workflow-name "Face Detailer Smoke" --input-image-name fanvue/direct/source.png',
+      create_auto_run_callback: 'FANVUE_CALLBACK_URL=... FANVUE_CALLBACK_AUTH_VALUE=... RUNPOD_API_KEY=... node scripts/runpod_direct_test.mjs create --auto-run --callback-auth-header x-fanvue-callback-secret',
       wait: 'node scripts/runpod_direct_test.mjs wait --pod-id POD_ID',
       submit_klein: 'node scripts/runpod_direct_test.mjs submit --pod-id POD_ID --prompt api_prompts/flux2_klein_4b_smoke.json',
       submit_face_detailer: 'node scripts/runpod_direct_test.mjs submit --pod-id POD_ID --input-file ./source.png --input-subfolder fanvue/direct',

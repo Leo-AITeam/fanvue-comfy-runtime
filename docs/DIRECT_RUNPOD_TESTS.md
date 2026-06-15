@@ -57,6 +57,18 @@ node scripts/runpod_direct_test.mjs create \
   --workflow-name "Flux Klein 4B Smoke"
 ```
 
+Add callback env vars when n8n executions are available again:
+
+```bash
+FANVUE_CALLBACK_URL="https://example.app.n8n.cloud/webhook/fanvue-generation-callback" \
+FANVUE_CALLBACK_AUTH_HEADER="x-fanvue-callback-secret" \
+FANVUE_CALLBACK_AUTH_VALUE="..." \
+node scripts/runpod_direct_test.mjs create \
+  --profile smoke \
+  --auto-run \
+  --workflow-name "Flux Klein 4B Smoke"
+```
+
 Create a pod that auto-runs Face Detailer against an image already present in ComfyUI input storage:
 
 ```bash

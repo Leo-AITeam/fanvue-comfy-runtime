@@ -31,6 +31,9 @@ const reportPath = env('FANVUE_WORKER_REPORT', path.join(fanvueDir, 'fanvue_work
 const mirrorReportPath = env('FANVUE_WORKER_REPORT_MIRROR', path.join(comfyDir, 'output', 'fanvue_worker_report.json'));
 const baseUrl = env('COMFYUI_BASE_URL', `http://127.0.0.1:${env('COMFYUI_PORT', '8188')}`);
 const dryRun = boolEnv('FANVUE_WORKER_DRY_RUN', false);
+const callbackUrl = env('FANVUE_CALLBACK_URL');
+const callbackDryRun = boolEnv('FANVUE_CALLBACK_DRY_RUN', dryRun);
+const callbackFailsJob = boolEnv('FANVUE_CALLBACK_FAILS_JOB', false);
 
 function bundlePath(value) {
   if (!value) return value;
@@ -192,6 +195,45 @@ async function waitHistory(promptId) {
   throw new Error(`Prompt history timeout: ${promptId}`);
 }
 
+async function sendCallback(report) {
+  if (!callbackUrl) return { ok: true, status: 'not_configured' };
+  if (callbackDryRun) {
+    return {
+      ok: true,
+      status: 'dry_run',
+      url: callbackUrl,
+      payload_keys: Object.keys(report),
+    };
+  }
+
+  const headers = { 'Content-Type': 'application/json' };
+  const authHeader = env('FANVUE_CALLBACK_AUTH_HEADER');
+  const authValue = env('FANVUE_CALLBACK_AUTH_VALUE');
+  if (authHeader && authValue) headers[authHeader] = authValue;
+
+  const response = await fetch(callbackUrl, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(report),
+  });
+  const text = await response.text();
+  let body = text;
+  try {
+    body = JSON.parse(text);
+  } catch {
+    body = text.slice(0, 1000);
+  }
+  if (!response.ok) {
+    throw new Error(`Callback failed: ${response.status} ${JSON.stringify(body)}`);
+  }
+  return {
+    ok: true,
+    status: 'sent',
+    response_status: response.status,
+    response_body: body,
+  };
+}
+
 async function main() {
   const report = {
     ok: false,
@@ -239,6 +281,20 @@ async function main() {
       status: 'failed',
       error: error.message,
     });
+  }
+
+  try {
+    report.callback = await sendCallback(report);
+  } catch (error) {
+    report.callback = {
+      ok: false,
+      status: 'failed',
+      error: error.message,
+    };
+    if (callbackFailsJob) {
+      report.ok = false;
+      report.status = 'callback_failed';
+    }
   }
 
   writeJson(reportPath, report);
