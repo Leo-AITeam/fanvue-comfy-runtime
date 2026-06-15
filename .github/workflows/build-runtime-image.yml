@@ -12,6 +12,8 @@ on:
       - scripts/**
       - models_manifest.json
       - custom_nodes_manifest.json
+      - schemas/**
+      - job_templates/**
       - workflows/**
       - api_prompts/**
       - .github/workflows/build-runtime-image.yml
