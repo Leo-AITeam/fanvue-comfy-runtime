@@ -52,6 +52,8 @@ Runtime preflight also fails `FANVUE_TEST_PROFILE=first_full` in real mode while
 any selected model is missing a `source_url`. Use `smoke` or
 `face_detailer_smoke` for safe GPU checks until the list below is empty.
 
+See `docs/MISSING_MODEL_SOURCES.md` for the handoff list and import format.
+
 ### Remaining Source Gaps
 
 - `AIKOZIMAGE_000002700.safetensors` — OFMTechNSFW++ checkpoint; source not verified yet.
