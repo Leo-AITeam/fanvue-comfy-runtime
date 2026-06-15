@@ -14,22 +14,22 @@ Generated from `models_manifest.json`.
 
 This is the current safe GPU smoke profile.
 
-| # | File | Type | Target dir | Source URL |
-|---:|---|---|---|---|
-| 1 | `flux2-vae.safetensors` | vae | `ComfyUI/models/vae` | ready |
-| 2 | `qwen_3_4b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready |
-| 3 | `flux-2-klein-4b.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |
+| # | File | Type | Target dir | Source URL | Integrity |
+|---:|---|---|---|---|---|
+| 1 | `flux2-vae.safetensors` | vae | `ComfyUI/models/vae` | ready | min bytes |
+| 2 | `qwen_3_4b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready | exact bytes |
+| 3 | `flux-2-klein-4b.safetensors` | model | `ComfyUI/models/diffusion_models` | ready | min bytes |
 
 ## Face Detailer Smoke Profile
 
 This is the current safe GPU image-to-image profile for the Face Detailer adapter.
 
-| # | File | Type | Target dir | Source URL |
-|---:|---|---|---|---|
-| 1 | `ae.safetensors` | model | `ComfyUI/models/vae` | ready |
-| 2 | `qwen_3_4b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready |
-| 3 | `sam_vit_b_01ec64.pth` | detector_or_upscale | `ComfyUI/models/sams` | ready |
-| 4 | `z_image_turbo_bf16.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |
+| # | File | Type | Target dir | Source URL | Integrity |
+|---:|---|---|---|---|---|
+| 1 | `ae.safetensors` | model | `ComfyUI/models/vae` | ready | exact bytes |
+| 2 | `qwen_3_4b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready | exact bytes |
+| 3 | `sam_vit_b_01ec64.pth` | detector_or_upscale | `ComfyUI/models/sams` | ready | exact bytes |
+| 4 | `z_image_turbo_bf16.safetensors` | model | `ComfyUI/models/diffusion_models` | ready | exact bytes |
 
 ## First Full Profile
 

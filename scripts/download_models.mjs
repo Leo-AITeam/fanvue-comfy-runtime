@@ -22,6 +22,32 @@ function matchesProfile(item) {
 
 const models = (manifest.models || []).filter((item) => matchesProfile(item));
 
+function expectedBytes(item) {
+  const value = Number(item.expected_bytes || 0);
+  return Number.isFinite(value) && value > 0 ? value : 0;
+}
+
+function minBytes(item) {
+  const value = Number(item.min_bytes || 0);
+  return Number.isFinite(value) && value > 0 ? value : 0;
+}
+
+function validateFileSize(item, destination) {
+  if (!fs.existsSync(destination)) {
+    return { ok: false, bytes: 0, reason: 'missing_file' };
+  }
+  const bytes = fs.statSync(destination).size;
+  const expected = expectedBytes(item);
+  if (expected && bytes !== expected) {
+    return { ok: false, bytes, expected_bytes: expected, reason: 'expected_bytes_mismatch' };
+  }
+  const minimum = minBytes(item);
+  if (minimum && bytes < minimum) {
+    return { ok: false, bytes, min_bytes: minimum, reason: 'min_bytes_mismatch' };
+  }
+  return { ok: true, bytes, expected_bytes: expected || undefined, min_bytes: minimum || undefined };
+}
+
 function targetPath(item) {
   const cleanName = String(item.name).replaceAll('\\', '/');
   const targetDir = String(item.target_dir || '').replaceAll('\\', '/');
@@ -35,34 +61,65 @@ function targetPath(item) {
 const results = [];
 for (const item of models) {
   const destination = targetPath(item);
-  fs.mkdirSync(path.dirname(destination), { recursive: true });
   if (!item.source_url) {
     results.push({ name: item.name, status: 'missing_source_url', destination });
     continue;
   }
   if (fs.existsSync(destination)) {
-    const stat = fs.statSync(destination);
-    results.push({ name: item.name, status: 'already_exists', destination, bytes: stat.size });
-    continue;
+    const validation = validateFileSize(item, destination);
+    if (!validation.ok) {
+      if (dryRun) {
+        results.push({ name: item.name, status: 'existing_invalid_dry_run', destination, ...validation });
+        continue;
+      }
+      fs.unlinkSync(destination);
+      results.push({ name: item.name, status: 'existing_invalid_removed', destination, ...validation });
+    } else {
+      results.push({ name: item.name, status: 'already_exists', destination, ...validation });
+      continue;
+    }
   }
   if (dryRun) {
     results.push({ name: item.name, status: 'dry_run', destination, source_url: item.source_url });
     continue;
   }
-  const curl = spawnSync('curl', ['-L', '--fail', '--retry', '3', '-o', destination, item.source_url], {
-    stdio: 'inherit',
-  });
+
+  fs.mkdirSync(path.dirname(destination), { recursive: true });
+  const configuredAttempts = Number(process.env.FANVUE_DOWNLOAD_ATTEMPTS || 3);
+  const maxAttempts = Number.isFinite(configuredAttempts) && configuredAttempts > 0 ? configuredAttempts : 3;
+  let finalStatus = { ok: false, bytes: 0, reason: 'not_started' };
+  let curlStatus = 0;
+  for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    const curl = spawnSync(
+      'curl',
+      ['-L', '--fail', '--retry', '3', '--retry-delay', '2', '-o', destination, item.source_url],
+      { stdio: 'inherit' },
+    );
+    curlStatus = curl.status || 0;
+    if (curl.status !== 0) {
+      finalStatus = { ok: false, bytes: 0, reason: 'curl_failed', attempt, curl_status: curl.status };
+      if (fs.existsSync(destination)) fs.unlinkSync(destination);
+      continue;
+    }
+    finalStatus = validateFileSize(item, destination);
+    if (finalStatus.ok) break;
+    console.error(
+      `[download_models] Invalid downloaded file for ${item.name} on attempt ${attempt}: ${JSON.stringify(finalStatus)}`,
+    );
+    if (fs.existsSync(destination)) fs.unlinkSync(destination);
+  }
+
   results.push({
     name: item.name,
-    status: curl.status === 0 ? 'downloaded' : 'failed',
+    status: finalStatus.ok ? 'downloaded' : 'failed',
     destination,
-    bytes: curl.status === 0 && fs.existsSync(destination) ? fs.statSync(destination).size : 0,
+    ...finalStatus,
   });
-  if (curl.status !== 0) process.exit(curl.status || 41);
+  if (!finalStatus.ok) process.exit(curlStatus || 41);
 }
 
 const report = {
-  ok: results.every((item) => !['failed'].includes(item.status)),
+  ok: results.every((item) => !['failed', 'existing_invalid_dry_run'].includes(item.status)),
   generated_at: new Date().toISOString(),
   workspace_dir: workspaceDir,
   comfy_dir: comfyDir,
