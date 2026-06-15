@@ -60,3 +60,25 @@ Recommended order:
 5. If native node support is missing, update the ComfyUI/runtime image before changing the workflow.
 
 Do not replace the full `QWEN Edit Consistent Face.json` workflow yet. First prove this minimal API prompt can boot, download models, and produce one image.
+
+## GPU Smoke Result
+
+Validated on 2026-06-15 with the direct RunPod tester.
+
+| Item | Result |
+|---|---|
+| Pod ID | `3eqg8xn1hit8sp` |
+| GPU | `NVIDIA L40S` |
+| Container disk | 120 GB |
+| Runtime image | `ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest` |
+| ComfyUI version | `0.18.2` |
+| Prompt ID | `e03b5767-f2ea-496c-a695-d6931af9514f` |
+| Output | `direct-runpod-output/fanvue_qwen_smoke_00001_.png` |
+| Status | Success |
+
+Observed timing:
+
+- ComfyUI ready after about 140 seconds.
+- Prompt execution completed successfully.
+- Output image was saved as a valid 512x512 RGB PNG.
+- The test pod was stopped after validation and all listed RunPod pods were `EXITED`.
