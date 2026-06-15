@@ -99,6 +99,18 @@ The Job Runner returns:
 
 Replace `__INPUT_IMAGE__` with `load_image_name` before calling `submit_prompt`.
 
+The runtime includes a helper for that replacement:
+
+```bash
+node scripts/build_face_detailer_prompt.mjs \
+  --input-image fanvue/anna_novari69/anna_face_detailer_input.png \
+  --filename-prefix fanvue_face_detailer_smoke_test \
+  --seed 12345 \
+  --output /tmp/fanvue_face_detailer_prompt.json
+```
+
+The resulting JSON file is ready to send to ComfyUI `/prompt`.
+
 Dry-run validation is available without GPU or ComfyUI:
 
 ```json
