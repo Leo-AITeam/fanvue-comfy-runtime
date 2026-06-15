@@ -48,6 +48,36 @@ const checks = [
     '.',
     path.join(outDir, 'MODEL_READINESS.md'),
   ]),
+  run('download_models.smoke_dry_run', ['scripts/download_models.mjs'], {
+    env: {
+      BUNDLE_DIR: root,
+      WORKSPACE_DIR: path.join(outDir, 'download-smoke'),
+      COMFY_DIR: path.join(outDir, 'download-smoke', 'ComfyUI'),
+      FANVUE_TEST_PROFILE: 'smoke',
+      FANVUE_DOWNLOAD_DRY_RUN: 'true',
+      FANVUE_DOWNLOAD_REPORT: path.join(outDir, 'download-smoke-report.json'),
+    },
+  }),
+  run('download_models.face_detailer_dry_run', ['scripts/download_models.mjs'], {
+    env: {
+      BUNDLE_DIR: root,
+      WORKSPACE_DIR: path.join(outDir, 'download-face-detailer'),
+      COMFY_DIR: path.join(outDir, 'download-face-detailer', 'ComfyUI'),
+      FANVUE_TEST_PROFILE: 'face_detailer_smoke',
+      FANVUE_DOWNLOAD_DRY_RUN: 'true',
+      FANVUE_DOWNLOAD_REPORT: path.join(outDir, 'download-face-detailer-report.json'),
+    },
+  }),
+  run('download_models.first_full_dry_run', ['scripts/download_models.mjs'], {
+    env: {
+      BUNDLE_DIR: root,
+      WORKSPACE_DIR: path.join(outDir, 'download-first-full'),
+      COMFY_DIR: path.join(outDir, 'download-first-full', 'ComfyUI'),
+      FANVUE_TEST_PROFILE: 'first_full',
+      FANVUE_DOWNLOAD_DRY_RUN: 'true',
+      FANVUE_DOWNLOAD_REPORT: path.join(outDir, 'download-first-full-report.json'),
+    },
+  }),
   run('face_detailer.prompt_build', [
     'scripts/build_face_detailer_prompt.mjs',
     '--input-image',
