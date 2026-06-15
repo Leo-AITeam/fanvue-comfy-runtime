@@ -33,6 +33,7 @@
       "repo_url": "https://github.com/chaoqun789/ComfyUI-CLIPSeg.git",
       "required_for_first_test": true,
       "skip_requirements": true,
+      "patch_clipseg_compat": true,
       "copy_files_to_custom_nodes": [
         "custom_nodes/clipseg.py"
       ],

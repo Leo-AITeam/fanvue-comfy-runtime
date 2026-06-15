@@ -24,6 +24,7 @@ The first direct Face Detailer GPU smoke reached ComfyUI successfully but failed
 - Added `ComfyUI-CLIPSeg` to `custom_nodes_manifest.json`.
 - Replaced the unavailable upstream URL `biegert/ComfyUI-CLIPSeg` with the public fork `chaoqun789/ComfyUI-CLIPSeg`.
 - Added installer support for copying legacy single-file custom nodes into the ComfyUI `custom_nodes` root.
+- Added a CLIPSeg compatibility patch for current ComfyUI IMAGE tensors and OpenCV resize dimensions.
 - Skipped the CLIPSeg fork `requirements.txt` because it pins an old Torch/CUDA stack that can break the runtime image.
 - Removed `segm/person_yolov8m-seg.pt` from the `face_detailer_smoke` model profile.
 - Kept SAM and Z-Image model assets in the smoke profile.
@@ -32,6 +33,8 @@ The first direct Face Detailer GPU smoke reached ComfyUI successfully but failed
 
 - Runtime bundle validator: `22/22`, failed `0`
 - Face Detailer model profile: `4` models, missing source URLs `0`
+- A40 pod boot after the fork switch: ComfyUI ready, `CLIPSegDetectorProvider` available
+- A40 prompt submission reached `FaceDetailer`; remaining blocker was old `clipseg.py` tensor/resize compatibility
 - Custom node dry run includes:
   - `ComfyUI-Manager`
   - `rgthree-comfy`

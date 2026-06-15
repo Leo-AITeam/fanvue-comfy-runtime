@@ -16,6 +16,38 @@ const nodes = (manifest.nodes || []).filter((item) =>
 const customNodesDir = path.join(comfyDir, 'custom_nodes');
 fs.mkdirSync(customNodesDir, { recursive: true });
 
+function patchClipSegCompat(filePath) {
+  let content = fs.readFileSync(filePath, 'utf8');
+  content = content.replace(
+    /        # Convert the Tensor to a PIL image\r?\n        image_np = image\.numpy\(\)\.squeeze\(\).*?\r?\n        # Convert the numpy array back to the original range \(0-255\) and data type \(uint8\)\r?\n        image_np = \(image_np \* 255\)\.astype\(np\.uint8\)\r?\n/s,
+    [
+      '        # Convert the ComfyUI IMAGE tensor to a PIL-compatible numpy array.',
+      '        image_np = image.detach().cpu().numpy()',
+      '        if image_np.ndim == 4:',
+      '            image_np = image_np[0]',
+      '        image_np = np.clip(image_np * 255, 0, 255).astype(np.uint8)',
+      ''
+    ].join('\n')
+  );
+  content = content.replace(
+    /        # Normalize the smoothed tensor to \[0, 1\]\r?\n        mask_normalized = \(tensor_smoothed - tensor_smoothed\.min\(\)\) \/ \(tensor_smoothed\.max\(\) - tensor_smoothed\.min\(\)\)\r?\n/s,
+    [
+      '        # Normalize the smoothed tensor to [0, 1]',
+      '        mask_range = tensor_smoothed.max() - tensor_smoothed.min()',
+      '        if float(mask_range) == 0:',
+      '            mask_normalized = torch.zeros_like(tensor_smoothed)',
+      '        else:',
+      '            mask_normalized = (tensor_smoothed - tensor_smoothed.min()) / mask_range',
+      ''
+    ].join('\n')
+  );
+  content = content.replace(
+    /        dimensions = \(image_np\.shape\[1\], image_np\.shape\[0\]\)\r?\n/,
+    '        dimensions = (int(image_np.shape[1]), int(image_np.shape[0]))\n'
+  );
+  fs.writeFileSync(filePath, content);
+}
+
 const results = [];
 for (const item of nodes) {
   const destination = path.join(customNodesDir, item.name);
@@ -46,6 +78,9 @@ for (const item of nodes) {
       process.exit(44);
     }
     fs.copyFileSync(source, target);
+    if (item.patch_clipseg_compat && path.basename(relativeFile) === 'clipseg.py') {
+      patchClipSegCompat(target);
+    }
     copiedFiles.push({ source, target, status: 'copied' });
   }
   if (copiedFiles.length > 0) {
