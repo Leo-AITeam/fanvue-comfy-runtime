@@ -24,7 +24,7 @@ The first direct Face Detailer GPU smoke reached ComfyUI successfully but failed
 - Added `ComfyUI-CLIPSeg` to `custom_nodes_manifest.json`.
 - Replaced the unavailable upstream URL `biegert/ComfyUI-CLIPSeg` with the public fork `chaoqun789/ComfyUI-CLIPSeg`.
 - Added installer support for copying legacy single-file custom nodes into the ComfyUI `custom_nodes` root.
-- Added a CLIPSeg compatibility patch for current ComfyUI IMAGE tensors and OpenCV resize dimensions.
+- Added a strict CLIPSeg compatibility patch for current ComfyUI IMAGE tensors and OpenCV resize dimensions. The installer now fails fast if the patch does not apply.
 - Skipped the CLIPSeg fork `requirements.txt` because it pins an old Torch/CUDA stack that can break the runtime image.
 - Removed `segm/person_yolov8m-seg.pt` from the `face_detailer_smoke` model profile.
 - Kept SAM and Z-Image model assets in the smoke profile.
@@ -37,6 +37,8 @@ The first direct Face Detailer GPU smoke reached ComfyUI successfully but failed
 - A40 pod boot after the fork switch: ComfyUI ready, `CLIPSegDetectorProvider` available
 - A40 prompt submission reached `FaceDetailer`; remaining blocker was old `clipseg.py` tensor/resize compatibility
 - A40 pod after the CLIPSeg tensor patch reached model loading, then failed in `UNETLoader` because `z_image_turbo_bf16.safetensors` was truncated or corrupted on disk.
+- RTX 6000 Ada pod after model integrity checks downloaded all `face_detailer_smoke` models with exact byte matches, then reached `FaceDetailer`; remaining blocker was that the earlier CLIPSeg patch did not alter `resize_image`.
+- Local strict CLIPSeg patch verification: `clipseg.py` contains `fanvue-runtime-clipseg-compat` markers, patched `tensor_to_numpy`, patched `resize_image`, and guarded mask normalization.
 - Custom node dry run includes:
   - `ComfyUI-Manager`
   - `rgthree-comfy`
@@ -47,4 +49,4 @@ The first direct Face Detailer GPU smoke reached ComfyUI successfully but failed
 
 ## Next GPU Step
 
-Launch a fresh RunPod pod with `FANVUE_TEST_PROFILE=face_detailer_smoke`, then resubmit the Face Detailer smoke prompt. The next pod should fail fast and retry if a large model downloads with the wrong size instead of reaching ComfyUI with a corrupted safetensors file.
+Launch a fresh RunPod pod with `FANVUE_TEST_PROFILE=face_detailer_smoke`, then resubmit the Face Detailer smoke prompt. The next pod should install the strict CLIPSeg patch and fail during bootstrap if the patch cannot be applied.

@@ -7,6 +7,7 @@ const comfyDir = process.env.COMFY_DIR || '/workspace/ComfyUI';
 const firstTestOnly = process.env.FANVUE_FIRST_TEST_ONLY !== 'false';
 const testProfile = process.env.FANVUE_TEST_PROFILE || (firstTestOnly ? 'smoke' : 'all');
 const dryRun = process.env.FANVUE_NODE_INSTALL_DRY_RUN === 'true';
+const skipAllRequirements = process.env.FANVUE_NODE_SKIP_REQUIREMENTS === 'true';
 
 const manifest = JSON.parse(fs.readFileSync(path.join(bundleDir, 'custom_nodes_manifest.json'), 'utf8'));
 const nodes = (manifest.nodes || []).filter((item) =>
@@ -18,18 +19,59 @@ fs.mkdirSync(customNodesDir, { recursive: true });
 
 function patchClipSegCompat(filePath) {
   let content = fs.readFileSync(filePath, 'utf8');
-  content = content.replace(
+
+  function replaceRequired(regex, replacement, label) {
+    const next = content.replace(regex, replacement);
+    if (next === content) {
+      throw new Error(`CLIPSeg compatibility patch failed at ${label}`);
+    }
+    content = next;
+  }
+
+  replaceRequired(
+    /def tensor_to_numpy\(tensor: torch\.Tensor\) -> np\.ndarray:\r?\n    """Convert a tensor to a numpy array and scale its values to 0-255\."""\r?\n    array = tensor\.numpy\(\)\.squeeze\(\)\r?\n    return \(array \* 255\)\.astype\(np\.uint8\)\r?\n/s,
+    [
+      'def tensor_to_numpy(tensor: torch.Tensor) -> np.ndarray:',
+      '    """Convert a ComfyUI IMAGE tensor to a numpy array and scale values to 0-255."""',
+      '    # fanvue-runtime-clipseg-compat',
+      '    array = tensor.detach().cpu().numpy()',
+      '    if array.ndim == 4:',
+      '        array = array[0]',
+      '    array = np.squeeze(array)',
+      '    return np.clip(array * 255, 0, 255).astype(np.uint8)',
+      ''
+    ].join('\n'),
+    'tensor_to_numpy',
+  );
+
+  replaceRequired(
+    /def resize_image\(image: np\.ndarray, dimensions: Tuple\[int, int\]\) -> np\.ndarray:\r?\n    """Resize an image to the given dimensions using linear interpolation\."""\r?\n    return cv2\.resize\(image, dimensions, interpolation=cv2\.INTER_LINEAR\)\r?\n/s,
+    [
+      'def resize_image(image: np.ndarray, dimensions: Tuple[int, int]) -> np.ndarray:',
+      '    """Resize an image to the given dimensions using linear interpolation."""',
+      '    # fanvue-runtime-clipseg-compat',
+      '    width, height = dimensions',
+      '    width = int(width.item() if hasattr(width, "item") else width)',
+      '    height = int(height.item() if hasattr(height, "item") else height)',
+      '    if width <= 0 or height <= 0:',
+      '        raise ValueError(f"Invalid resize dimensions: {(width, height)}")',
+      '    return cv2.resize(image, (width, height), interpolation=cv2.INTER_LINEAR)',
+      ''
+    ].join('\n'),
+    'resize_image',
+  );
+
+  replaceRequired(
     /        # Convert the Tensor to a PIL image\r?\n        image_np = image\.numpy\(\)\.squeeze\(\).*?\r?\n        # Convert the numpy array back to the original range \(0-255\) and data type \(uint8\)\r?\n        image_np = \(image_np \* 255\)\.astype\(np\.uint8\)\r?\n/s,
     [
       '        # Convert the ComfyUI IMAGE tensor to a PIL-compatible numpy array.',
-      '        image_np = image.detach().cpu().numpy()',
-      '        if image_np.ndim == 4:',
-      '            image_np = image_np[0]',
-      '        image_np = np.clip(image_np * 255, 0, 255).astype(np.uint8)',
+      '        image_np = tensor_to_numpy(image)',
       ''
-    ].join('\n')
+    ].join('\n'),
+    'segment_image.tensor_to_numpy',
   );
-  content = content.replace(
+
+  replaceRequired(
     /        # Normalize the smoothed tensor to \[0, 1\]\r?\n        mask_normalized = \(tensor_smoothed - tensor_smoothed\.min\(\)\) \/ \(tensor_smoothed\.max\(\) - tensor_smoothed\.min\(\)\)\r?\n/s,
     [
       '        # Normalize the smoothed tensor to [0, 1]',
@@ -39,12 +81,13 @@ function patchClipSegCompat(filePath) {
       '        else:',
       '            mask_normalized = (tensor_smoothed - tensor_smoothed.min()) / mask_range',
       ''
-    ].join('\n')
+    ].join('\n'),
+    'mask_normalization',
   );
-  content = content.replace(
-    /        dimensions = \(image_np\.shape\[1\], image_np\.shape\[0\]\)\r?\n/,
-    '        dimensions = (int(image_np.shape[1]), int(image_np.shape[0]))\n'
-  );
+
+  if (!content.includes('fanvue-runtime-clipseg-compat')) {
+    throw new Error('CLIPSeg compatibility patch marker missing');
+  }
   fs.writeFileSync(filePath, content);
 }
 
@@ -88,7 +131,7 @@ for (const item of nodes) {
   }
 
   const requirements = path.join(destination, 'requirements.txt');
-  if (!dryRun && item.skip_requirements) {
+  if (!dryRun && (item.skip_requirements || skipAllRequirements)) {
     results[results.length - 1].requirements = 'skipped';
   } else if (!dryRun && fs.existsSync(requirements)) {
     const pip = spawnSync('python3', ['-m', 'pip', 'install', '-r', requirements], { stdio: 'inherit' });
