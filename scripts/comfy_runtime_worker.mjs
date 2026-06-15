@@ -34,6 +34,10 @@ const dryRun = boolEnv('FANVUE_WORKER_DRY_RUN', false);
 const callbackUrl = env('FANVUE_CALLBACK_URL');
 const callbackDryRun = boolEnv('FANVUE_CALLBACK_DRY_RUN', dryRun);
 const callbackFailsJob = boolEnv('FANVUE_CALLBACK_FAILS_JOB', false);
+const fetchRetries = Number(env('FANVUE_WORKER_FETCH_RETRIES', '3'));
+const fetchRetryDelayMs = Number(env('FANVUE_WORKER_FETCH_RETRY_DELAY_MS', '5000'));
+const callbackRetries = Number(env('FANVUE_CALLBACK_RETRIES', '3'));
+const callbackRetryDelayMs = Number(env('FANVUE_CALLBACK_RETRY_DELAY_MS', '5000'));
 
 function bundlePath(value) {
   if (!value) return value;
@@ -56,6 +60,29 @@ async function sleep(ms) {
   await new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function fetchWithRetry(url, options = {}, config = {}) {
+  const retries = config.retries ?? fetchRetries;
+  const delayMs = config.delayMs ?? fetchRetryDelayMs;
+  const retryStatuses = new Set([408, 425, 429, 500, 502, 503, 504]);
+  let lastError;
+
+  for (let attempt = 1; attempt <= retries; attempt += 1) {
+    try {
+      const response = await fetch(url, options);
+      if (!retryStatuses.has(response.status) || attempt === retries) {
+        return { response, attempt };
+      }
+      lastError = new Error(`HTTP ${response.status}`);
+    } catch (error) {
+      lastError = error;
+      if (attempt === retries) throw error;
+    }
+    await sleep(delayMs * attempt);
+  }
+
+  throw lastError || new Error(`Request failed: ${url}`);
+}
+
 async function waitForComfy() {
   const timeoutMs = Number(env('FANVUE_WORKER_READY_TIMEOUT_MS', '1800000'));
   const intervalMs = Number(env('FANVUE_WORKER_READY_INTERVAL_MS', '10000'));
@@ -63,12 +90,13 @@ async function waitForComfy() {
   let lastError = '';
   while (Date.now() - started < timeoutMs) {
     try {
-      const response = await fetch(`${baseUrl}/system_stats`);
+      const { response, attempt } = await fetchWithRetry(`${baseUrl}/system_stats`, {}, { retries: 1, delayMs: 0 });
       const text = await response.text();
       if (response.ok) {
         return {
           ok: true,
           waited_ms: Date.now() - started,
+          final_attempt: attempt,
           system_stats: JSON.parse(text),
         };
       }
@@ -96,10 +124,14 @@ async function uploadInputImage() {
   form.append('subfolder', subfolder);
   form.append('overwrite', 'true');
 
-  const response = await fetch(`${baseUrl}/upload/image`, { method: 'POST', body: form });
+  const { response, attempt } = await fetchWithRetry(`${baseUrl}/upload/image`, { method: 'POST', body: form });
   const body = await response.json().catch(async () => ({ raw: await response.text() }));
   if (!response.ok) throw new Error(`Input upload failed: ${response.status} ${JSON.stringify(body)}`);
-  return body.subfolder ? `${body.subfolder}/${body.name || filename}` : (body.name || filename);
+  return {
+    name: body.subfolder ? `${body.subfolder}/${body.name || filename}` : (body.name || filename),
+    attempt,
+    response: body,
+  };
 }
 
 function buildFaceDetailerPrompt(loadImageName) {
@@ -139,18 +171,19 @@ function buildPrompt(uploadedInputName) {
 
 async function submitPrompt(prompt) {
   const clientId = env('FANVUE_CLIENT_ID', `fanvue-runtime-${crypto.randomUUID()}`);
-  const response = await fetch(`${baseUrl}/prompt`, {
+  const { response, attempt } = await fetchWithRetry(`${baseUrl}/prompt`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ prompt, client_id: clientId }),
   });
   const body = await response.json().catch(async () => ({ raw: await response.text() }));
   if (!response.ok) throw new Error(`Prompt submit failed: ${response.status} ${JSON.stringify(body)}`);
-  return body;
+  return { ...body, _attempt: attempt };
 }
 
 async function downloadOutputs(promptId, history) {
   const saved = [];
+  const skipped = [];
   for (const node of Object.values(history.outputs || {})) {
     for (const image of node.images || []) {
       const params = new URLSearchParams({
@@ -158,18 +191,31 @@ async function downloadOutputs(promptId, history) {
         subfolder: image.subfolder || '',
         type: image.type || 'output',
       });
-      const response = await fetch(`${baseUrl}/view?${params.toString()}`);
-      if (!response.ok) continue;
+      const url = `${baseUrl}/view?${params.toString()}`;
+      let response;
+      let attempt = 0;
+      try {
+        const result = await fetchWithRetry(url);
+        response = result.response;
+        attempt = result.attempt;
+      } catch (error) {
+        skipped.push({ image, error: error.message });
+        continue;
+      }
+      if (!response.ok) {
+        skipped.push({ image, status: response.status, status_text: response.statusText });
+        continue;
+      }
       const bytes = Buffer.from(await response.arrayBuffer());
       const safeSubfolder = String(image.subfolder || '').replace(/[^a-zA-Z0-9._-]+/g, '_');
       const filename = safeSubfolder ? `${safeSubfolder}_${image.filename}` : image.filename;
       const destination = path.join(outputDir, 'worker', promptId, filename);
       fs.mkdirSync(path.dirname(destination), { recursive: true });
       fs.writeFileSync(destination, bytes);
-      saved.push(destination);
+      saved.push({ path: destination, bytes: bytes.length, attempt });
     }
   }
-  return saved;
+  return { saved, skipped };
 }
 
 async function waitHistory(promptId) {
@@ -177,16 +223,18 @@ async function waitHistory(promptId) {
   const intervalMs = Number(env('FANVUE_WORKER_HISTORY_INTERVAL_MS', '10000'));
   const started = Date.now();
   while (Date.now() - started < timeoutMs) {
-    const response = await fetch(`${baseUrl}/history/${promptId}`);
+    const { response } = await fetchWithRetry(`${baseUrl}/history/${promptId}`, {}, { retries: 1, delayMs: 0 });
     const body = await response.json().catch(async () => ({ raw: await response.text() }));
     const history = body[promptId];
     if (history?.outputs) {
-      const savedFiles = await downloadOutputs(promptId, history);
+      const downloaded = await downloadOutputs(promptId, history);
       return {
         ok: true,
         waited_ms: Date.now() - started,
         prompt_id: promptId,
-        saved_files: savedFiles,
+        saved_files: downloaded.saved.map((item) => item.path),
+        downloaded_files: downloaded.saved,
+        skipped_files: downloaded.skipped,
         history,
       };
     }
@@ -211,10 +259,13 @@ async function sendCallback(report) {
   const authValue = env('FANVUE_CALLBACK_AUTH_VALUE');
   if (authHeader && authValue) headers[authHeader] = authValue;
 
-  const response = await fetch(callbackUrl, {
+  const { response, attempt } = await fetchWithRetry(callbackUrl, {
     method: 'POST',
     headers,
     body: JSON.stringify(report),
+  }, {
+    retries: callbackRetries,
+    delayMs: callbackRetryDelayMs,
   });
   const text = await response.text();
   let body = text;
@@ -229,6 +280,7 @@ async function sendCallback(report) {
   return {
     ok: true,
     status: 'sent',
+    attempt,
     response_status: response.status,
     response_body: body,
   };
@@ -242,7 +294,11 @@ async function main() {
   };
 
   try {
-    const uploadedInputName = dryRun ? env('FANVUE_INPUT_IMAGE_NAME') : await uploadInputImage();
+    const startedAt = Date.now();
+    const uploadedInput = dryRun
+      ? { name: env('FANVUE_INPUT_IMAGE_NAME'), attempt: 0, response: null }
+      : await uploadInputImage();
+    const uploadedInputName = uploadedInput.name;
     const built = buildPrompt(uploadedInputName);
     const promptPreviewPath = env('FANVUE_WORKER_PROMPT_PREVIEW', path.join(fanvueDir, 'fanvue_worker_prompt.json'));
     writeJson(promptPreviewPath, built.prompt);
@@ -252,6 +308,7 @@ async function main() {
         ok: true,
         status: 'dry_run_ready',
         uploaded_input_name: uploadedInputName || null,
+        upload: uploadedInput,
         prompt_preview_path: promptPreviewPath,
         prompt_node_count: Object.keys(built.prompt).length,
         prompt_template: built.templatePath,
@@ -267,12 +324,14 @@ async function main() {
         ok: true,
         status: 'completed',
         uploaded_input_name: uploadedInputName || null,
+        upload: uploadedInput,
         prompt_preview_path: promptPreviewPath,
         prompt_template: built.templatePath,
         replaced: built.replaced,
         ready,
         submitted,
         history,
+        duration_ms: Date.now() - startedAt,
       });
     }
   } catch (error) {

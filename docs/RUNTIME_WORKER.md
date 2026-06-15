@@ -72,7 +72,20 @@ The report includes:
 - prompt submission response;
 - prompt history;
 - downloaded output file paths;
+- downloaded output byte counts and retry attempts;
+- skipped output files if download failed;
 - error details when failed.
+
+## Retry Settings
+
+```text
+FANVUE_WORKER_FETCH_RETRIES=3
+FANVUE_WORKER_FETCH_RETRY_DELAY_MS=5000
+FANVUE_CALLBACK_RETRIES=3
+FANVUE_CALLBACK_RETRY_DELAY_MS=5000
+```
+
+Retries are used for transient ComfyUI and callback failures such as `429`, `500`, `502`, `503`, and `504`.
 
 ## Optional Final Callback
 
