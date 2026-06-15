@@ -155,6 +155,19 @@ node scripts/runpod_direct_test.mjs history \
 
 This bypasses n8n `media_asset.signed_url` and `upload_input`.
 
+The latest validated GPU smoke used:
+
+```text
+Profile: face_detailer_smoke
+GPU: NVIDIA RTX 6000 Ada Generation
+Prompt ID: 3ab4632e-2b76-4086-a0d7-116391f9da96
+Output: direct-runpod-output/fanvue_direct_face_detailer_00001_.png
+```
+
+For this profile the runtime disables pre-baked `ComfyUI-ReActor` automatically,
+because ReActor can download `GFPGANv1.3.pth` during import and block ComfyUI API
+endpoints that the smoke test needs.
+
 Dry-run prompt build without a live pod:
 
 ```bash
@@ -169,7 +182,7 @@ Live submit with ComfyUI upload:
 ```bash
 node scripts/runpod_direct_test.mjs submit \
   --pod-id POD_ID \
-  --input-file ./source.png \
+  --input-file ./direct-runpod-output/fanvue_flux2_klein_4b_smoke_00001_.png \
   --input-subfolder fanvue/direct \
   --save-prompt ./direct-runpod-output/face_detailer_prompt.json
 ```
