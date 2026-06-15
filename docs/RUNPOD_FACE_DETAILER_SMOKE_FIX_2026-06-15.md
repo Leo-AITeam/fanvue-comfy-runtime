@@ -39,6 +39,8 @@ The first direct Face Detailer GPU smoke reached ComfyUI successfully but failed
 - A40 pod after the CLIPSeg tensor patch reached model loading, then failed in `UNETLoader` because `z_image_turbo_bf16.safetensors` was truncated or corrupted on disk.
 - RTX 6000 Ada pod after model integrity checks downloaded all `face_detailer_smoke` models with exact byte matches, then reached `FaceDetailer`; remaining blocker was that the earlier CLIPSeg patch did not alter `resize_image`.
 - Local strict CLIPSeg patch verification: `clipseg.py` contains `fanvue-runtime-clipseg-compat` markers, patched `tensor_to_numpy`, patched `resize_image`, and guarded mask normalization.
+- L40S pod after delayed ComfyUI startup accepted the prompt with all models visible, then failed inside `FaceDetailer` because CLIPSeg still reached OpenCV with invalid resize dimensions. The patch now normalizes dimensions through `normalize_dimensions`, derives target dimensions through `image_dimensions(image_np)`, and fails fast if those snippets are missing.
+- Local CLIPSeg patch replay with requirements skipped: copied `ComfyUI-CLIPSeg/custom_nodes/clipseg.py` into `custom_nodes/clipseg.py` and verified `normalize_dimensions`, `image_dimensions`, and `dimensions = image_dimensions(image_np)` are present.
 - Custom node dry run includes:
   - `ComfyUI-Manager`
   - `rgthree-comfy`

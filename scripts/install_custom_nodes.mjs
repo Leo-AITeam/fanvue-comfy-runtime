@@ -38,6 +38,16 @@ function patchClipSegCompat(filePath) {
       '    if array.ndim == 4:',
       '        array = array[0]',
       '    array = np.squeeze(array)',
+      '    if array.ndim == 2:',
+      '        array = np.repeat(array[..., None], 3, axis=2)',
+      '    if array.ndim == 3 and array.shape[0] in (1, 3, 4) and array.shape[-1] not in (1, 3, 4):',
+      '        array = np.moveaxis(array, 0, -1)',
+      '    if array.ndim == 3 and array.shape[-1] == 1:',
+      '        array = np.repeat(array, 3, axis=2)',
+      '    if array.ndim != 3 or array.shape[-1] not in (3, 4):',
+      '        raise ValueError(f"Invalid IMAGE tensor shape after conversion: {array.shape}")',
+      '    if array.shape[-1] == 4:',
+      '        array = array[..., :3]',
       '    return np.clip(array * 255, 0, 255).astype(np.uint8)',
       ''
     ].join('\n'),
@@ -47,14 +57,39 @@ function patchClipSegCompat(filePath) {
   replaceRequired(
     /def resize_image\(image: np\.ndarray, dimensions: Tuple\[int, int\]\) -> np\.ndarray:\r?\n    """Resize an image to the given dimensions using linear interpolation\."""\r?\n    return cv2\.resize\(image, dimensions, interpolation=cv2\.INTER_LINEAR\)\r?\n/s,
     [
-      'def resize_image(image: np.ndarray, dimensions: Tuple[int, int]) -> np.ndarray:',
-      '    """Resize an image to the given dimensions using linear interpolation."""',
+      'def normalize_dimensions(dimensions) -> Tuple[int, int]:',
+      '    """Normalize PIL/torch/numpy/list resize dimensions to an OpenCV dsize tuple."""',
       '    # fanvue-runtime-clipseg-compat',
-      '    width, height = dimensions',
+      '    if hasattr(dimensions, "detach"):',
+      '        dimensions = dimensions.detach().cpu().numpy()',
+      '    if hasattr(dimensions, "tolist"):',
+      '        dimensions = dimensions.tolist()',
+      '    if isinstance(dimensions, (int, float, np.integer, np.floating)):',
+      '        raise ValueError(f"Resize dimensions must contain width and height, got scalar: {dimensions}")',
+      '    values = list(dimensions)',
+      '    if len(values) < 2:',
+      '        raise ValueError(f"Resize dimensions must contain width and height, got: {dimensions}")',
+      '    width, height = values[0], values[1]',
       '    width = int(width.item() if hasattr(width, "item") else width)',
       '    height = int(height.item() if hasattr(height, "item") else height)',
       '    if width <= 0 or height <= 0:',
       '        raise ValueError(f"Invalid resize dimensions: {(width, height)}")',
+      '    return width, height',
+      '',
+      'def image_dimensions(image: np.ndarray) -> Tuple[int, int]:',
+      '    """Return OpenCV resize dimensions from a numpy image in width, height order."""',
+      '    # fanvue-runtime-clipseg-compat',
+      '    if image.ndim < 2:',
+      '        raise ValueError(f"Invalid image shape for dimensions: {image.shape}")',
+      '    height, width = image.shape[:2]',
+      '    if width <= 0 or height <= 0:',
+      '        raise ValueError(f"Invalid image dimensions from shape: {image.shape}")',
+      '    return int(width), int(height)',
+      '',
+      'def resize_image(image: np.ndarray, dimensions: Tuple[int, int]) -> np.ndarray:',
+      '    """Resize an image to the given dimensions using linear interpolation."""',
+      '    # fanvue-runtime-clipseg-compat',
+      '    width, height = normalize_dimensions(dimensions)',
       '    return cv2.resize(image, (width, height), interpolation=cv2.INTER_LINEAR)',
       ''
     ].join('\n'),
@@ -69,6 +104,16 @@ function patchClipSegCompat(filePath) {
       ''
     ].join('\n'),
     'segment_image.tensor_to_numpy',
+  );
+
+  replaceRequired(
+    /        # Overlay the heatmap and binary mask on the original image\r?\n        dimensions = \(image_np\.shape\[1\], image_np\.shape\[0\]\)\r?\n/s,
+    [
+      '        # Overlay the heatmap and binary mask on the original image',
+      '        dimensions = image_dimensions(image_np)',
+      ''
+    ].join('\n'),
+    'segment_image.dimensions',
   );
 
   replaceRequired(
@@ -87,6 +132,16 @@ function patchClipSegCompat(filePath) {
 
   if (!content.includes('fanvue-runtime-clipseg-compat')) {
     throw new Error('CLIPSeg compatibility patch marker missing');
+  }
+  for (const requiredSnippet of [
+    'def normalize_dimensions(dimensions) -> Tuple[int, int]:',
+    'def image_dimensions(image: np.ndarray) -> Tuple[int, int]:',
+    'dimensions = image_dimensions(image_np)',
+    'width, height = normalize_dimensions(dimensions)',
+  ]) {
+    if (!content.includes(requiredSnippet)) {
+      throw new Error(`CLIPSeg compatibility patch missing snippet: ${requiredSnippet}`);
+    }
   }
   fs.writeFileSync(filePath, content);
 }
