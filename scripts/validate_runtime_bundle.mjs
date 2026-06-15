@@ -125,6 +125,44 @@ function validateCustomNodes() {
   ];
 }
 
+function validateRuntimePatchGuards() {
+  const checks = [];
+  const installerFile = 'scripts/install_custom_nodes.mjs';
+  const startFile = 'scripts/start_comfyui.sh';
+
+  try {
+    const installer = fs.readFileSync(path.join(root, installerFile), 'utf8');
+    for (const snippet of [
+      'def normalize_dimensions(dimensions) -> Tuple[int, int]:',
+      'def image_dimensions(image: np.ndarray) -> Tuple[int, int]:',
+      'def safe_resize_image(image: np.ndarray, dimensions: Tuple[int, int], channels: int = 3) -> np.ndarray:',
+      'heatmap_resized = safe_resize_image(heatmap, dimensions)',
+      'binary_mask_resized = safe_resize_image(binary_mask, dimensions)',
+      'fanvue-runtime-clipseg-compat',
+    ]) {
+      checks.push(result(installer.includes(snippet), 'runtime_patch.clipseg_snippet', { file: installerFile, snippet }));
+    }
+  } catch (error) {
+    checks.push(result(false, 'runtime_patch.clipseg_snippet', { file: installerFile, error: error.message }));
+  }
+
+  try {
+    const startScript = fs.readFileSync(path.join(root, startFile), 'utf8');
+    for (const snippet of [
+      'FANVUE_DISABLE_REACTOR',
+      'FANVUE_TEST_PROFILE:-smoke',
+      'face_detailer_smoke',
+      'disable_baked_node "ComfyUI-ReActor"',
+    ]) {
+      checks.push(result(startScript.includes(snippet), 'runtime_patch.reactor_guard', { file: startFile, snippet }));
+    }
+  } catch (error) {
+    checks.push(result(false, 'runtime_patch.reactor_guard', { file: startFile, error: error.message }));
+  }
+
+  return checks;
+}
+
 function listFiles(directory, suffix) {
   const fullDir = path.join(root, directory);
   if (!fs.existsSync(fullDir)) return [];
@@ -156,6 +194,7 @@ if (exists('api_prompts/face_detailer_smoke_template.json')) {
 checks.push(...validateWorkflowMapping());
 checks.push(...validateModelProfiles());
 checks.push(...validateCustomNodes());
+checks.push(...validateRuntimePatchGuards());
 
 const failed = checks.filter((check) => !check.ok);
 const output = {
