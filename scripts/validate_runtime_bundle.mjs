@@ -163,6 +163,14 @@ function validateRuntimePatchGuards() {
   return checks;
 }
 
+function validateUtilityScripts() {
+  return [
+    result(exists('scripts/import_model_sources_csv.mjs'), 'utility.import_model_sources_csv.exists', {
+      file: 'scripts/import_model_sources_csv.mjs',
+    }),
+  ];
+}
+
 function listFiles(directory, suffix) {
   const fullDir = path.join(root, directory);
   if (!fs.existsSync(fullDir)) return [];
@@ -195,6 +203,7 @@ checks.push(...validateWorkflowMapping());
 checks.push(...validateModelProfiles());
 checks.push(...validateCustomNodes());
 checks.push(...validateRuntimePatchGuards());
+checks.push(...validateUtilityScripts());
 
 const failed = checks.filter((check) => !check.ok);
 const output = {

@@ -108,6 +108,15 @@ The Face Detailer direct GPU smoke passed on 2026-06-15. See:
 docs/RUNPOD_FACE_DETAILER_SMOKE_FIX_2026-06-15.md
 ```
 
+To fill the remaining full-profile model sources from a CSV:
+
+```bash
+node scripts/import_model_sources_csv.mjs . model_sources_first_test_template.csv --dry-run
+node scripts/import_model_sources_csv.mjs . model_sources_first_test_template.csv --strict
+node scripts/model_readiness_report.mjs . docs/MODEL_READINESS.md
+node scripts/validate_runtime_bundle.mjs .
+```
+
 See:
 
 ```text
