@@ -68,6 +68,18 @@ ${table(faceDetailerSmoke)}
 
 This profile remains blocked until every missing \`source_url\` is filled with a direct download URL.
 
+Use the CSV importer to apply verified direct URLs safely:
+
+\`\`\`bash
+node scripts/import_model_sources_csv.mjs . model_sources_first_test_template.csv --dry-run
+node scripts/import_model_sources_csv.mjs . model_sources_first_test_template.csv --strict
+node scripts/model_readiness_report.mjs . docs/MODEL_READINESS.md
+node scripts/validate_runtime_bundle.mjs .
+\`\`\`
+
+The importer matches by exact model filename, reports unknown or duplicate rows,
+and can fail in \`--strict\` mode until all \`first_full\` sources are filled.
+
 ${table(firstFull)}
 `;
 

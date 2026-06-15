@@ -11,7 +11,8 @@
     {
       "name": "4x-UltraSharpV2.pth",
       "type": "detector_or_upscale",
-      "source_url": null,
+      "source_url": "https://huggingface.co/GeraldoZulimar/4x-UltraSharpV2/resolve/main/4x-UltraSharpV2.pth",
+      "expected_bytes": 140335046,
       "target_dir": "ComfyUI/models",
       "required_for_first_test": true,
       "test_profiles": [
@@ -21,7 +22,8 @@
     {
       "name": "4x_NMKD-Superscale-SP_178000_G.pth",
       "type": "detector_or_upscale",
-      "source_url": null,
+      "source_url": "https://huggingface.co/gemasai/4x_NMKD-Superscale-SP_178000_G/resolve/main/4x_NMKD-Superscale-SP_178000_G.pth",
+      "expected_bytes": 66958607,
       "target_dir": "ComfyUI/models",
       "required_for_first_test": true,
       "test_profiles": [
@@ -97,7 +99,8 @@
     {
       "name": "bbox/face_yolov8m.pt",
       "type": "detector_or_upscale",
-      "source_url": null,
+      "source_url": "https://huggingface.co/obitobosna/face_yolov8m.pt/resolve/main/face_yolov8m.pt",
+      "expected_bytes": 52026019,
       "target_dir": "ComfyUI/models",
       "required_for_first_test": true,
       "test_profiles": [
@@ -137,7 +140,8 @@
     {
       "name": "depth_anything_v2_vitl.pth",
       "type": "detector_or_upscale",
-      "source_url": null,
+      "source_url": "https://huggingface.co/AyushSahaUndergrad/Depth-Anything-V2-vitl-checkpoint/resolve/main/depth_anything_v2_vitl.pth",
+      "expected_bytes": 1341395338,
       "target_dir": "ComfyUI/models",
       "required_for_first_test": true,
       "test_profiles": [
@@ -147,7 +151,8 @@
     {
       "name": "dmd2_sdxl_4step_lora_fp16.safetensors",
       "type": "lora",
-      "source_url": null,
+      "source_url": "https://huggingface.co/wornleto/dmd2_sdxl_4step_lora_fp16/resolve/main/dmd2_sdxl_4step_lora_fp16.safetensors",
+      "expected_bytes": 393854592,
       "target_dir": "ComfyUI/models/loras",
       "required_for_first_test": true,
       "test_profiles": [
@@ -157,7 +162,8 @@
     {
       "name": "flux-2-klein-9b.safetensors",
       "type": "model",
-      "source_url": null,
+      "source_url": "https://huggingface.co/rkppvc/flux-2-klein-9b.safetensors/resolve/main/flux-2-klein-9b.safetensors",
+      "expected_bytes": 18157185168,
       "target_dir": "ComfyUI/models/checkpoints",
       "required_for_first_test": true,
       "test_profiles": [
@@ -179,7 +185,8 @@
     {
       "name": "lustifySDXLNSFW_ggwpV7.safetensors",
       "type": "model",
-      "source_url": null,
+      "source_url": "https://huggingface.co/aboba2005/lustifySDXLNSFW_ggwpV7/resolve/main/lustifySDXLNSFW_ggwpV7.safetensors",
+      "expected_bytes": 6938099634,
       "target_dir": "ComfyUI/models/checkpoints",
       "required_for_first_test": true,
       "test_profiles": [
@@ -252,7 +259,8 @@
     {
       "name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
       "type": "text_encoder",
-      "source_url": null,
+      "source_url": "https://huggingface.co/Osrivers/umt5_xxl_fp8_e4m3fn_scaled.safetensors/resolve/main/umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "expected_bytes": 6735906897,
       "target_dir": "ComfyUI/models/text_encoders",
       "required_for_first_test": true,
       "test_profiles": [
@@ -262,7 +270,8 @@
     {
       "name": "wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors",
       "type": "model",
-      "source_url": null,
+      "source_url": "https://huggingface.co/mihaiciorobitca/wan2.2_t2v_high_noise_14B_fp8_scaled/resolve/main/wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors",
+      "expected_bytes": 14293923632,
       "target_dir": "ComfyUI/models/checkpoints",
       "required_for_first_test": true,
       "test_profiles": [
@@ -282,7 +291,8 @@
     {
       "name": "wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors",
       "type": "model",
-      "source_url": null,
+      "source_url": "https://huggingface.co/mihaiciorobitca/wan2.2_t2v_low_noise_14B_fp8_scaled/resolve/main/wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors",
+      "expected_bytes": 14293923632,
       "target_dir": "ComfyUI/models/checkpoints",
       "required_for_first_test": true,
       "test_profiles": [
@@ -302,7 +312,8 @@
     {
       "name": "wan_2.1_vae.safetensors",
       "type": "vae",
-      "source_url": null,
+      "source_url": "https://huggingface.co/Osrivers/wan_2.1_vae.safetensors/resolve/main/wan_2.1_vae.safetensors",
+      "expected_bytes": 253815318,
       "target_dir": "ComfyUI/models/vae",
       "required_for_first_test": true,
       "test_profiles": [
@@ -312,7 +323,8 @@
     {
       "name": "x1_ITF_SkinDiffDetail_Lite_v1.pth",
       "type": "detector_or_upscale",
-      "source_url": null,
+      "source_url": "https://huggingface.co/gemasai/x1_ITF_SkinDiffDetail_Lite_v1/resolve/main/x1_ITF_SkinDiffDetail_Lite_v1.pth",
+      "expected_bytes": 20099337,
       "target_dir": "ComfyUI/models",
       "required_for_first_test": true,
       "test_profiles": [
