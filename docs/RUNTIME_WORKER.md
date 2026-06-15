@@ -17,10 +17,20 @@ Set:
 FANVUE_AUTO_RUN_PROMPT=true
 ```
 
-The entrypoint starts ComfyUI first, downloads models, then starts:
+By default, the entrypoint installs custom nodes and downloads models before
+starting ComfyUI. This prevents false readiness where `/system_stats` is up but
+ComfyUI has not scanned the downloaded model files yet.
+
+After ComfyUI starts, the entrypoint starts:
 
 ```text
 scripts/comfy_runtime_worker.mjs
+```
+
+For debugging only, early ComfyUI startup can be restored with:
+
+```text
+FANVUE_START_COMFYUI_EARLY=true
 ```
 
 ## Klein Smoke Worker

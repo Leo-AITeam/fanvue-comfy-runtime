@@ -172,6 +172,7 @@ function buildCreatePayload() {
       FANVUE_PREFLIGHT_MODE: argValue('preflight-mode', process.env.FANVUE_PREFLIGHT_MODE || 'real'),
       FANVUE_DOWNLOAD_DRY_RUN: String(argValue('download-dry-run', process.env.FANVUE_DOWNLOAD_DRY_RUN || 'false')),
       FANVUE_NODE_INSTALL_DRY_RUN: String(argValue('node-install-dry-run', process.env.FANVUE_NODE_INSTALL_DRY_RUN || 'false')),
+      FANVUE_START_COMFYUI_EARLY: String(argValue('start-comfyui-early', process.env.FANVUE_START_COMFYUI_EARLY || 'false')),
       COMFYUI_PORT: '8188',
       FANVUE_WORKER_FETCH_RETRIES: String(argValue('worker-fetch-retries', process.env.FANVUE_WORKER_FETCH_RETRIES || '3')),
       FANVUE_WORKER_FETCH_RETRY_DELAY_MS: String(argValue('worker-fetch-retry-delay-ms', process.env.FANVUE_WORKER_FETCH_RETRY_DELAY_MS || '5000')),

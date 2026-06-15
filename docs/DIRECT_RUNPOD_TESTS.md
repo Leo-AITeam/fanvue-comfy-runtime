@@ -194,6 +194,14 @@ node scripts/runpod_direct_test.mjs stop --pod-id POD_ID
 
 If a command fails, check active pods directly in RunPod Console before starting another GPU test.
 
+## Readiness Notes
+
+Direct tests set `FANVUE_START_COMFYUI_EARLY=false` by default. The diagnostics
+URL on port `8888` can be used to watch `fanvue_runtime.log` immediately, but
+the ComfyUI URL on port `8188` should not answer until required models have been
+downloaded and scanned. This keeps model combo lists from being empty during
+the first prompt submission.
+
 ## What This Saves
 
 This direct path saves n8n executions for:

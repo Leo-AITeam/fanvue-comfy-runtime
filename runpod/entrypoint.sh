@@ -56,7 +56,7 @@ fi
 
 chmod +x "$BUNDLE_DIR/bootstrap_fanvue_comfyui.sh"
 
-if [ "${FANVUE_START_COMFYUI_EARLY:-true}" = "true" ]; then
+if [ "${FANVUE_START_COMFYUI_EARLY:-false}" = "true" ]; then
   echo "[fanvue-runpod] Running pre-model bootstrap before ComfyUI start"
   FANVUE_BOOTSTRAP_STAGE=pre_models "$BUNDLE_DIR/bootstrap_fanvue_comfyui.sh"
 
