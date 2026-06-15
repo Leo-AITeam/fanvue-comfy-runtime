@@ -87,6 +87,43 @@ function validateWorkflowMapping() {
   return checks;
 }
 
+function modelMatchesProfile(item, profile) {
+  if (profile === 'api_smoke') return false;
+  if (profile === 'all') return true;
+  if (Array.isArray(item.test_profiles)) return item.test_profiles.includes(profile);
+  if (profile === 'first_full') return Boolean(item.required_for_first_test);
+  return false;
+}
+
+function validateModelProfiles() {
+  const checks = [];
+  const manifest = readJson('models_manifest.json');
+  const models = manifest.models || [];
+  for (const profile of ['smoke', 'first_full']) {
+    const selected = models.filter((item) => modelMatchesProfile(item, profile));
+    const missing = selected.filter((item) => !item.source_url).map((item) => item.name);
+    checks.push(result(profile === 'smoke' ? missing.length === 0 : true, `models.${profile}.source_urls`, {
+      selected_model_count: selected.length,
+      missing_source_count: missing.length,
+      missing_sources: missing,
+    }));
+  }
+  return checks;
+}
+
+function validateCustomNodes() {
+  const manifest = readJson('custom_nodes_manifest.json');
+  const requiredNodes = (manifest.nodes || []).filter((item) => item.required_for_first_test);
+  const missingRepos = requiredNodes.filter((item) => !item.repo_url).map((item) => item.name);
+  return [
+    result(missingRepos.length === 0, 'custom_nodes.first_test.repo_urls', {
+      selected_node_count: requiredNodes.length,
+      missing_repo_count: missingRepos.length,
+      missing_repos: missingRepos,
+    }),
+  ];
+}
+
 function listFiles(directory, suffix) {
   const fullDir = path.join(root, directory);
   if (!fs.existsSync(fullDir)) return [];
@@ -116,6 +153,8 @@ if (exists('api_prompts/face_detailer_smoke_template.json')) {
 }
 
 checks.push(...validateWorkflowMapping());
+checks.push(...validateModelProfiles());
+checks.push(...validateCustomNodes());
 
 const failed = checks.filter((check) => !check.ok);
 const output = {
