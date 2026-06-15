@@ -16,6 +16,12 @@ Do not commit the key.
 
 ## 1. Preview Pod Payload
 
+Run the full local smoke suite before spending GPU:
+
+```bash
+node scripts/local_runtime_smoke.mjs
+```
+
 This does not create a pod:
 
 ```bash

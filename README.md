@@ -42,6 +42,12 @@ Validate the bundle before launching a pod:
 node scripts/validate_runtime_bundle.mjs
 ```
 
+Run all local runtime smoke checks without n8n, network, or GPU:
+
+```bash
+node scripts/local_runtime_smoke.mjs
+```
+
 Real mode:
 
 ```bash

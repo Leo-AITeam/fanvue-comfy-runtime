@@ -8,6 +8,7 @@ __pycache__/
 *.tar.gz
 *.zip
 .dryrun_*/
+tmp/
 
 # Never commit generated media or downloaded model binaries by accident.
 output/
