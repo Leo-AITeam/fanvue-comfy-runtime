@@ -99,10 +99,11 @@ function validateModelProfiles() {
   const checks = [];
   const manifest = readJson('models_manifest.json');
   const models = manifest.models || [];
-  for (const profile of ['smoke', 'first_full']) {
+  for (const profile of ['smoke', 'face_detailer_smoke', 'first_full']) {
     const selected = models.filter((item) => modelMatchesProfile(item, profile));
     const missing = selected.filter((item) => !item.source_url).map((item) => item.name);
-    checks.push(result(profile === 'smoke' ? missing.length === 0 : true, `models.${profile}.source_urls`, {
+    const mustBeComplete = ['smoke', 'face_detailer_smoke'].includes(profile);
+    checks.push(result(mustBeComplete ? missing.length === 0 : true, `models.${profile}.source_urls`, {
       selected_model_count: selected.length,
       missing_source_count: missing.length,
       missing_sources: missing,

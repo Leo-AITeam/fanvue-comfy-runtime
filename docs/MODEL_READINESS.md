@@ -7,6 +7,7 @@ Generated from `models_manifest.json`.
 | Profile | Selected models | Missing source_url |
 |---|---:|---:|
 | smoke | 3 | 0 |
+| face_detailer_smoke | 5 | 0 |
 | first_full | 27 | 22 |
 
 ## Smoke Profile
@@ -18,6 +19,18 @@ This is the current safe GPU smoke profile.
 | 1 | `flux2-vae.safetensors` | vae | `ComfyUI/models/vae` | ready |
 | 2 | `qwen_3_4b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready |
 | 3 | `flux-2-klein-4b.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |
+
+## Face Detailer Smoke Profile
+
+This is the current safe GPU image-to-image profile for the Face Detailer adapter.
+
+| # | File | Type | Target dir | Source URL |
+|---:|---|---|---|---|
+| 1 | `ae.safetensors` | model | `ComfyUI/models/vae` | ready |
+| 2 | `qwen_3_4b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready |
+| 3 | `sam_vit_b_01ec64.pth` | detector_or_upscale | `ComfyUI/models/sams` | ready |
+| 4 | `segm/person_yolov8m-seg.pt` | detector_or_upscale | `ComfyUI/models/ultralytics` | ready |
+| 5 | `z_image_turbo_bf16.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |
 
 ## First Full Profile
 
@@ -43,7 +56,7 @@ This profile remains blocked until every missing `source_url` is filled with a d
 | 16 | `lustifySDXLNSFW_ggwpV7.safetensors` | model | `ComfyUI/models/checkpoints` | missing |
 | 17 | `qwen_3_4b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready |
 | 18 | `qwen_3_8b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | missing |
-| 19 | `sam_vit_b_01ec64.pth` | detector_or_upscale | `ComfyUI/models` | ready |
+| 19 | `sam_vit_b_01ec64.pth` | detector_or_upscale | `ComfyUI/models/sams` | ready |
 | 20 | `umt5_xxl_fp8_e4m3fn_scaled.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | missing |
 | 21 | `wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors` | model | `ComfyUI/models/checkpoints` | missing |
 | 22 | `wan2.2_t2v_highnoise_sidemissionary_v1.0.safetensors` | model | `ComfyUI/models/checkpoints` | missing |
@@ -51,4 +64,4 @@ This profile remains blocked until every missing `source_url` is filled with a d
 | 24 | `wan2.2_t2v_lownoise_sidemissionary_v1.0.safetensors` | model | `ComfyUI/models/checkpoints` | missing |
 | 25 | `wan_2.1_vae.safetensors` | vae | `ComfyUI/models/vae` | missing |
 | 26 | `x1_ITF_SkinDiffDetail_Lite_v1.pth` | detector_or_upscale | `ComfyUI/models` | missing |
-| 27 | `z_image_turbo_bf16.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
+| 27 | `z_image_turbo_bf16.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |

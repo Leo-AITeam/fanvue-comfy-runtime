@@ -38,6 +38,7 @@ function table(rows) {
 }
 
 const smoke = profileRows('smoke');
+const faceDetailerSmoke = profileRows('face_detailer_smoke');
 const firstFull = profileRows('first_full');
 const report = `# Runtime Model Readiness
 
@@ -48,6 +49,7 @@ Generated from \`models_manifest.json\`.
 | Profile | Selected models | Missing source_url |
 |---|---:|---:|
 | smoke | ${smoke.length} | ${smoke.filter((item) => !item.source_url).length} |
+| face_detailer_smoke | ${faceDetailerSmoke.length} | ${faceDetailerSmoke.filter((item) => !item.source_url).length} |
 | first_full | ${firstFull.length} | ${firstFull.filter((item) => !item.source_url).length} |
 
 ## Smoke Profile
@@ -55,6 +57,12 @@ Generated from \`models_manifest.json\`.
 This is the current safe GPU smoke profile.
 
 ${table(smoke)}
+
+## Face Detailer Smoke Profile
+
+This is the current safe GPU image-to-image profile for the Face Detailer adapter.
+
+${table(faceDetailerSmoke)}
 
 ## First Full Profile
 
@@ -67,7 +75,13 @@ if (outputPath) {
   const resolved = path.isAbsolute(outputPath) ? outputPath : path.join(root, outputPath);
   fs.mkdirSync(path.dirname(resolved), { recursive: true });
   fs.writeFileSync(resolved, report);
-  console.log(JSON.stringify({ ok: true, output: resolved, smoke_count: smoke.length, first_full_count: firstFull.length }, null, 2));
+  console.log(JSON.stringify({
+    ok: true,
+    output: resolved,
+    smoke_count: smoke.length,
+    face_detailer_smoke_count: faceDetailerSmoke.length,
+    first_full_count: firstFull.length,
+  }, null, 2));
 } else {
   console.log(report);
 }
