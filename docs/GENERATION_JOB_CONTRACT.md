@@ -122,3 +122,12 @@ node scripts/direct_image_chain_smoke.mjs \
   --dry-run \
   --job-file "$PWD/job_templates/qwen_to_face_detailer_chain_job.json"
 ```
+
+RunPod/n8n may also pass the same payload through env:
+
+```text
+FANVUE_JOB_JSON=<raw generation_job.v1 JSON>
+FANVUE_JOB_JSON_BASE64=<base64-encoded generation_job.v1 JSON>
+```
+
+Prefer `FANVUE_JOB_JSON_BASE64` when passing the payload through systems that may escape quotes or newlines.

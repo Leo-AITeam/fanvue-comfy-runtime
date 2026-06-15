@@ -28,6 +28,14 @@ function run(name, commandArgs, options = {}) {
 fs.mkdirSync(outDir, { recursive: true });
 
 const workerRoot = path.join(outDir, 'worker');
+const faceDetailerJobBase64 = Buffer.from(
+  fs.readFileSync(path.join(root, 'job_templates', 'face_detailer_smoke_job.json'), 'utf8'),
+  'utf8'
+).toString('base64');
+const chainJobBase64 = Buffer.from(
+  fs.readFileSync(path.join(root, 'job_templates', 'qwen_to_face_detailer_chain_job.json'), 'utf8'),
+  'utf8'
+).toString('base64');
 const checks = [
   run('syntax.validate_runtime_bundle', ['--check', 'scripts/validate_runtime_bundle.mjs']),
   run('syntax.runpod_direct_test', ['--check', 'scripts/runpod_direct_test.mjs']),
@@ -135,6 +143,16 @@ const checks = [
     '--out-dir',
     path.join(outDir, 'direct-image-chain-job-file'),
   ]),
+  run('direct.image_chain_job_base64_dry_run', [
+    'scripts/direct_image_chain_smoke.mjs',
+    '--dry-run',
+    '--out-dir',
+    path.join(outDir, 'direct-image-chain-job-base64'),
+  ], {
+    env: {
+      FANVUE_JOB_JSON_BASE64: chainJobBase64,
+    },
+  }),
   run('worker.face_detailer_dry_run', ['scripts/comfy_runtime_worker.mjs'], {
     env: {
       BUNDLE_DIR: root,
@@ -161,6 +179,19 @@ const checks = [
       FANVUE_CALLBACK_DRY_RUN: 'true',
       FANVUE_WORKER_REPORT: path.join(workerRoot, 'fanvue-job-file', 'fanvue_worker_report.json'),
       FANVUE_WORKER_REPORT_MIRROR: path.join(workerRoot, 'ComfyUI-job-file', 'output', 'fanvue_worker_report.json'),
+    },
+  }),
+  run('worker.face_detailer_job_base64_dry_run', ['scripts/comfy_runtime_worker.mjs'], {
+    env: {
+      BUNDLE_DIR: root,
+      FANVUE_DIR: path.join(workerRoot, 'fanvue-job-base64'),
+      COMFY_DIR: path.join(workerRoot, 'ComfyUI-job-base64'),
+      OUTPUT_DIR: path.join(workerRoot, 'fanvue-job-base64', 'output'),
+      FANVUE_WORKER_DRY_RUN: 'true',
+      FANVUE_JOB_JSON_BASE64: faceDetailerJobBase64,
+      FANVUE_CALLBACK_DRY_RUN: 'true',
+      FANVUE_WORKER_REPORT: path.join(workerRoot, 'fanvue-job-base64', 'fanvue_worker_report.json'),
+      FANVUE_WORKER_REPORT_MIRROR: path.join(workerRoot, 'ComfyUI-job-base64', 'output', 'fanvue_worker_report.json'),
     },
   }),
 ];

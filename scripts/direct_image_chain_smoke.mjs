@@ -27,12 +27,32 @@ function readJson(file) {
 
 function loadJobFile() {
   const jobFile = argValue('job-file', process.env.FANVUE_JOB_FILE || process.env.FANVUE_GENERATION_JOB_FILE || '');
-  if (!jobFile) return null;
-  const resolved = path.resolve(jobFile);
-  return {
-    file: resolved,
-    payload: readJson(resolved),
-  };
+  if (jobFile) {
+    const resolved = path.resolve(jobFile);
+    return {
+      source: 'file',
+      file: resolved,
+      payload: readJson(resolved),
+    };
+  }
+
+  if (process.env.FANVUE_JOB_JSON_BASE64) {
+    return {
+      source: 'env_base64',
+      file: null,
+      payload: JSON.parse(Buffer.from(process.env.FANVUE_JOB_JSON_BASE64, 'base64').toString('utf8')),
+    };
+  }
+
+  if (process.env.FANVUE_JOB_JSON) {
+    return {
+      source: 'env_json',
+      file: null,
+      payload: JSON.parse(process.env.FANVUE_JOB_JSON),
+    };
+  }
+
+  return null;
 }
 
 const generationJob = loadJobFile();
@@ -139,6 +159,7 @@ async function main() {
     job_id: jobString([['job_id']]) || null,
     character_id: jobString([['character_id']]) || null,
     generation_job_file: generationJob?.file || null,
+    generation_job_source: generationJob?.source || null,
     workflow_name: jobString([['workflow', 'name']], 'Qwen to Face Detailer Chain'),
     out_dir: outDir,
     qwen: null,

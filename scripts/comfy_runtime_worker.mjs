@@ -24,12 +24,34 @@ function readJson(file) {
 
 function loadGenerationJob() {
   const jobFile = env('FANVUE_JOB_FILE', env('FANVUE_GENERATION_JOB_FILE'));
-  if (!jobFile) return null;
-  const resolved = path.resolve(jobFile);
-  return {
-    file: resolved,
-    payload: readJson(resolved),
-  };
+  if (jobFile) {
+    const resolved = path.resolve(jobFile);
+    return {
+      source: 'file',
+      file: resolved,
+      payload: readJson(resolved),
+    };
+  }
+
+  const jobJsonBase64 = env('FANVUE_JOB_JSON_BASE64');
+  if (jobJsonBase64) {
+    return {
+      source: 'env_base64',
+      file: null,
+      payload: JSON.parse(Buffer.from(jobJsonBase64, 'base64').toString('utf8')),
+    };
+  }
+
+  const jobJson = env('FANVUE_JOB_JSON');
+  if (jobJson) {
+    return {
+      source: 'env_json',
+      file: null,
+      payload: JSON.parse(jobJson),
+    };
+  }
+
+  return null;
 }
 
 const generationJob = loadGenerationJob();
@@ -102,6 +124,7 @@ function resultBase() {
     workflow_name: workflowName,
     test_profile: env('FANVUE_TEST_PROFILE', 'smoke'),
     generation_job_file: generationJob?.file || null,
+    generation_job_source: generationJob?.source || null,
     base_url: baseUrl,
     generated_at: new Date().toISOString(),
   };

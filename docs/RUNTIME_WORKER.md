@@ -168,6 +168,15 @@ FANVUE_JOB_FILE="$PWD/job_templates/qwen_image_smoke_job.json" \
 node scripts/comfy_runtime_worker.mjs
 ```
 
+The same payload can be passed through env:
+
+```bash
+FANVUE_WORKER_DRY_RUN=true \
+BUNDLE_DIR="$PWD" \
+FANVUE_JOB_JSON_BASE64="$(base64 -i "$PWD/job_templates/face_detailer_smoke_job.json")" \
+node scripts/comfy_runtime_worker.mjs
+```
+
 The chain job is handled by the direct chain runner:
 
 ```bash
