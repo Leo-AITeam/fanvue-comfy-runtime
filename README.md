@@ -115,6 +115,12 @@ The Face Detailer direct GPU smoke passed on 2026-06-15. See:
 docs/RUNPOD_FACE_DETAILER_SMOKE_FIX_2026-06-15.md
 ```
 
+The direct Qwen -> Face Detailer image chain also passed on 2026-06-15 without using n8n executions. See:
+
+```text
+docs/DIRECT_IMAGE_CHAIN_SMOKE_2026-06-15.md
+```
+
 To fill the remaining full-profile model sources from a CSV:
 
 ```bash

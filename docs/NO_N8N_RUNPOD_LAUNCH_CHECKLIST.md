@@ -115,6 +115,22 @@ direct-runpod-output/chain-smoke/
 
 If the chain fails, the script still tries to stop every pod it created.
 
+The live direct chain passed on 2026-06-15:
+
+```text
+Qwen pod: m1fculi6w89h61
+Qwen prompt: ebdc9872-b683-45c5-bd83-843c8b9917eb
+Face Detailer pod: mc5c7a0r1hnb2m
+Face Detailer prompt: 014744d4-5c4e-45f6-a787-0b496032ef57
+Final output: direct-runpod-output/chain-smoke/fanvue_direct_chain_face_detailer_00001_.png
+```
+
+See:
+
+```text
+docs/DIRECT_IMAGE_CHAIN_SMOKE_2026-06-15.md
+```
+
 ## 4. Watch Readiness
 
 ```bash
