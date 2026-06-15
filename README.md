@@ -114,6 +114,7 @@ To fill the remaining full-profile model sources from a CSV:
 node scripts/import_model_sources_csv.mjs . model_sources_first_test_template.csv --dry-run
 node scripts/import_model_sources_csv.mjs . model_sources_first_test_template.csv --strict
 node scripts/model_readiness_report.mjs . docs/MODEL_READINESS.md
+node scripts/verify_model_sources.mjs . first_full
 node scripts/validate_runtime_bundle.mjs .
 ```
 

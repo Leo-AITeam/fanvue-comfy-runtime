@@ -168,6 +168,9 @@ function validateUtilityScripts() {
     result(exists('scripts/import_model_sources_csv.mjs'), 'utility.import_model_sources_csv.exists', {
       file: 'scripts/import_model_sources_csv.mjs',
     }),
+    result(exists('scripts/verify_model_sources.mjs'), 'utility.verify_model_sources.exists', {
+      file: 'scripts/verify_model_sources.mjs',
+    }),
   ];
 }
 
