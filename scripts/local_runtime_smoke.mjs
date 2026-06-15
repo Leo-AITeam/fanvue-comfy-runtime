@@ -33,8 +33,16 @@ const checks = [
   run('syntax.runpod_direct_test', ['--check', 'scripts/runpod_direct_test.mjs']),
   run('syntax.comfy_runtime_worker', ['--check', 'scripts/comfy_runtime_worker.mjs']),
   run('syntax.build_face_detailer_prompt', ['--check', 'scripts/build_face_detailer_prompt.mjs']),
+  run('syntax.import_model_sources_csv', ['--check', 'scripts/import_model_sources_csv.mjs']),
   run('syntax.model_readiness_report', ['--check', 'scripts/model_readiness_report.mjs']),
+  run('syntax.verify_model_sources', ['--check', 'scripts/verify_model_sources.mjs']),
   run('bundle.validate', ['scripts/validate_runtime_bundle.mjs']),
+  run('model_sources.import_dry_run', [
+    'scripts/import_model_sources_csv.mjs',
+    '.',
+    'model_sources_first_test_template.csv',
+    '--dry-run',
+  ]),
   run('model_readiness.report', [
     'scripts/model_readiness_report.mjs',
     '.',
