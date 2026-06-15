@@ -58,6 +58,15 @@ function output(value) {
   console.log(JSON.stringify(value, null, 2));
 }
 
+async function readResponseBody(response) {
+  const text = await response.text();
+  try {
+    return text ? JSON.parse(text) : {};
+  } catch {
+    return { raw: text };
+  }
+}
+
 function redactedCreatePayload(payload) {
   return {
     ...payload,
@@ -298,7 +307,7 @@ async function uploadInputImage(baseUrl) {
     method: 'POST',
     body: form,
   });
-  const body = await response.json().catch(async () => ({ raw: await response.text() }));
+  const body = await readResponseBody(response);
   if (!response.ok) {
     throw new Error(`Input upload failed: ${response.status} ${JSON.stringify(body)}`);
   }
@@ -377,7 +386,7 @@ async function submitPrompt() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ prompt, client_id: clientId }),
   });
-  const body = await response.json().catch(async () => ({ raw: await response.text() }));
+  const body = await readResponseBody(response);
   if (!response.ok) throw new Error(`Prompt submit failed: ${response.status} ${JSON.stringify(body)}`);
   output({
     ok: true,
