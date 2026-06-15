@@ -85,8 +85,8 @@
     {
       "name": "ae.safetensors",
       "type": "model",
-      "source_url": null,
-      "target_dir": "ComfyUI/models/checkpoints",
+      "source_url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors",
+      "target_dir": "ComfyUI/models/vae",
       "required_for_first_test": true,
       "test_profiles": [
         "first_full"
@@ -315,7 +315,7 @@
     {
       "name": "z_image_turbo_bf16.safetensors",
       "type": "model",
-      "source_url": null,
+      "source_url": "https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16.safetensors",
       "target_dir": "ComfyUI/models/checkpoints",
       "required_for_first_test": true,
       "test_profiles": [
