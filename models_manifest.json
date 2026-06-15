@@ -199,9 +199,13 @@
     {
       "name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
       "type": "model",
-      "source_url": null,
-      "target_dir": "ComfyUI/models/checkpoints",
-      "required_for_first_test": false
+      "source_url": "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "target_dir": "ComfyUI/models/text_encoders",
+      "min_bytes": 7000000000,
+      "required_for_first_test": false,
+      "test_profiles": [
+        "qwen_edit_smoke"
+      ]
     },
     {
       "name": "qwen_3_4b.safetensors",
@@ -230,16 +234,24 @@
     {
       "name": "qwen_image_edit_2509_fp8_e4m3fn.safetensors",
       "type": "model",
-      "source_url": null,
-      "target_dir": "ComfyUI/models/checkpoints",
-      "required_for_first_test": false
+      "source_url": "https://huggingface.co/Comfy-Org/Qwen-Image-Edit_ComfyUI/resolve/main/split_files/diffusion_models/qwen_image_edit_2509_fp8_e4m3fn.safetensors",
+      "target_dir": "ComfyUI/models/diffusion_models",
+      "expected_bytes": 20430698424,
+      "required_for_first_test": false,
+      "test_profiles": [
+        "qwen_edit_smoke"
+      ]
     },
     {
       "name": "qwen_image_vae.safetensors",
       "type": "vae",
-      "source_url": null,
+      "source_url": "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/vae/qwen_image_vae.safetensors",
+      "expected_bytes": 253806246,
       "target_dir": "ComfyUI/models/vae",
-      "required_for_first_test": false
+      "required_for_first_test": false,
+      "test_profiles": [
+        "qwen_edit_smoke"
+      ]
     },
     {
       "name": "sam_vit_b_01ec64.pth",
@@ -396,6 +408,11 @@
     },
     "face_detailer_smoke": {
       "description": "Minimal public-download image-to-image Face Detailer smoke profile."
+    },
+    "qwen_edit_smoke": {
+      "description": "Minimal public-download Qwen Image Edit prompt profile.",
+      "api_prompt": "api_prompts/qwen_image_smoke.json",
+      "source_workflow": "workflows/QWEN Edit Consistent Face.json"
     }
   }
 }

@@ -65,6 +65,20 @@
         "sam_vit_b_01ec64.pth"
       ],
       "notes": "Use Job Runner upload_input first, replace __INPUT_IMAGE__, then submit the template prompt. The smoke adapter uses CLIPSegDetectorProvider because the current Impact Pack build does not expose UltralyticsDetectorProvider."
+    },
+    "Qwen Image Edit Smoke": {
+      "job_type": "face_variations",
+      "source_workflow": "workflows/QWEN Edit Consistent Face.json",
+      "api_prompt": "api_prompts/qwen_image_smoke.json",
+      "input_mode": "text_to_image",
+      "native_orchestrator_status": "prepared_not_gpu_validated",
+      "model_profile": "qwen_edit_smoke",
+      "model_blockers": [
+        "qwen_image_edit_2509_fp8_e4m3fn.safetensors",
+        "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+        "qwen_image_vae.safetensors"
+      ],
+      "notes": "Minimal Qwen Image Edit API prompt for the first Qwen GPU smoke before adapting the heavier local Qwen edit workflows."
     }
   }
 }

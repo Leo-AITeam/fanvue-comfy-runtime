@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
 import path from 'node:path';
+import { spawnSync } from 'node:child_process';
 
 const root = path.resolve(process.argv[2] || '.');
 const profile = process.env.FANVUE_TEST_PROFILE || process.argv[3] || 'first_full';
@@ -61,16 +62,56 @@ async function checkUrl(item) {
     }
     return result;
   } catch (error) {
-    return {
-      name: item.name,
-      ok: false,
-      status: error.name === 'AbortError' ? 'timeout' : 'request_failed',
-      error: error.message,
-      source_url: item.source_url,
-    };
+    return checkUrlWithCurl(item, error);
   } finally {
     clearTimeout(timer);
   }
+}
+
+function checkUrlWithCurl(item, fetchError) {
+  const curl = spawnSync('curl', ['-L', '-sI', '--max-time', String(Math.ceil(timeoutMs / 1000)), item.source_url], {
+    encoding: 'utf8',
+  });
+  if (curl.status !== 0) {
+    return {
+      name: item.name,
+      ok: false,
+      status: 'request_failed',
+      error: fetchError.message,
+      fetch_status: fetchError.name === 'AbortError' ? 'timeout' : 'request_failed',
+      curl_status: curl.status,
+      curl_stderr: curl.stderr.trim() || undefined,
+      source_url: item.source_url,
+    };
+  }
+  const headerBlocks = curl.stdout.trim().split(/\n\s*\n/);
+  const finalHeaders = headerBlocks.at(-1) || '';
+  const statusMatch = finalHeaders.match(/^HTTP\/\S+\s+(\d+)/im);
+  const status = statusMatch ? Number(statusMatch[1]) : 0;
+  const contentLengthMatches = [...curl.stdout.matchAll(/^content-length:\s*(\d+)/gim)];
+  const contentLength = contentLengthMatches.length ? Number(contentLengthMatches.at(-1)[1]) : 0;
+  const expected = expectedBytes(item);
+  const minimum = minBytes(item);
+  const result = {
+    name: item.name,
+    ok: status >= 200 && status < 300,
+    status: status >= 200 && status < 300 ? 'reachable' : 'http_error',
+    http_status: status || undefined,
+    content_length: contentLength || undefined,
+    expected_bytes: expected || undefined,
+    min_bytes: minimum || undefined,
+    source_url: item.source_url,
+    verifier: 'curl_fallback',
+  };
+  if (result.ok && expected && contentLength && contentLength !== expected) {
+    result.ok = false;
+    result.status = 'expected_bytes_mismatch';
+  }
+  if (result.ok && minimum && contentLength && contentLength < minimum) {
+    result.ok = false;
+    result.status = 'min_bytes_mismatch';
+  }
+  return result;
 }
 
 const selectedModels = (manifest.models || []).filter((item) => matchesProfile(item));

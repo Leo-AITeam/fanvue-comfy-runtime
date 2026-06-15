@@ -68,6 +68,16 @@ const checks = [
       FANVUE_DOWNLOAD_REPORT: path.join(outDir, 'download-face-detailer-report.json'),
     },
   }),
+  run('download_models.qwen_edit_dry_run', ['scripts/download_models.mjs'], {
+    env: {
+      BUNDLE_DIR: root,
+      WORKSPACE_DIR: path.join(outDir, 'download-qwen-edit'),
+      COMFY_DIR: path.join(outDir, 'download-qwen-edit', 'ComfyUI'),
+      FANVUE_TEST_PROFILE: 'qwen_edit_smoke',
+      FANVUE_DOWNLOAD_DRY_RUN: 'true',
+      FANVUE_DOWNLOAD_REPORT: path.join(outDir, 'download-qwen-edit-report.json'),
+    },
+  }),
   run('download_models.first_full_dry_run', ['scripts/download_models.mjs'], {
     env: {
       BUNDLE_DIR: root,
