@@ -102,6 +102,13 @@ node scripts/runpod_direct_test.mjs validate
 node scripts/runpod_direct_test.mjs create --dry-run --profile smoke
 ```
 
+To validate the still-image chain without n8n:
+
+```bash
+node scripts/direct_image_chain_smoke.mjs --dry-run
+node scripts/direct_image_chain_smoke.mjs
+```
+
 The Face Detailer direct GPU smoke passed on 2026-06-15. See:
 
 ```text

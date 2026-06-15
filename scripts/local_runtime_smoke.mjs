@@ -31,6 +31,7 @@ const workerRoot = path.join(outDir, 'worker');
 const checks = [
   run('syntax.validate_runtime_bundle', ['--check', 'scripts/validate_runtime_bundle.mjs']),
   run('syntax.runpod_direct_test', ['--check', 'scripts/runpod_direct_test.mjs']),
+  run('syntax.direct_image_chain_smoke', ['--check', 'scripts/direct_image_chain_smoke.mjs']),
   run('syntax.comfy_runtime_worker', ['--check', 'scripts/comfy_runtime_worker.mjs']),
   run('syntax.build_face_detailer_prompt', ['--check', 'scripts/build_face_detailer_prompt.mjs']),
   run('syntax.import_model_sources_csv', ['--check', 'scripts/import_model_sources_csv.mjs']),
@@ -103,6 +104,12 @@ const checks = [
     '--dry-run',
     '--profile',
     'smoke',
+  ]),
+  run('direct.image_chain_dry_run', [
+    'scripts/direct_image_chain_smoke.mjs',
+    '--dry-run',
+    '--out-dir',
+    path.join(outDir, 'direct-image-chain'),
   ]),
   run('worker.face_detailer_dry_run', ['scripts/comfy_runtime_worker.mjs'], {
     env: {

@@ -80,6 +80,41 @@ comfyui_url
 diagnostics_url
 ```
 
+## 3.5 Run The Direct Image Chain
+
+Use this when the goal is to validate the still-image chain without n8n:
+
+```bash
+node scripts/direct_image_chain_smoke.mjs --dry-run
+```
+
+Live chain:
+
+```bash
+node scripts/direct_image_chain_smoke.mjs
+```
+
+What it does:
+
+1. creates a `qwen_edit_smoke` pod;
+2. waits for ComfyUI;
+3. submits `api_prompts/qwen_image_smoke.json`;
+4. downloads the generated image;
+5. stops the Qwen pod immediately;
+6. creates a `face_detailer_smoke` pod;
+7. uploads the Qwen image;
+8. submits `api_prompts/face_detailer_smoke_template.json`;
+9. downloads the detailed image;
+10. stops the Face Detailer pod.
+
+Outputs and the final report are written to:
+
+```text
+direct-runpod-output/chain-smoke/
+```
+
+If the chain fails, the script still tries to stop every pod it created.
+
 ## 4. Watch Readiness
 
 ```bash
