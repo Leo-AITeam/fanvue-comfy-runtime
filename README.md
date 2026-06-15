@@ -92,6 +92,8 @@ See:
 ```text
 docs/DIRECT_RUNPOD_TESTS.md
 docs/N8N_EXECUTION_OPTIMIZATION.md
+docs/RUNTIME_WORKER.md
+docs/N8N_GENERATION_CALLBACK.md
 ```
 
 After the private/custom model URLs are filled, switch to the full first test:
