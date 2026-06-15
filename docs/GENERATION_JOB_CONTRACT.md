@@ -114,3 +114,11 @@ Face Detailer Smoke
 ```
 
 `Qwen to Face Detailer Chain` is handled by `scripts/direct_image_chain_smoke.mjs`.
+
+Chain dry-run from job file:
+
+```bash
+node scripts/direct_image_chain_smoke.mjs \
+  --dry-run \
+  --job-file "$PWD/job_templates/qwen_to_face_detailer_chain_job.json"
+```

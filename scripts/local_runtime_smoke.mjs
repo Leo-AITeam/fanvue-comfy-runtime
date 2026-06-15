@@ -127,6 +127,14 @@ const checks = [
     '--out-dir',
     path.join(outDir, 'direct-image-chain'),
   ]),
+  run('direct.image_chain_job_file_dry_run', [
+    'scripts/direct_image_chain_smoke.mjs',
+    '--dry-run',
+    '--job-file',
+    path.join(root, 'job_templates', 'qwen_to_face_detailer_chain_job.json'),
+    '--out-dir',
+    path.join(outDir, 'direct-image-chain-job-file'),
+  ]),
   run('worker.face_detailer_dry_run', ['scripts/comfy_runtime_worker.mjs'], {
     env: {
       BUNDLE_DIR: root,

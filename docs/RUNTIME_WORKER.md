@@ -171,7 +171,9 @@ node scripts/comfy_runtime_worker.mjs
 The chain job is handled by the direct chain runner:
 
 ```bash
-node scripts/direct_image_chain_smoke.mjs --dry-run
+node scripts/direct_image_chain_smoke.mjs \
+  --dry-run \
+  --job-file "$PWD/job_templates/qwen_to_face_detailer_chain_job.json"
 ```
 
 ## Production Shape Later

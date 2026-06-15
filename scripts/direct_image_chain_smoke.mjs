@@ -21,6 +21,50 @@ function hasFlag(name) {
   return args.includes(`--${name}`);
 }
 
+function readJson(file) {
+  return JSON.parse(fs.readFileSync(file, 'utf8'));
+}
+
+function loadJobFile() {
+  const jobFile = argValue('job-file', process.env.FANVUE_JOB_FILE || process.env.FANVUE_GENERATION_JOB_FILE || '');
+  if (!jobFile) return null;
+  const resolved = path.resolve(jobFile);
+  return {
+    file: resolved,
+    payload: readJson(resolved),
+  };
+}
+
+const generationJob = loadJobFile();
+
+function jobAt(keys) {
+  if (!generationJob) return undefined;
+  let value = generationJob.payload;
+  for (const key of keys) {
+    if (!value || typeof value !== 'object' || !(key in value)) return undefined;
+    value = value[key];
+  }
+  return value;
+}
+
+function jobString(paths, fallback = '') {
+  for (const keys of paths) {
+    const value = jobAt(keys);
+    if (typeof value === 'string' && value.length > 0) return value;
+    if (typeof value === 'number') return String(value);
+  }
+  return fallback;
+}
+
+function jobNumber(paths, fallback = undefined) {
+  for (const keys of paths) {
+    const value = jobAt(keys);
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    if (typeof value === 'string' && value.trim() && Number.isFinite(Number(value))) return Number(value);
+  }
+  return fallback;
+}
+
 function writeJson(file, value) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`);
@@ -72,18 +116,19 @@ async function main() {
   const outDir = path.resolve(argValue('out-dir', path.join(root, 'direct-runpod-output', 'chain-smoke')));
   const reportPath = path.resolve(argValue('report', path.join(outDir, 'direct_image_chain_report.json')));
   const qwenPrompt = argValue('qwen-prompt', 'api_prompts/qwen_image_smoke.json');
-  const qwenProfile = argValue('qwen-profile', 'qwen_edit_smoke');
+  const qwenProfile = argValue('qwen-profile', jobString([['workflow', 'qwen_profile']], 'qwen_edit_smoke'));
   const qwenWorkflow = argValue('qwen-workflow-name', 'Qwen Image Edit Smoke');
-  const qwenGpu = argValue('qwen-gpu', 'NVIDIA L40S');
-  const qwenDisk = argValue('qwen-container-disk-gb', '120');
-  const faceProfile = argValue('face-profile', 'face_detailer_smoke');
+  const qwenGpu = argValue('qwen-gpu', jobString([['runtime', 'gpu_type']], 'NVIDIA L40S'));
+  const qwenDisk = argValue('qwen-container-disk-gb', String(jobNumber([['runtime', 'disk_gb']], 120)));
+  const faceProfile = argValue('face-profile', jobString([['workflow', 'face_profile']], 'face_detailer_smoke'));
   const faceWorkflow = argValue('face-workflow-name', 'Face Detailer Smoke');
-  const faceGpu = argValue('face-gpu', 'NVIDIA RTX 6000 Ada Generation');
-  const faceDisk = argValue('face-container-disk-gb', '80');
+  const faceGpu = argValue('face-gpu', jobString([['runtime', 'face_gpu_type']], 'NVIDIA RTX 6000 Ada Generation'));
+  const faceDisk = argValue('face-container-disk-gb', String(jobNumber([['runtime', 'face_disk_gb']], 80)));
   const faceSubfolder = argValue('face-input-subfolder', 'fanvue/direct-chain');
-  const qwenTimeout = argValue('qwen-timeout-ms', '3600000');
-  const faceTimeout = argValue('face-timeout-ms', '3600000');
+  const qwenTimeout = argValue('qwen-timeout-ms', String(jobNumber([['runtime', 'timeout_seconds']], 3600) * 1000));
+  const faceTimeout = argValue('face-timeout-ms', String(jobNumber([['runtime', 'face_timeout_seconds']], jobNumber([['runtime', 'timeout_seconds']], 3600)) * 1000));
   const historyTimeout = argValue('history-timeout-ms', '1800000');
+  const filenamePrefix = argValue('filename-prefix', jobString([['output', 'filename_prefix']], 'fanvue_direct_chain_face_detailer'));
   const sourceFile = argValue('source-file');
 
   fs.mkdirSync(outDir, { recursive: true });
@@ -91,6 +136,10 @@ async function main() {
   const report = {
     ok: false,
     dry_run: dryRun,
+    job_id: jobString([['job_id']]) || null,
+    character_id: jobString([['character_id']]) || null,
+    generation_job_file: generationJob?.file || null,
+    workflow_name: jobString([['workflow', 'name']], 'Qwen to Face Detailer Chain'),
     out_dir: outDir,
     qwen: null,
     face_detailer: null,
@@ -126,7 +175,7 @@ async function main() {
           '--dry-run',
           '--input-image', sourceFile || 'fanvue/direct-chain/source.png',
           '--save-prompt', path.join(outDir, 'face_detailer_prompt.json'),
-          '--filename-prefix', 'fanvue_direct_chain_face_detailer',
+          '--filename-prefix', filenamePrefix,
         ])),
       };
       report.ok = true;
@@ -197,7 +246,7 @@ async function main() {
       '--input-file', qwenOutput,
       '--input-subfolder', faceSubfolder,
       '--save-prompt', path.join(outDir, 'face_detailer_prompt_submitted.json'),
-      '--filename-prefix', 'fanvue_direct_chain_face_detailer',
+      '--filename-prefix', filenamePrefix,
     ]));
     const facePromptId = faceSubmit.response?.prompt_id;
     if (!facePromptId) throw new Error('Face Detailer prompt id missing from submit response');
