@@ -36,6 +36,12 @@ The runtime auto-detects ComfyUI in common RunPod paths, including:
 
 ## Bootstrap Modes
 
+Validate the bundle before launching a pod:
+
+```bash
+node scripts/validate_runtime_bundle.mjs
+```
+
 Real mode:
 
 ```bash

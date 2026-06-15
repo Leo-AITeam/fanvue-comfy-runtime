@@ -18,6 +18,19 @@ export FANVUE_CALLBACK_AUTH_HEADER="x-fanvue-callback-secret"
 export FANVUE_CALLBACK_AUTH_VALUE="..."
 ```
 
+## 0.5 Validate Runtime Bundle
+
+```bash
+node scripts/validate_runtime_bundle.mjs
+```
+
+Continue only if:
+
+```text
+ok = true
+failed = 0
+```
+
 ## 1. Check Current Pods
 
 ```bash
