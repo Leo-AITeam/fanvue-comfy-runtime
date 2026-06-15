@@ -46,6 +46,17 @@ const checks = [
   run('syntax.model_readiness_report', ['--check', 'scripts/model_readiness_report.mjs']),
   run('syntax.verify_model_sources', ['--check', 'scripts/verify_model_sources.mjs']),
   run('syntax.validate_generation_job', ['--check', 'scripts/validate_generation_job.mjs']),
+  run('syntax.supabase_generation_jobs', ['--check', 'scripts/supabase_generation_jobs.mjs']),
+  run('supabase_generation_jobs.help', ['scripts/supabase_generation_jobs.mjs', 'help']),
+  run('supabase_generation_jobs.claim_dry_run', ['scripts/supabase_generation_jobs.mjs', 'claim']),
+  run('supabase_generation_jobs.validate_payload_file', [
+    'scripts/supabase_generation_jobs.mjs',
+    'validate-payload',
+    '--file',
+    path.join(root, 'job_templates', 'qwen_image_smoke_job.json'),
+    '--root',
+    root,
+  ]),
   run('bundle.validate', ['scripts/validate_runtime_bundle.mjs']),
   run('generation_job.qwen_validate', [
     'scripts/validate_generation_job.mjs',

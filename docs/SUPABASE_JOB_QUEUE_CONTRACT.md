@@ -63,3 +63,47 @@ Until n8n executions are available again:
 3. launch RunPod only for one selected job;
 4. write the final worker report back into `generation_jobs.output`;
 5. create one `media_assets` row after output is archived.
+
+## Direct No-n8n Helper
+
+The runtime repo includes a small Supabase REST/RPC helper:
+
+```bash
+node scripts/supabase_generation_jobs.mjs help
+```
+
+Required env vars:
+
+```text
+SUPABASE_URL=https://PROJECT.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=...
+```
+
+Check that the migration was applied:
+
+```bash
+node scripts/supabase_generation_jobs.mjs health
+```
+
+Read the normalized queue without mutating rows:
+
+```bash
+node scripts/supabase_generation_jobs.mjs queue --limit 5
+```
+
+Build and validate one payload:
+
+```bash
+node scripts/supabase_generation_jobs.mjs payload --job-id JOB_UUID
+node scripts/supabase_generation_jobs.mjs validate-payload --job-id JOB_UUID
+```
+
+`claim` is safe by default and does not mutate rows unless `--confirm` is passed:
+
+```bash
+node scripts/supabase_generation_jobs.mjs claim
+node scripts/supabase_generation_jobs.mjs claim --confirm
+```
+
+Only use `claim --confirm` when a worker is ready, because it changes the next
+queued job to `starting_pod`.

@@ -174,6 +174,9 @@ function validateUtilityScripts() {
     result(exists('scripts/validate_generation_job.mjs'), 'utility.validate_generation_job.exists', {
       file: 'scripts/validate_generation_job.mjs',
     }),
+    result(exists('scripts/supabase_generation_jobs.mjs'), 'utility.supabase_generation_jobs.exists', {
+      file: 'scripts/supabase_generation_jobs.mjs',
+    }),
   ];
 }
 
