@@ -14,6 +14,20 @@ export RUNPOD_API_KEY="..."
 
 Do not commit the key.
 
+The direct test harness also auto-loads `.env.local` from this repository folder when the file exists:
+
+```bash
+cp .env.example .env.local
+```
+
+Then fill only your local values, for example:
+
+```text
+RUNPOD_API_KEY=...
+```
+
+`.env.local` is ignored by git.
+
 ## 1. Preview Pod Payload
 
 Run the full local smoke suite before spending GPU:
@@ -26,6 +40,12 @@ This does not create a pod:
 
 ```bash
 node scripts/runpod_direct_test.mjs create --dry-run --profile smoke
+```
+
+Use a specific local env file when needed:
+
+```bash
+node scripts/runpod_direct_test.mjs create --dry-run --profile smoke --local-env-file .env.local
 ```
 
 The create command validates the runtime bundle before building the pod payload. Run it directly when you only want the preflight:

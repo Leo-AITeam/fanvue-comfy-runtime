@@ -23,6 +23,26 @@ function readJson(file) {
   return JSON.parse(fs.readFileSync(file, 'utf8'));
 }
 
+function loadEnvFile(file) {
+  if (!file || !fs.existsSync(file)) return { loaded: false, file };
+  const text = fs.readFileSync(file, 'utf8');
+  let count = 0;
+  for (const rawLine of text.split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith('#')) continue;
+    const match = line.match(/^([A-Za-z_][A-Za-z0-9_]*)=(.*)$/);
+    if (!match) continue;
+    const [, key, rawValue] = match;
+    if (process.env[key]) continue;
+    const value = rawValue
+      .replace(/^"([\s\S]*)"$/, '$1')
+      .replace(/^'([\s\S]*)'$/, '$1');
+    process.env[key] = value;
+    count += 1;
+  }
+  return { loaded: true, file, count };
+}
+
 function writeJson(file, value) {
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`);
@@ -49,8 +69,10 @@ function redactedCreatePayload(payload) {
 }
 
 const command = argValue('command', args[0] || 'help');
-const apiBase = process.env.RUNPOD_REST_BASE_URL || 'https://rest.runpod.io/v1';
 const bundleDir = path.resolve(argValue('bundle-dir', process.env.BUNDLE_DIR || '.'));
+const envFile = path.resolve(argValue('local-env-file', process.env.FANVUE_ENV_FILE || path.join(bundleDir, '.env.local')));
+const envFileStatus = hasFlag('no-env-file') ? { loaded: false, skipped: true, file: envFile } : loadEnvFile(envFile);
+const apiBase = process.env.RUNPOD_REST_BASE_URL || 'https://rest.runpod.io/v1';
 
 function validateBundle({ print = true } = {}) {
   const validator = path.join(bundleDir, 'scripts', 'validate_runtime_bundle.mjs');
@@ -190,6 +212,7 @@ async function createPod() {
     output({
       ok: true,
       status: 'create_dry_run',
+      env_file: envFileStatus,
       bundle_validation: hasFlag('skip-bundle-validate') ? 'skipped' : 'passed',
       payload: redactedCreatePayload(payload),
     });
@@ -427,6 +450,7 @@ function help() {
     ok: true,
     commands: {
       validate: 'node scripts/runpod_direct_test.mjs validate',
+      env_file: 'node scripts/runpod_direct_test.mjs create --dry-run --local-env-file .env.local',
       list: 'RUNPOD_API_KEY=... node scripts/runpod_direct_test.mjs list',
       create_dry_run: 'node scripts/runpod_direct_test.mjs create --dry-run --profile smoke',
       create_dry_run_skip_validation: 'node scripts/runpod_direct_test.mjs create --dry-run --profile smoke --skip-bundle-validate',
