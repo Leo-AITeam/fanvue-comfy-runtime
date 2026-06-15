@@ -40,5 +40,32 @@
     "lora_train": [
       "external_trainer_required"
     ]
+  },
+  "api_prompt_adapters": {
+    "Flux Klein 4B Smoke": {
+      "job_type": "photo",
+      "api_prompt": "api_prompts/flux2_klein_4b_smoke.json",
+      "input_mode": "text_to_image",
+      "native_orchestrator_status": "validated",
+      "notes": "First successful native n8n GPU path."
+    },
+    "Face Detailer Smoke": {
+      "job_type": "quality_check",
+      "source_workflow": "workflows/Face_Detailer.json",
+      "api_prompt_template": "api_prompts/face_detailer_smoke_template.json",
+      "input_mode": "image_to_image",
+      "requires_upload_input": true,
+      "load_image_placeholder": "__INPUT_IMAGE__",
+      "upload_command": "upload_input",
+      "expected_load_image_name": "<input_subfolder>/<filename>",
+      "native_orchestrator_status": "prepared_not_gpu_validated",
+      "model_blockers": [
+        "z_image_turbo_bf16.safetensors",
+        "ae.safetensors",
+        "sam_vit_b_01ec64.pth",
+        "segm/person_yolov8m-seg.pt"
+      ],
+      "notes": "Use Job Runner upload_input first, replace __INPUT_IMAGE__, then submit the template prompt."
+    }
   }
 }

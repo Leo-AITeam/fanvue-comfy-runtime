@@ -73,3 +73,42 @@ __INPUT_IMAGE__
 ```
 
 n8n must replace that placeholder with the filename uploaded to the ComfyUI input folder before submitting the prompt. Use it after the native Klein path can upload or reuse an input image inside the active pod.
+
+Recommended n8n upload command:
+
+```json
+{
+  "command": "upload_input",
+  "pod_url": "https://<pod-id>-8188.proxy.runpod.net",
+  "source_url": "https://example.com/source.png",
+  "filename": "anna_face_detailer_input.png",
+  "input_type": "input",
+  "input_subfolder": "fanvue/anna_novari69",
+  "overwrite": true
+}
+```
+
+The Job Runner returns:
+
+```json
+{
+  "status": "input_uploaded",
+  "load_image_name": "fanvue/anna_novari69/anna_face_detailer_input.png"
+}
+```
+
+Replace `__INPUT_IMAGE__` with `load_image_name` before calling `submit_prompt`.
+
+Dry-run validation is available without GPU or ComfyUI:
+
+```json
+{
+  "command": "upload_input",
+  "dry_run": true,
+  "pod_url": "https://example-8188.proxy.runpod.net",
+  "source_url": "https://example.com/input.png",
+  "filename": "anna_face_detailer_input.png",
+  "input_type": "input",
+  "input_subfolder": "fanvue/anna_novari69"
+}
+```
