@@ -228,7 +228,7 @@
     {
       "name": "sam_vit_b_01ec64.pth",
       "type": "detector_or_upscale",
-      "source_url": null,
+      "source_url": "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth",
       "target_dir": "ComfyUI/models",
       "required_for_first_test": true,
       "test_profiles": [
@@ -238,7 +238,7 @@
     {
       "name": "segm/person_yolov8m-seg.pt",
       "type": "detector_or_upscale",
-      "source_url": null,
+      "source_url": "https://huggingface.co/Bingsu/adetailer/resolve/main/person_yolov8m-seg.pt",
       "target_dir": "ComfyUI/models",
       "required_for_first_test": false
     },
