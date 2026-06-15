@@ -13,6 +13,7 @@ tmp/
 # Never commit generated media or downloaded model binaries by accident.
 output/
 input/
+direct-runpod-output/
 ComfyUI/
 models/
 *.ckpt
