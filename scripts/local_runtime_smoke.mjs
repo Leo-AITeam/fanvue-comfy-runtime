@@ -33,7 +33,13 @@ const checks = [
   run('syntax.runpod_direct_test', ['--check', 'scripts/runpod_direct_test.mjs']),
   run('syntax.comfy_runtime_worker', ['--check', 'scripts/comfy_runtime_worker.mjs']),
   run('syntax.build_face_detailer_prompt', ['--check', 'scripts/build_face_detailer_prompt.mjs']),
+  run('syntax.model_readiness_report', ['--check', 'scripts/model_readiness_report.mjs']),
   run('bundle.validate', ['scripts/validate_runtime_bundle.mjs']),
+  run('model_readiness.report', [
+    'scripts/model_readiness_report.mjs',
+    '.',
+    path.join(outDir, 'MODEL_READINESS.md'),
+  ]),
   run('face_detailer.prompt_build', [
     'scripts/build_face_detailer_prompt.mjs',
     '--input-image',
