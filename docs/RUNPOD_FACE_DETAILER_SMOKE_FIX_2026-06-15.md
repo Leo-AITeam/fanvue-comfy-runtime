@@ -44,6 +44,9 @@ The first direct Face Detailer GPU smoke reached ComfyUI successfully but failed
 - Added a `start_comfyui.sh` guard that disables the pre-baked `ComfyUI-ReActor` directory automatically for `FANVUE_TEST_PROFILE=face_detailer_smoke`, because that smoke profile does not need ReActor and should not trigger model downloads on startup.
 - A40 pod after disabling ReActor reached ready state in 144 seconds, accepted image upload immediately, and accepted the Face Detailer prompt without `node_errors`.
 - The prompt still failed in `FaceDetailer` because CLIPSeg produced an empty or invalid heatmap overlay for OpenCV resize. The detector only needs the first `MASK` output, so the CLIPSeg patch now uses `safe_resize_image` for heatmap/BW overlay outputs and falls back to blank overlay images instead of failing the detector.
+- RTX 6000 Ada pod after the safe overlay patch reached ready state in 180 seconds, accepted image upload, completed Face Detailer successfully, and saved `direct-runpod-output/fanvue_direct_face_detailer_00001_.png`.
+- Successful Face Detailer prompt ID: `3ab4632e-2b76-4086-a0d7-116391f9da96`
+- Successful pod ID: `zgp2u40pu38yft`; stopped after validation.
 - Local CLIPSeg patch replay with requirements skipped: copied `ComfyUI-CLIPSeg/custom_nodes/clipseg.py` into `custom_nodes/clipseg.py` and verified `normalize_dimensions`, `image_dimensions`, and `dimensions = image_dimensions(image_np)` are present.
 - Custom node dry run includes:
   - `ComfyUI-Manager`
@@ -55,4 +58,4 @@ The first direct Face Detailer GPU smoke reached ComfyUI successfully but failed
 
 ## Next GPU Step
 
-Launch a fresh RunPod pod with `FANVUE_TEST_PROFILE=face_detailer_smoke`, then resubmit the Face Detailer smoke prompt. The next pod should install the strict CLIPSeg patch, disable pre-baked ReActor for this profile, and use safe overlay resizing so CLIPSeg heatmap/BW rendering cannot block the detector mask.
+Face Detailer smoke now passes on GPU. Next GPU step is to promote this adapter into the orchestration path and run a combined generation + detailer callback test when n8n executions are available again or through a direct non-n8n runner.
