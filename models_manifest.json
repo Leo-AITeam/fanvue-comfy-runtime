@@ -110,32 +110,35 @@
     {
       "name": "bbox/nipple.pt",
       "type": "detector_or_upscale",
-      "source_url": null,
+      "source_url": "https://huggingface.co/vermin94/nipples_yolov8s.pt/resolve/main/nipples_yolov8s.pt",
       "target_dir": "ComfyUI/models",
       "required_for_first_test": true,
       "test_profiles": [
         "first_full"
-      ]
+      ],
+      "expected_bytes": 22508344
     },
     {
       "name": "bbox/pussyV2.pt",
       "type": "detector_or_upscale",
-      "source_url": null,
+      "source_url": "https://huggingface.co/vermin94/nipples_yolov8s.pt/resolve/main/pussyV2.pt",
       "target_dir": "ComfyUI/models",
       "required_for_first_test": true,
       "test_profiles": [
         "first_full"
-      ]
+      ],
+      "expected_bytes": 6211374
     },
     {
       "name": "controlnet-union-sdxl-promax.safetensors",
       "type": "model",
-      "source_url": null,
+      "source_url": "https://huggingface.co/xinsir/controlnet-union-sdxl-1.0/resolve/main/diffusion_pytorch_model_promax.safetensors",
       "target_dir": "ComfyUI/models/checkpoints",
       "required_for_first_test": true,
       "test_profiles": [
         "first_full"
-      ]
+      ],
+      "expected_bytes": 2513342408
     },
     {
       "name": "depth_anything_v2_vitl.pth",
@@ -216,12 +219,13 @@
     {
       "name": "qwen_3_8b.safetensors",
       "type": "text_encoder",
-      "source_url": null,
+      "source_url": "https://huggingface.co/DenRakEiw/qwen3_8b.safetensors/resolve/main/qwen3_8b.safetensors",
       "target_dir": "ComfyUI/models/text_encoders",
       "required_for_first_test": true,
       "test_profiles": [
         "first_full"
-      ]
+      ],
+      "expected_bytes": 16381517176
     },
     {
       "name": "qwen_image_edit_2509_fp8_e4m3fn.safetensors",
