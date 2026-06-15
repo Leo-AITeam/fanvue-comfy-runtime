@@ -30,8 +30,12 @@
     },
     {
       "name": "ComfyUI-CLIPSeg",
-      "repo_url": "https://github.com/biegert/ComfyUI-CLIPSeg.git",
+      "repo_url": "https://github.com/chaoqun789/ComfyUI-CLIPSeg.git",
       "required_for_first_test": true,
+      "skip_requirements": true,
+      "copy_files_to_custom_nodes": [
+        "custom_nodes/clipseg.py"
+      ],
       "node_type_hints": [
         "CLIPSegDetectorProvider",
         "CLIPSegToBboxDetector"

@@ -33,8 +33,29 @@ for (const item of nodes) {
     if (git.status !== 0) process.exit(git.status || 42);
   }
 
+  const copiedFiles = [];
+  for (const relativeFile of item.copy_files_to_custom_nodes || []) {
+    const source = path.join(destination, relativeFile);
+    const target = path.join(customNodesDir, path.basename(relativeFile));
+    if (dryRun) {
+      copiedFiles.push({ source, target, status: 'dry_run' });
+      continue;
+    }
+    if (!fs.existsSync(source)) {
+      console.error(`Missing custom node file for ${item.name}: ${source}`);
+      process.exit(44);
+    }
+    fs.copyFileSync(source, target);
+    copiedFiles.push({ source, target, status: 'copied' });
+  }
+  if (copiedFiles.length > 0) {
+    results[results.length - 1].copied_files = copiedFiles;
+  }
+
   const requirements = path.join(destination, 'requirements.txt');
-  if (!dryRun && fs.existsSync(requirements)) {
+  if (!dryRun && item.skip_requirements) {
+    results[results.length - 1].requirements = 'skipped';
+  } else if (!dryRun && fs.existsSync(requirements)) {
     const pip = spawnSync('python3', ['-m', 'pip', 'install', '-r', requirements], { stdio: 'inherit' });
     if (pip.status !== 0) process.exit(pip.status || 43);
   }

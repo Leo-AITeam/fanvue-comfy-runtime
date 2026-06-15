@@ -22,6 +22,9 @@ The first direct Face Detailer GPU smoke reached ComfyUI successfully but failed
 
 - Switched the Face Detailer smoke template to `CLIPSegDetectorProvider`.
 - Added `ComfyUI-CLIPSeg` to `custom_nodes_manifest.json`.
+- Replaced the unavailable upstream URL `biegert/ComfyUI-CLIPSeg` with the public fork `chaoqun789/ComfyUI-CLIPSeg`.
+- Added installer support for copying legacy single-file custom nodes into the ComfyUI `custom_nodes` root.
+- Skipped the CLIPSeg fork `requirements.txt` because it pins an old Torch/CUDA stack that can break the runtime image.
 - Removed `segm/person_yolov8m-seg.pt` from the `face_detailer_smoke` model profile.
 - Kept SAM and Z-Image model assets in the smoke profile.
 
@@ -33,7 +36,7 @@ The first direct Face Detailer GPU smoke reached ComfyUI successfully but failed
   - `ComfyUI-Manager`
   - `rgthree-comfy`
   - `ComfyUI-Impact-Pack`
-  - `ComfyUI-CLIPSeg`
+  - `ComfyUI-CLIPSeg`, copied as `clipseg.py`
 - Local runtime smoke: `10/10`, failed `0`
 
 ## Next GPU Step
