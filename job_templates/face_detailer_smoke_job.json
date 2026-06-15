@@ -1,0 +1,49 @@
+{
+  "schema_version": "generation_job.v1",
+  "job_id": "job_face_detailer_smoke_example",
+  "character_id": "character_anna_novari_example",
+  "fan_id": null,
+  "request_id": "request_face_detailer_smoke_example",
+  "job_type": "quality_check",
+  "content_tier": "sfw",
+  "priority": 50,
+  "status": "queued",
+  "workflow": {
+    "name": "Face Detailer Smoke",
+    "adapter": "Face Detailer Smoke",
+    "profile": "face_detailer_smoke",
+    "input_mode": "image_to_image"
+  },
+  "inputs": {
+    "input_image": "fanvue/direct/source.png",
+    "positive_prompt": "clean face detail, realistic skin texture, natural portrait",
+    "negative_prompt": "distorted face, overprocessed skin, artifacts, watermark",
+    "seed": 12345
+  },
+  "output": {
+    "filename_prefix": "fanvue_direct_chain_face_detailer",
+    "storage_target": "local_debug",
+    "expected_files": 1
+  },
+  "callback": {
+    "enabled": false,
+    "url_env": null,
+    "auth_header_env": null,
+    "auth_value_env": null,
+    "fails_job": false
+  },
+  "runtime": {
+    "provider": "runpod",
+    "image": "ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest",
+    "disk_gb": 80,
+    "gpu_count": 1,
+    "gpu_type": null,
+    "stop_policy": "always",
+    "timeout_seconds": 2400
+  },
+  "metadata": {
+    "purpose": "direct_gpu_validated_face_detailer_smoke",
+    "last_validated_at": "2026-06-15",
+    "validated_prompt_id": "014744d4-5c4e-45f6-a787-0b496032ef57"
+  }
+}

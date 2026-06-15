@@ -37,7 +37,23 @@ const checks = [
   run('syntax.import_model_sources_csv', ['--check', 'scripts/import_model_sources_csv.mjs']),
   run('syntax.model_readiness_report', ['--check', 'scripts/model_readiness_report.mjs']),
   run('syntax.verify_model_sources', ['--check', 'scripts/verify_model_sources.mjs']),
+  run('syntax.validate_generation_job', ['--check', 'scripts/validate_generation_job.mjs']),
   run('bundle.validate', ['scripts/validate_runtime_bundle.mjs']),
+  run('generation_job.qwen_validate', [
+    'scripts/validate_generation_job.mjs',
+    '.',
+    'job_templates/qwen_image_smoke_job.json',
+  ]),
+  run('generation_job.face_detailer_validate', [
+    'scripts/validate_generation_job.mjs',
+    '.',
+    'job_templates/face_detailer_smoke_job.json',
+  ]),
+  run('generation_job.chain_validate', [
+    'scripts/validate_generation_job.mjs',
+    '.',
+    'job_templates/qwen_to_face_detailer_chain_job.json',
+  ]),
   run('model_sources.import_dry_run', [
     'scripts/import_model_sources_csv.mjs',
     '.',

@@ -1,0 +1,51 @@
+{
+  "schema_version": "generation_job.v1",
+  "job_id": "job_qwen_smoke_example",
+  "character_id": "character_anna_novari_example",
+  "fan_id": null,
+  "request_id": "request_qwen_smoke_example",
+  "job_type": "face_variations",
+  "content_tier": "sfw",
+  "priority": 50,
+  "status": "queued",
+  "workflow": {
+    "name": "Qwen Image Edit Smoke",
+    "adapter": "Qwen Image Edit Smoke",
+    "profile": "qwen_edit_smoke",
+    "input_mode": "text_to_image"
+  },
+  "inputs": {
+    "positive_prompt": "cinematic portrait, soft studio light, consistent face, realistic skin",
+    "negative_prompt": "low quality, distorted face, extra limbs, watermark",
+    "seed": 12345,
+    "width": 512,
+    "height": 512,
+    "batch_size": 1
+  },
+  "output": {
+    "filename_prefix": "fanvue_qwen_smoke",
+    "storage_target": "local_debug",
+    "expected_files": 1
+  },
+  "callback": {
+    "enabled": false,
+    "url_env": null,
+    "auth_header_env": null,
+    "auth_value_env": null,
+    "fails_job": false
+  },
+  "runtime": {
+    "provider": "runpod",
+    "image": "ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest",
+    "disk_gb": 120,
+    "gpu_count": 1,
+    "gpu_type": "NVIDIA L40S",
+    "stop_policy": "always",
+    "timeout_seconds": 2400
+  },
+  "metadata": {
+    "purpose": "direct_gpu_validated_qwen_smoke",
+    "last_validated_at": "2026-06-15",
+    "validated_prompt_id": "ebdc9872-b683-45c5-bd83-843c8b9917eb"
+  }
+}

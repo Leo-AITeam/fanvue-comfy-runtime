@@ -171,7 +171,49 @@ function validateUtilityScripts() {
     result(exists('scripts/verify_model_sources.mjs'), 'utility.verify_model_sources.exists', {
       file: 'scripts/verify_model_sources.mjs',
     }),
+    result(exists('scripts/validate_generation_job.mjs'), 'utility.validate_generation_job.exists', {
+      file: 'scripts/validate_generation_job.mjs',
+    }),
   ];
+}
+
+function validateGenerationJobTemplates() {
+  const checks = [];
+  const files = listFiles('job_templates', '.json');
+  checks.push(result(files.length > 0, 'generation_job.templates_exist', {
+    directory: 'job_templates',
+    count: files.length,
+  }));
+
+  const mapping = readJson('workflow_mapping.json');
+  for (const file of files) {
+    let job;
+    try {
+      job = readJson(file);
+    } catch (error) {
+      checks.push(result(false, 'generation_job.template_valid_json', { file, error: error.message }));
+      continue;
+    }
+
+    checks.push(result(job.schema_version === 'generation_job.v1', 'generation_job.schema_version', {
+      file,
+      value: job.schema_version,
+    }));
+    checks.push(result(Boolean(job.workflow?.adapter), 'generation_job.workflow_adapter', {
+      file,
+      adapter: job.workflow?.adapter,
+    }));
+    const adapter = mapping.api_prompt_adapters?.[job.workflow?.adapter];
+    const isKnownChain = job.workflow?.adapter === 'Qwen to Face Detailer Chain'
+      && Array.isArray(job.workflow?.chain)
+      && job.workflow.chain.every((name) => Boolean(mapping.api_prompt_adapters?.[name]));
+    checks.push(result(Boolean(adapter) || isKnownChain, 'generation_job.adapter_registered', {
+      file,
+      adapter: job.workflow?.adapter,
+    }));
+  }
+
+  return checks;
 }
 
 function listFiles(directory, suffix) {
@@ -189,6 +231,7 @@ for (const file of [
   'models_manifest.json',
   'custom_nodes_manifest.json',
   'workflow_mapping.json',
+  'schemas/generation_job.schema.json',
 ]) {
   checks.push(validateJsonFile(file));
 }
@@ -207,6 +250,7 @@ checks.push(...validateModelProfiles());
 checks.push(...validateCustomNodes());
 checks.push(...validateRuntimePatchGuards());
 checks.push(...validateUtilityScripts());
+checks.push(...validateGenerationJobTemplates());
 
 const failed = checks.filter((check) => !check.ok);
 const output = {

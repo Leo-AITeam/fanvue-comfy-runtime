@@ -48,6 +48,12 @@ Run all local runtime smoke checks without n8n, network, or GPU:
 node scripts/local_runtime_smoke.mjs
 ```
 
+Validate a production generation job contract without n8n:
+
+```bash
+node scripts/validate_generation_job.mjs . job_templates/qwen_to_face_detailer_chain_job.json
+```
+
 Real mode:
 
 ```bash
@@ -135,6 +141,7 @@ See:
 
 ```text
 docs/DIRECT_RUNPOD_TESTS.md
+docs/GENERATION_JOB_CONTRACT.md
 docs/N8N_EXECUTION_OPTIMIZATION.md
 docs/RUNTIME_WORKER.md
 docs/N8N_GENERATION_CALLBACK.md

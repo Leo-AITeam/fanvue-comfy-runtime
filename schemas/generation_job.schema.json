@@ -1,0 +1,222 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fanvue.local/schemas/generation_job.schema.json",
+  "title": "Fanvue Generation Job",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "job_id",
+    "character_id",
+    "job_type",
+    "content_tier",
+    "priority",
+    "status",
+    "workflow",
+    "inputs",
+    "output",
+    "callback",
+    "runtime"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "generation_job.v1"
+    },
+    "job_id": {
+      "type": "string",
+      "minLength": 8
+    },
+    "character_id": {
+      "type": "string",
+      "minLength": 8
+    },
+    "fan_id": {
+      "type": ["string", "null"]
+    },
+    "request_id": {
+      "type": ["string", "null"]
+    },
+    "job_type": {
+      "type": "string",
+      "enum": [
+        "photo",
+        "ppv_photo",
+        "face_variations",
+        "face_swap",
+        "quality_check",
+        "video"
+      ]
+    },
+    "content_tier": {
+      "type": "string",
+      "enum": [
+        "sfw",
+        "teasing",
+        "lingerie",
+        "nude",
+        "explicit",
+        "hardcore"
+      ]
+    },
+    "priority": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "queued",
+        "claimed",
+        "pod_starting",
+        "runtime_ready",
+        "generating",
+        "postprocessing",
+        "uploading",
+        "completed",
+        "failed",
+        "cancelled",
+        "paused"
+      ]
+    },
+    "workflow": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "adapter",
+        "profile",
+        "input_mode"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "adapter": {
+          "type": "string"
+        },
+        "profile": {
+          "type": "string"
+        },
+        "input_mode": {
+          "type": "string",
+          "enum": [
+            "text_to_image",
+            "image_to_image",
+            "image_edit",
+            "text_to_video"
+          ]
+        },
+        "chain": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "filename_prefix",
+        "storage_target"
+      ],
+      "properties": {
+        "filename_prefix": {
+          "type": "string",
+          "minLength": 1
+        },
+        "storage_target": {
+          "type": "string",
+          "enum": [
+            "external",
+            "local_debug"
+          ]
+        },
+        "expected_files": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "callback": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "enabled",
+        "fails_job"
+      ],
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "url_env": {
+          "type": ["string", "null"]
+        },
+        "auth_header_env": {
+          "type": ["string", "null"]
+        },
+        "auth_value_env": {
+          "type": ["string", "null"]
+        },
+        "fails_job": {
+          "type": "boolean"
+        }
+      }
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "image",
+        "disk_gb",
+        "gpu_count",
+        "stop_policy"
+      ],
+      "properties": {
+        "provider": {
+          "type": "string",
+          "const": "runpod"
+        },
+        "image": {
+          "type": "string",
+          "minLength": 1
+        },
+        "disk_gb": {
+          "type": "integer",
+          "minimum": 20
+        },
+        "gpu_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "gpu_type": {
+          "type": ["string", "null"]
+        },
+        "stop_policy": {
+          "type": "string",
+          "enum": [
+            "always",
+            "on_success",
+            "manual_debug"
+          ]
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 60
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  }
+}

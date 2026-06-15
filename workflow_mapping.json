@@ -81,6 +81,20 @@
         "qwen_image_vae.safetensors"
       ],
       "notes": "Minimal Qwen Image Edit API prompt for the first Qwen GPU smoke before adapting the heavier local Qwen edit workflows."
+    },
+    "Qwen to Face Detailer Chain": {
+      "job_type": "quality_check",
+      "input_mode": "image_to_image",
+      "chain": [
+        "Qwen Image Edit Smoke",
+        "Face Detailer Smoke"
+      ],
+      "native_orchestrator_status": "direct_gpu_validated",
+      "validated_prompt_ids": {
+        "qwen": "ebdc9872-b683-45c5-bd83-843c8b9917eb",
+        "face_detailer": "014744d4-5c4e-45f6-a787-0b496032ef57"
+      },
+      "notes": "Validated by scripts/direct_image_chain_smoke.mjs on 2026-06-15. Use Qwen output as Face Detailer input."
     }
   }
 }
