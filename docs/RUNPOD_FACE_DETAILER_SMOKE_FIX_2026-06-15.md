@@ -42,6 +42,8 @@ The first direct Face Detailer GPU smoke reached ComfyUI successfully but failed
 - L40S pod after delayed ComfyUI startup accepted the prompt with all models visible, then failed inside `FaceDetailer` because CLIPSeg still reached OpenCV with invalid resize dimensions. The patch now normalizes dimensions through `normalize_dimensions`, derives target dimensions through `image_dimensions(image_np)`, and fails fast if those snippets are missing.
 - L40S pod after the CLIPSeg resize patch reached ComfyUI startup, but the pre-baked `ComfyUI-ReActor` node started downloading `GFPGANv1.3.pth` during import and blocked core API endpoints, including `/object_info`, `/queue`, and `/upload/image`.
 - Added a `start_comfyui.sh` guard that disables the pre-baked `ComfyUI-ReActor` directory automatically for `FANVUE_TEST_PROFILE=face_detailer_smoke`, because that smoke profile does not need ReActor and should not trigger model downloads on startup.
+- A40 pod after disabling ReActor reached ready state in 144 seconds, accepted image upload immediately, and accepted the Face Detailer prompt without `node_errors`.
+- The prompt still failed in `FaceDetailer` because CLIPSeg produced an empty or invalid heatmap overlay for OpenCV resize. The detector only needs the first `MASK` output, so the CLIPSeg patch now uses `safe_resize_image` for heatmap/BW overlay outputs and falls back to blank overlay images instead of failing the detector.
 - Local CLIPSeg patch replay with requirements skipped: copied `ComfyUI-CLIPSeg/custom_nodes/clipseg.py` into `custom_nodes/clipseg.py` and verified `normalize_dimensions`, `image_dimensions`, and `dimensions = image_dimensions(image_np)` are present.
 - Custom node dry run includes:
   - `ComfyUI-Manager`
@@ -53,4 +55,4 @@ The first direct Face Detailer GPU smoke reached ComfyUI successfully but failed
 
 ## Next GPU Step
 
-Launch a fresh RunPod pod with `FANVUE_TEST_PROFILE=face_detailer_smoke`, then resubmit the Face Detailer smoke prompt. The next pod should install the strict CLIPSeg patch, disable pre-baked ReActor for this profile, and fail during bootstrap if the CLIPSeg patch cannot be applied.
+Launch a fresh RunPod pod with `FANVUE_TEST_PROFILE=face_detailer_smoke`, then resubmit the Face Detailer smoke prompt. The next pod should install the strict CLIPSeg patch, disable pre-baked ReActor for this profile, and use safe overlay resizing so CLIPSeg heatmap/BW rendering cannot block the detector mask.

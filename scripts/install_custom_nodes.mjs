@@ -91,6 +91,22 @@ function patchClipSegCompat(filePath) {
       '    # fanvue-runtime-clipseg-compat',
       '    width, height = normalize_dimensions(dimensions)',
       '    return cv2.resize(image, (width, height), interpolation=cv2.INTER_LINEAR)',
+      '',
+      'def safe_resize_image(image: np.ndarray, dimensions: Tuple[int, int], channels: int = 3) -> np.ndarray:',
+      '    """Resize an image, falling back to a blank image if CLIPSeg produced an empty overlay."""',
+      '    # fanvue-runtime-clipseg-compat',
+      '    width, height = normalize_dimensions(dimensions)',
+      '    if image is None or getattr(image, "size", 0) == 0:',
+      '        return np.zeros((height, width, channels), dtype=np.uint8)',
+      '    try:',
+      '        resized = cv2.resize(image, (width, height), interpolation=cv2.INTER_LINEAR)',
+      '    except cv2.error:',
+      '        return np.zeros((height, width, channels), dtype=np.uint8)',
+      '    if resized.ndim == 2:',
+      '        resized = np.repeat(resized[..., None], channels, axis=2)',
+      '    if resized.ndim == 3 and resized.shape[-1] > channels:',
+      '        resized = resized[..., :channels]',
+      '    return resized.astype(np.uint8, copy=False)',
       ''
     ].join('\n'),
     'resize_image',
@@ -130,13 +146,25 @@ function patchClipSegCompat(filePath) {
     'mask_normalization',
   );
 
+  replaceRequired(
+    /        heatmap_resized = resize_image\(heatmap, dimensions\)\r?\n        binary_mask_resized = resize_image\(binary_mask, dimensions\)\r?\n/s,
+    [
+      '        heatmap_resized = safe_resize_image(heatmap, dimensions)',
+      '        binary_mask_resized = safe_resize_image(binary_mask, dimensions)',
+      ''
+    ].join('\n'),
+    'segment_image.safe_resize',
+  );
+
   if (!content.includes('fanvue-runtime-clipseg-compat')) {
     throw new Error('CLIPSeg compatibility patch marker missing');
   }
   for (const requiredSnippet of [
     'def normalize_dimensions(dimensions) -> Tuple[int, int]:',
     'def image_dimensions(image: np.ndarray) -> Tuple[int, int]:',
+    'def safe_resize_image(image: np.ndarray, dimensions: Tuple[int, int], channels: int = 3) -> np.ndarray:',
     'dimensions = image_dimensions(image_np)',
+    'heatmap_resized = safe_resize_image(heatmap, dimensions)',
     'width, height = normalize_dimensions(dimensions)',
   ]) {
     if (!content.includes(requiredSnippet)) {
