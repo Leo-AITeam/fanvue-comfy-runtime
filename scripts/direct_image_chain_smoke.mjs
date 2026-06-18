@@ -7,6 +7,24 @@ const args = process.argv.slice(2);
 const root = path.resolve(args[0] && !args[0].startsWith('--') ? args[0] : '.');
 const node = process.execPath;
 const direct = path.join(root, 'scripts', 'runpod_direct_test.mjs');
+let signalCleanup = null;
+let signalCleanupStarted = false;
+
+function installSignalCleanup() {
+  for (const signal of ['SIGINT', 'SIGTERM']) {
+    process.once(signal, () => {
+      if (signalCleanupStarted) process.exit(signal === 'SIGINT' ? 130 : 143);
+      signalCleanupStarted = true;
+      console.error(`[direct-chain] received ${signal}; stopping tracked pods before exit`);
+      try {
+        if (signalCleanup) signalCleanup(signal);
+      } catch (error) {
+        console.error(`[direct-chain] signal cleanup failed: ${error.message}`);
+      }
+      process.exit(signal === 'SIGINT' ? 130 : 143);
+    });
+  }
+}
 
 function argValue(name, fallback = '') {
   const prefix = `--${name}=`;
@@ -129,6 +147,28 @@ function directArgs(command, extra = []) {
   return [...base, ...extra];
 }
 
+function trackPod(activePods, label, podId) {
+  if (podId) activePods.set(podId, label);
+}
+
+function untrackPod(activePods, podId) {
+  activePods.delete(podId);
+}
+
+function stopTrackedPods(activePods, report, reason) {
+  for (const [podId, label] of Array.from(activePods.entries()).reverse()) {
+    try {
+      const stopped = runDirect(`cleanup stop ${label} pod ${podId}`, directArgs('stop', ['--pod-id', podId]));
+      report.stopped_pods.push({ pod_id: podId, label, reason, ok: true, response: stopped });
+    } catch (error) {
+      report.stopped_pods.push({ pod_id: podId, label, reason, ok: false, error: error.message });
+    }
+    activePods.delete(podId);
+  }
+}
+
+installSignalCleanup();
+
 async function main() {
   if (!fs.existsSync(direct)) throw new Error(`Direct RunPod tester not found: ${direct}`);
 
@@ -167,7 +207,12 @@ async function main() {
     stopped_pods: [],
   };
 
-  const activePods = [];
+  const activePods = new Map();
+  signalCleanup = (signal) => {
+    report.interrupted_by_signal = signal;
+    stopTrackedPods(activePods, report, signal);
+    writeJson(reportPath, report);
+  };
   try {
     if (dryRun) {
       report.qwen = {
@@ -215,7 +260,7 @@ async function main() {
       ]));
       const qwenPodId = create.pod_id;
       if (!qwenPodId) throw new Error('Qwen pod id missing from create response');
-      activePods.push(qwenPodId);
+      trackPod(activePods, 'qwen', qwenPodId);
 
       const wait = runDirect('qwen wait comfyui', directArgs('wait', [
         '--pod-id', qwenPodId,
@@ -241,8 +286,8 @@ async function main() {
       report.qwen = { create, wait, submit, history, output_file: qwenOutput };
       const qwenStop = runDirect(`stop qwen pod ${qwenPodId}`, directArgs('stop', ['--pod-id', qwenPodId]));
       report.qwen.stop = qwenStop;
-      report.stopped_pods.push({ pod_id: qwenPodId, ok: true, response: qwenStop });
-      activePods.splice(activePods.indexOf(qwenPodId), 1);
+      report.stopped_pods.push({ pod_id: qwenPodId, label: 'qwen', reason: 'completed', ok: true, response: qwenStop });
+      untrackPod(activePods, qwenPodId);
     } else {
       report.qwen = { skipped: true, source_file: qwenOutput };
     }
@@ -255,7 +300,7 @@ async function main() {
     ]));
     const facePodId = faceCreate.pod_id;
     if (!facePodId) throw new Error('Face Detailer pod id missing from create response');
-    activePods.push(facePodId);
+    trackPod(activePods, 'face_detailer', facePodId);
 
     const faceWait = runDirect('face detailer wait comfyui', directArgs('wait', [
       '--pod-id', facePodId,
@@ -285,6 +330,16 @@ async function main() {
       history: faceHistory,
       output_file: faceHistory.saved_files?.[0] || null,
     };
+    const faceStop = runDirect(`stop Face Detailer pod ${facePodId}`, directArgs('stop', ['--pod-id', facePodId]));
+    report.face_detailer.stop = faceStop;
+    report.stopped_pods.push({
+      pod_id: facePodId,
+      label: 'face_detailer',
+      reason: 'completed',
+      ok: true,
+      response: faceStop,
+    });
+    untrackPod(activePods, facePodId);
     report.ok = true;
     writeJson(reportPath, report);
     console.log(JSON.stringify({
@@ -295,15 +350,9 @@ async function main() {
       report: reportPath,
     }, null, 2));
   } finally {
-    for (const podId of activePods.reverse()) {
-      try {
-        const stopped = runDirect(`stop pod ${podId}`, directArgs('stop', ['--pod-id', podId]));
-        report.stopped_pods.push({ pod_id: podId, ok: true, response: stopped });
-      } catch (error) {
-        report.stopped_pods.push({ pod_id: podId, ok: false, error: error.message });
-      }
-    }
+    stopTrackedPods(activePods, report, 'final cleanup');
     writeJson(reportPath, report);
+    signalCleanup = null;
   }
 }
 
