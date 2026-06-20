@@ -1,0 +1,9 @@
+name,type,target_dir,required_for_first_test,test_profiles,expected_bytes,min_bytes,sha256,source_url
+AIKOZIMAGE_000002700.safetensors,model,ComfyUI/models/checkpoints,yes,first_full,,,,
+Detailed Nipples XL v1.0.safetensors,lora,ComfyUI/models/loras,yes,first_full,,,,
+QWEN\Qwen-Image-Lightning-8steps-V1.0.safetensors,lora,ComfyUI/models/loras,no,,,,,
+QWEN\qwen-boreal-portraits-portraits-high-rank.safetensors,lora,ComfyUI/models/loras,no,,,,,
+Wan22_A14B_T2V_HIGH_Lightning_4steps_lora_250928_rank128_fp16.safetensors,lora,ComfyUI/models/loras,yes,first_full,,,,
+Wan22_A14B_T2V_LOW_Lightning_4steps_lora_250928_rank64_fp16.safetensors,lora,ComfyUI/models/loras,yes,first_full,,,,
+wan2.2_t2v_highnoise_sidemissionary_v1.0.safetensors,model,ComfyUI/models/checkpoints,yes,first_full,,,,
+wan2.2_t2v_lownoise_sidemissionary_v1.0.safetensors,model,ComfyUI/models/checkpoints,yes,first_full,,,,

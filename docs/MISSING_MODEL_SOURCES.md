@@ -6,6 +6,18 @@ These files still need verified direct download URLs before
 Do not add approximate substitutes unless the workflow has also been checked
 and updated to use the substitute filename intentionally.
 
+Source inventory files for this repository are maintained in:
+
+- `docs/MODEL_SOURCE_PACK.md`
+- `model_sources_accessible.csv`
+- `model_sources_missing.csv`
+
+Regenerate the inventories with:
+
+```bash
+node scripts/export_model_source_tables.mjs .
+```
+
 ## Needed Files
 
 | File | Type | Used by | Notes |
