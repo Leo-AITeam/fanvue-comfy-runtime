@@ -68,12 +68,23 @@ async function readResponseBody(response) {
 }
 
 function redactedCreatePayload(payload) {
+  const secretEnvNames = new Set([
+    'FANVUE_CALLBACK_AUTH_VALUE',
+    'FANVUE_JOB_JSON_BASE64',
+    'FANVUE_JOB_JSON',
+    'RUNPOD_API_KEY',
+    'FANVUE_RUNPOD_API_KEY',
+    'SUPABASE_SERVICE_ROLE_KEY',
+    'FANVUE_SUPABASE_SERVICE_ROLE_KEY',
+    'GITHUB_TOKEN',
+  ]);
+  const env = { ...(payload.env || {}) };
+  for (const name of secretEnvNames) {
+    if (env[name]) env[name] = '***';
+  }
   return {
     ...payload,
-    env: {
-      ...(payload.env || {}),
-      FANVUE_CALLBACK_AUTH_VALUE: payload.env?.FANVUE_CALLBACK_AUTH_VALUE ? '***' : '',
-    },
+    env,
   };
 }
 
