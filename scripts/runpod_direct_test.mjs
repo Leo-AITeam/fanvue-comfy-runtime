@@ -197,6 +197,13 @@ function buildCreatePayload() {
       FANVUE_CALLBACK_RETRY_DELAY_MS: String(argValue('callback-retry-delay-ms', process.env.FANVUE_CALLBACK_RETRY_DELAY_MS || '5000')),
       FANVUE_CALLBACK_AUTH_HEADER: callbackAuthHeader,
       FANVUE_CALLBACK_AUTH_VALUE: process.env.FANVUE_CALLBACK_AUTH_VALUE || '',
+      FANVUE_JOB_JSON_BASE64: process.env.FANVUE_JOB_JSON_BASE64 || '',
+      FANVUE_JOB_JSON: process.env.FANVUE_JOB_JSON || '',
+      FANVUE_SUPABASE_STATUS_UPDATES: String(argValue('supabase-status-updates', process.env.FANVUE_SUPABASE_STATUS_UPDATES || 'false')),
+      FANVUE_SUPABASE_FAILS_JOB: String(argValue('supabase-fails-job', process.env.FANVUE_SUPABASE_FAILS_JOB || 'false')),
+      SUPABASE_URL: process.env.SUPABASE_URL || process.env.FANVUE_SUPABASE_URL || '',
+      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.FANVUE_SUPABASE_SERVICE_ROLE_KEY || '',
+      GITHUB_TOKEN: process.env.GITHUB_TOKEN || '',
     },
   };
 }

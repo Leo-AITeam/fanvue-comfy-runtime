@@ -105,6 +105,7 @@ const fetchRetries = Number(env('FANVUE_WORKER_FETCH_RETRIES', '3'));
 const fetchRetryDelayMs = Number(env('FANVUE_WORKER_FETCH_RETRY_DELAY_MS', '5000'));
 const callbackRetries = Number(env('FANVUE_CALLBACK_RETRIES', '3'));
 const callbackRetryDelayMs = Number(env('FANVUE_CALLBACK_RETRY_DELAY_MS', '5000'));
+const supabaseStatusUpdates = boolEnv('FANVUE_SUPABASE_STATUS_UPDATES', false);
 const workflowName = env(
   'FANVUE_WORKFLOW_NAME',
   jobString([['workflow', 'name'], ['workflow', 'adapter']], env('FANVUE_TEST_PROFILE', 'smoke'))
@@ -155,6 +156,58 @@ async function fetchWithRetry(url, options = {}, config = {}) {
   }
 
   throw lastError || new Error(`Request failed: ${url}`);
+}
+
+async function updateSupabaseJobStatus(status, patch = {}) {
+  if (!supabaseStatusUpdates) return { ok: true, status: 'disabled' };
+  const jobId = env('FANVUE_JOB_ID', jobString([['job_id']]));
+  const supabaseUrl = env('SUPABASE_URL', env('FANVUE_SUPABASE_URL')).replace(/\/+$/, '');
+  const serviceRoleKey = env('SUPABASE_SERVICE_ROLE_KEY', env('FANVUE_SUPABASE_SERVICE_ROLE_KEY'));
+  if (!jobId || !supabaseUrl || !serviceRoleKey) {
+    return {
+      ok: false,
+      status: 'not_configured',
+      has_job_id: Boolean(jobId),
+      has_supabase_url: Boolean(supabaseUrl),
+      has_service_role_key: Boolean(serviceRoleKey),
+    };
+  }
+
+  const payload = {
+    status,
+    ...patch,
+  };
+  const { response } = await fetchWithRetry(
+    `${supabaseUrl}/rest/v1/generation_jobs?id=eq.${encodeURIComponent(jobId)}`,
+    {
+      method: 'PATCH',
+      headers: {
+        apikey: serviceRoleKey,
+        authorization: `Bearer ${serviceRoleKey}`,
+        'content-type': 'application/json',
+        prefer: 'return=representation',
+      },
+      body: JSON.stringify(payload),
+    },
+    { retries: callbackRetries, delayMs: callbackRetryDelayMs }
+  );
+  const text = await response.text();
+  let body = text;
+  try {
+    body = text ? JSON.parse(text) : null;
+  } catch {
+    body = text.slice(0, 1000);
+  }
+  if (!response.ok) {
+    throw new Error(`Supabase status update failed: ${response.status} ${JSON.stringify(body)}`);
+  }
+  return {
+    ok: true,
+    status: 'sent',
+    job_status: status,
+    response_status: response.status,
+    rows: Array.isArray(body) ? body.length : null,
+  };
 }
 
 async function waitForComfy() {
@@ -273,8 +326,21 @@ function buildPrompt(uploadedInputName) {
     };
   }
   const promptPath = bundlePath(env('FANVUE_API_PROMPT', path.join(bundleDir, 'api_prompts', 'flux2_klein_4b_smoke.json')));
+  const prompt = readJson(promptPath);
+  if (prompt['4']?.inputs) {
+    prompt['4'].inputs.text = env(
+      'FANVUE_POSITIVE_PROMPT',
+      jobString([['inputs', 'positive_prompt'], ['inputs', 'prompt']], prompt['4'].inputs.text)
+    );
+  }
+  if (prompt['13']?.inputs) {
+    prompt['13'].inputs.filename_prefix = env(
+      'FANVUE_FILENAME_PREFIX',
+      jobString([['output', 'filename_prefix']], prompt['13'].inputs.filename_prefix || 'fanvue_runtime_klein')
+    );
+  }
   return {
-    prompt: readJson(promptPath),
+    prompt,
     replaced: 0,
     templatePath: promptPath,
   };
@@ -411,6 +477,15 @@ async function main() {
   };
 
   try {
+    report.supabase_started = await updateSupabaseJobStatus('running', {
+      started_at: new Date().toISOString(),
+      runpod_pod_id: env('RUNPOD_POD_ID', env('RUNPOD_PODID', null)),
+      output: {
+        worker_status: 'started',
+        workflow_name: workflowName,
+        generation_job_source: generationJob?.source || null,
+      },
+    });
     const startedAt = Date.now();
     const uploadedInput = dryRun
       ? { name: env('FANVUE_INPUT_IMAGE_NAME'), attempt: 0, response: null }
@@ -457,6 +532,37 @@ async function main() {
       status: 'failed',
       error: error.message,
     });
+  }
+
+  try {
+    const finalStatus = report.ok ? 'succeeded' : 'failed';
+    report.supabase_finished = await updateSupabaseJobStatus(finalStatus, {
+      finished_at: new Date().toISOString(),
+      completed_at: report.ok ? new Date().toISOString() : null,
+      failed_at: report.ok ? null : new Date().toISOString(),
+      comfy_prompt_id: report.submitted?.prompt_id || report.submitted?.promptId || null,
+      last_error: report.ok ? null : report.error || 'runtime worker failed',
+      output: {
+        worker_status: report.status,
+        workflow_name: workflowName,
+        prompt_id: report.submitted?.prompt_id || report.submitted?.promptId || null,
+        saved_files: report.history?.saved_files || [],
+        downloaded_files: report.history?.downloaded_files || [],
+        skipped_files: report.history?.skipped_files || [],
+        report_path: reportPath,
+        generated_at: report.generated_at,
+      },
+    });
+  } catch (error) {
+    report.supabase_finished = {
+      ok: false,
+      status: 'failed',
+      error: error.message,
+    };
+    if (boolEnv('FANVUE_SUPABASE_FAILS_JOB', false)) {
+      report.ok = false;
+      report.status = 'supabase_update_failed';
+    }
   }
 
   try {

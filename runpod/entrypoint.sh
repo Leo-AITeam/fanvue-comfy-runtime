@@ -79,5 +79,16 @@ if [ "${FANVUE_START_COMFYUI_EARLY:-false}" = "true" ]; then
 else
   "$BUNDLE_DIR/bootstrap_fanvue_comfyui.sh"
   echo "[fanvue-runpod] Starting ComfyUI"
-  exec "$BUNDLE_DIR/scripts/start_comfyui.sh"
+  "$BUNDLE_DIR/scripts/start_comfyui.sh" &
+  COMFY_PID="$!"
+
+  if [ "${FANVUE_AUTO_RUN_PROMPT:-false}" = "true" ]; then
+    echo "[fanvue-runpod] Starting runtime worker"
+    FANVUE_WORKER_REPORT="$FANVUE_DIR/fanvue_worker_report.json" \
+    FANVUE_WORKER_REPORT_MIRROR="$COMFY_DIR/output/fanvue_worker_report.json" \
+    node "$BUNDLE_DIR/scripts/comfy_runtime_worker.mjs" &
+  fi
+
+  echo "[fanvue-runpod] Bootstrap complete; keeping ComfyUI process alive"
+  wait "$COMFY_PID"
 fi
