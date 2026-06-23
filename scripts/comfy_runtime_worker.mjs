@@ -107,6 +107,7 @@ const callbackRetries = Number(env('FANVUE_CALLBACK_RETRIES', '3'));
 const callbackRetryDelayMs = Number(env('FANVUE_CALLBACK_RETRY_DELAY_MS', '5000'));
 const supabaseStatusUpdates = boolEnv('FANVUE_SUPABASE_STATUS_UPDATES', false);
 const runpodSelfStop = boolEnv('FANVUE_RUNPOD_SELF_STOP', false);
+const workerHeartbeatIntervalMs = Number(env('FANVUE_WORKER_HEARTBEAT_INTERVAL_MS', '60000'));
 const workflowName = env(
   'FANVUE_WORKFLOW_NAME',
   jobString([['workflow', 'name'], ['workflow', 'adapter']], env('FANVUE_TEST_PROFILE', 'smoke'))
@@ -251,6 +252,50 @@ async function updateSupabaseJobStatus(status, patch = {}) {
     job_status: status,
     response_status: response.status,
     rows: Array.isArray(body) ? body.length : null,
+  };
+}
+
+function startSupabaseHeartbeat(report) {
+  if (!supabaseStatusUpdates || workerHeartbeatIntervalMs <= 0) {
+    return () => {};
+  }
+
+  let stopped = false;
+  let inFlight = false;
+  const tick = async () => {
+    if (stopped || inFlight) return;
+    inFlight = true;
+    const heartbeatAt = new Date().toISOString();
+    try {
+      report.supabase_heartbeat = await updateSupabaseJobStatus('running', {
+        worker_heartbeat_at: heartbeatAt,
+        runpod_pod_id: env('RUNPOD_POD_ID', env('RUNPOD_PODID', null)),
+        comfy_prompt_id: report.submitted?.prompt_id || report.submitted?.promptId || null,
+        output: {
+          worker_status: report.status,
+          workflow_name: workflowName,
+          heartbeat_at: heartbeatAt,
+        },
+      });
+    } catch (error) {
+      report.supabase_heartbeat = {
+        ok: false,
+        status: 'failed',
+        error: error.message,
+        heartbeat_at: heartbeatAt,
+      };
+    } finally {
+      inFlight = false;
+    }
+  };
+
+  const timer = setInterval(tick, workerHeartbeatIntervalMs);
+  timer.unref?.();
+  void tick();
+
+  return () => {
+    stopped = true;
+    clearInterval(timer);
   };
 }
 
@@ -567,10 +612,13 @@ async function main() {
     status: 'started',
     ...resultBase(),
   };
+  let stopHeartbeat = () => {};
 
   try {
+    const now = new Date().toISOString();
     report.supabase_started = await updateSupabaseJobStatus('running', {
-      started_at: new Date().toISOString(),
+      started_at: now,
+      worker_heartbeat_at: now,
       runpod_pod_id: env('RUNPOD_POD_ID', env('RUNPOD_PODID', null)),
       output: {
         worker_status: 'started',
@@ -578,6 +626,7 @@ async function main() {
         generation_job_source: generationJob?.source || null,
       },
     });
+    stopHeartbeat = startSupabaseHeartbeat(report);
     const startedAt = Date.now();
     const uploadedInput = dryRun
       ? { name: env('FANVUE_INPUT_IMAGE_NAME'), attempt: 0, response: null }
@@ -627,11 +676,14 @@ async function main() {
   }
 
   try {
+    stopHeartbeat();
+    const finishedAt = new Date().toISOString();
     const finalStatus = report.ok ? 'succeeded' : 'failed';
     report.supabase_finished = await updateSupabaseJobStatus(finalStatus, {
-      finished_at: new Date().toISOString(),
-      completed_at: report.ok ? new Date().toISOString() : null,
-      failed_at: report.ok ? null : new Date().toISOString(),
+      finished_at: finishedAt,
+      worker_heartbeat_at: finishedAt,
+      completed_at: report.ok ? finishedAt : null,
+      failed_at: report.ok ? null : finishedAt,
       comfy_prompt_id: report.submitted?.prompt_id || report.submitted?.promptId || null,
       last_error: report.ok ? null : report.error || 'runtime worker failed',
       output: {
