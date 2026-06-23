@@ -163,14 +163,57 @@ async function updateSupabaseJobStatus(status, patch = {}) {
   if (!supabaseStatusUpdates) return { ok: true, status: 'disabled' };
   const jobId = env('FANVUE_JOB_ID', jobString([['job_id']]));
   const supabaseUrl = env('SUPABASE_URL', env('FANVUE_SUPABASE_URL')).replace(/\/+$/, '');
+  const workerToken = env('FANVUE_WORKER_TOKEN', env('FANVUE_SUPABASE_WORKER_TOKEN'));
+  const publishableKey = env('SUPABASE_ANON_KEY', env('SUPABASE_PUBLISHABLE_KEY', env('FANVUE_SUPABASE_ANON_KEY')));
   const serviceRoleKey = env('SUPABASE_SERVICE_ROLE_KEY', env('FANVUE_SUPABASE_SERVICE_ROLE_KEY'));
-  if (!jobId || !supabaseUrl || !serviceRoleKey) {
+  if (!jobId || !supabaseUrl || (!serviceRoleKey && !(publishableKey && workerToken))) {
     return {
       ok: false,
       status: 'not_configured',
       has_job_id: Boolean(jobId),
       has_supabase_url: Boolean(supabaseUrl),
       has_service_role_key: Boolean(serviceRoleKey),
+      has_publishable_key: Boolean(publishableKey),
+      has_worker_token: Boolean(workerToken),
+    };
+  }
+
+  if (publishableKey && workerToken) {
+    const { response } = await fetchWithRetry(
+      `${supabaseUrl}/rest/v1/rpc/record_generation_worker_report_v1`,
+      {
+        method: 'POST',
+        headers: {
+          apikey: publishableKey,
+          authorization: `Bearer ${publishableKey}`,
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          p_job_id: jobId,
+          p_token: workerToken,
+          p_status: status,
+          p_patch: patch,
+        }),
+      },
+      { retries: callbackRetries, delayMs: callbackRetryDelayMs }
+    );
+    const text = await response.text();
+    let body = text;
+    try {
+      body = text ? JSON.parse(text) : null;
+    } catch {
+      body = text.slice(0, 1000);
+    }
+    if (!response.ok) {
+      throw new Error(`Supabase worker report RPC failed: ${response.status} ${JSON.stringify(body)}`);
+    }
+    return {
+      ok: true,
+      status: 'sent',
+      mode: 'worker_rpc',
+      job_status: status,
+      response_status: response.status,
+      response_body: body,
     };
   }
 

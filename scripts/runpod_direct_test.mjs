@@ -76,6 +76,8 @@ function redactedCreatePayload(payload) {
     'FANVUE_RUNPOD_API_KEY',
     'SUPABASE_SERVICE_ROLE_KEY',
     'FANVUE_SUPABASE_SERVICE_ROLE_KEY',
+    'FANVUE_WORKER_TOKEN',
+    'FANVUE_SUPABASE_WORKER_TOKEN',
     'GITHUB_TOKEN',
   ]);
   const env = { ...(payload.env || {}) };
@@ -214,9 +216,14 @@ function buildCreatePayload() {
       FANVUE_SUPABASE_FAILS_JOB: String(argValue('supabase-fails-job', process.env.FANVUE_SUPABASE_FAILS_JOB || 'false')),
       FANVUE_RUNPOD_SELF_STOP: String(argValue('runpod-self-stop', process.env.FANVUE_RUNPOD_SELF_STOP || 'false')),
       FANVUE_RUNPOD_STOP_POLICY: argValue('runpod-stop-policy', process.env.FANVUE_RUNPOD_STOP_POLICY || ''),
-      RUNPOD_API_KEY: process.env.RUNPOD_API_KEY || '',
+      RUNPOD_API_KEY: process.env.FANVUE_PASS_RUNPOD_KEY_TO_POD === 'true' ? process.env.RUNPOD_API_KEY || '' : '',
       SUPABASE_URL: process.env.SUPABASE_URL || process.env.FANVUE_SUPABASE_URL || '',
-      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.FANVUE_SUPABASE_SERVICE_ROLE_KEY || '',
+      SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || process.env.FANVUE_SUPABASE_ANON_KEY || '',
+      SUPABASE_PUBLISHABLE_KEY: process.env.SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.FANVUE_SUPABASE_ANON_KEY || '',
+      SUPABASE_SERVICE_ROLE_KEY: process.env.FANVUE_PASS_SUPABASE_SERVICE_ROLE_TO_POD === 'true'
+        ? process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.FANVUE_SUPABASE_SERVICE_ROLE_KEY || ''
+        : '',
+      FANVUE_WORKER_TOKEN: process.env.FANVUE_WORKER_TOKEN || process.env.FANVUE_SUPABASE_WORKER_TOKEN || '',
       GITHUB_TOKEN: process.env.GITHUB_TOKEN || '',
     },
   };
