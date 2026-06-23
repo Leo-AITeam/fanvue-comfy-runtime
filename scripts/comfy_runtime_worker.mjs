@@ -106,6 +106,7 @@ const fetchRetryDelayMs = Number(env('FANVUE_WORKER_FETCH_RETRY_DELAY_MS', '5000
 const callbackRetries = Number(env('FANVUE_CALLBACK_RETRIES', '3'));
 const callbackRetryDelayMs = Number(env('FANVUE_CALLBACK_RETRY_DELAY_MS', '5000'));
 const supabaseStatusUpdates = boolEnv('FANVUE_SUPABASE_STATUS_UPDATES', false);
+const runpodSelfStop = boolEnv('FANVUE_RUNPOD_SELF_STOP', false);
 const workflowName = env(
   'FANVUE_WORKFLOW_NAME',
   jobString([['workflow', 'name'], ['workflow', 'adapter']], env('FANVUE_TEST_PROFILE', 'smoke'))
@@ -207,6 +208,54 @@ async function updateSupabaseJobStatus(status, patch = {}) {
     job_status: status,
     response_status: response.status,
     rows: Array.isArray(body) ? body.length : null,
+  };
+}
+
+async function stopRunPodSelf(report) {
+  if (!runpodSelfStop) return { ok: true, status: 'disabled' };
+  const policy = env('FANVUE_RUNPOD_STOP_POLICY', jobString([['runtime', 'stop_policy']], 'always'));
+  if (policy === 'manual_debug') return { ok: true, status: 'manual_debug' };
+  if (policy === 'on_success' && !report.ok) return { ok: true, status: 'skipped_after_failure' };
+
+  const apiKey = env('RUNPOD_API_KEY', env('FANVUE_RUNPOD_API_KEY'));
+  const podId = env('RUNPOD_POD_ID', env('RUNPOD_PODID', env('FANVUE_RUNPOD_POD_ID')));
+  if (!apiKey || !podId) {
+    return {
+      ok: false,
+      status: 'not_configured',
+      has_api_key: Boolean(apiKey),
+      has_pod_id: Boolean(podId),
+    };
+  }
+
+  const { response } = await fetchWithRetry(
+    `https://rest.runpod.io/v1/pods/${encodeURIComponent(podId)}/stop`,
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: '{}',
+    },
+    { retries: callbackRetries, delayMs: callbackRetryDelayMs }
+  );
+  const text = await response.text();
+  let body = text;
+  try {
+    body = text ? JSON.parse(text) : null;
+  } catch {
+    body = text.slice(0, 1000);
+  }
+  if (!response.ok) {
+    throw new Error(`RunPod self-stop failed: ${response.status} ${JSON.stringify(body)}`);
+  }
+  return {
+    ok: true,
+    status: 'sent',
+    stop_policy: policy,
+    pod_id: podId,
+    response_status: response.status,
   };
 }
 
@@ -577,6 +626,19 @@ async function main() {
       report.ok = false;
       report.status = 'callback_failed';
     }
+  }
+
+  writeJson(reportPath, report);
+  writeJson(mirrorReportPath, report);
+
+  try {
+    report.self_stop = await stopRunPodSelf(report);
+  } catch (error) {
+    report.self_stop = {
+      ok: false,
+      status: 'failed',
+      error: error.message,
+    };
   }
 
   writeJson(reportPath, report);
