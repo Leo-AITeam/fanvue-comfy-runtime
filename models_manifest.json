@@ -305,7 +305,7 @@
       "type": "model",
       "source_url": "https://huggingface.co/mihaiciorobitca/wan2.2_t2v_high_noise_14B_fp8_scaled/resolve/main/wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors",
       "expected_bytes": 14293923632,
-      "target_dir": "ComfyUI/models/checkpoints",
+      "target_dir": "ComfyUI/models/diffusion_models",
       "required_for_first_test": true,
       "test_profiles": [
         "first_full",
@@ -329,7 +329,7 @@
       "type": "model",
       "source_url": "https://huggingface.co/mihaiciorobitca/wan2.2_t2v_low_noise_14B_fp8_scaled/resolve/main/wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors",
       "expected_bytes": 14293923632,
-      "target_dir": "ComfyUI/models/checkpoints",
+      "target_dir": "ComfyUI/models/diffusion_models",
       "required_for_first_test": true,
       "test_profiles": [
         "first_full",
