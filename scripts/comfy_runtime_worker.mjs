@@ -92,6 +92,12 @@ const outputDir = env('OUTPUT_DIR', path.join(fanvueDir, 'output'));
 const reportPath = env('FANVUE_WORKER_REPORT', path.join(fanvueDir, 'fanvue_worker_report.json'));
 const mirrorReportPath = env('FANVUE_WORKER_REPORT_MIRROR', path.join(comfyDir, 'output', 'fanvue_worker_report.json'));
 const baseUrl = env('COMFYUI_BASE_URL', `http://127.0.0.1:${env('COMFYUI_PORT', '8188')}`);
+const publicComfyBaseUrl = env(
+  'FANVUE_COMFY_PUBLIC_BASE_URL',
+  env('RUNPOD_POD_ID', env('RUNPOD_PODID', env('FANVUE_RUNPOD_POD_ID')))
+    ? `https://${env('RUNPOD_POD_ID', env('RUNPOD_PODID', env('FANVUE_RUNPOD_POD_ID')))}-${env('COMFYUI_PORT', '8188')}.proxy.runpod.net`
+    : baseUrl
+).replace(/\/+$/, '');
 const dryRun = boolEnv('FANVUE_WORKER_DRY_RUN', false);
 const callbackUrl = env(
   'FANVUE_CALLBACK_URL',
@@ -126,9 +132,13 @@ function resultBase() {
     content_tier: env('FANVUE_CONTENT_TIER', jobString([['content_tier']], 'sfw')),
     workflow_name: workflowName,
     test_profile: env('FANVUE_TEST_PROFILE', 'smoke'),
+    input: generationJob?.payload?.inputs || null,
+    output_config: generationJob?.payload?.output || null,
+    metadata: generationJob?.payload?.metadata || null,
     generation_job_file: generationJob?.file || null,
     generation_job_source: generationJob?.source || null,
     base_url: baseUrl,
+    public_base_url: publicComfyBaseUrl,
     generated_at: new Date().toISOString(),
   };
 }
@@ -589,6 +599,7 @@ async function downloadOutputs(promptId, history) {
         type: output.type || 'output',
       });
       const url = `${baseUrl}/view?${params.toString()}`;
+      const publicUrl = `${publicComfyBaseUrl}/view?${params.toString()}`;
       let response;
       let attempt = 0;
       try {
@@ -609,7 +620,16 @@ async function downloadOutputs(promptId, history) {
       const destination = path.join(outputDir, 'worker', promptId, filename);
       fs.mkdirSync(path.dirname(destination), { recursive: true });
       fs.writeFileSync(destination, bytes);
-      saved.push({ path: destination, bytes: bytes.length, attempt, output_kind: output.output_kind });
+      saved.push({
+        path: destination,
+        bytes: bytes.length,
+        attempt,
+        output_kind: output.output_kind,
+        filename: output.filename,
+        subfolder: output.subfolder || '',
+        type: output.type || 'output',
+        public_url: publicUrl,
+      });
     }
   }
   return { saved, skipped };

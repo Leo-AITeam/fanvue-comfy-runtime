@@ -77,11 +77,13 @@ The worker writes:
 The report includes:
 
 - job metadata;
+- generation input/output metadata from the `generation_job.v1` payload;
 - prompt preview path;
 - readiness result;
 - prompt submission response;
 - prompt history;
 - downloaded output file paths;
+- public ComfyUI `/view` URLs for downloaded image/video outputs while the pod is still running;
 - downloaded output byte counts and retry attempts;
 - skipped output files if download failed;
 - error details when failed.
@@ -114,6 +116,11 @@ The worker sends one final JSON report after completion or failure. Keep this en
 2. create/update the `media_assets` row;
 3. send one Telegram notification;
 4. do not poll RunPod or ComfyUI from n8n.
+
+When `RUNPOD_POD_ID` is present, downloaded output entries include a
+`public_url` such as `https://<pod>-8188.proxy.runpod.net/view?...`. The
+callback endpoint should archive that URL to permanent storage before allowing
+the pod self-stop step to complete.
 
 For dry-run validation without network calls:
 
