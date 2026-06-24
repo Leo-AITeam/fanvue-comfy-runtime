@@ -95,6 +95,42 @@ const bundleDir = path.resolve(argValue('bundle-dir', process.env.BUNDLE_DIR || 
 const envFile = path.resolve(argValue('local-env-file', process.env.FANVUE_ENV_FILE || path.join(bundleDir, '.env.local')));
 const envFileStatus = hasFlag('no-env-file') ? { loaded: false, skipped: true, file: envFile } : loadEnvFile(envFile);
 const apiBase = process.env.RUNPOD_REST_BASE_URL || 'https://rest.runpod.io/v1';
+const defaultComfyTemplateId = process.env.RUNPOD_COMFY_TEMPLATE_ID || 'cw3nka7d08';
+const maxGpuPriceUsd = Number(process.env.RUNPOD_MAX_GPU_PRICE_USD || '1');
+const gpuPriceCatalog = {
+  'NVIDIA GeForce RTX 5090': { secure: 0.99, community: 0.69, vram_gb: 32 },
+  'NVIDIA GeForce RTX 4090': { secure: 0.69, community: 0.34, vram_gb: 24 },
+  'NVIDIA L40S': { secure: 0.99, community: 0.79, vram_gb: 48 },
+  'NVIDIA RTX 6000 Ada Generation': { secure: 0.77, community: 0.74, vram_gb: 48 },
+  'NVIDIA RTX A6000': { secure: 0.49, community: 0.33, vram_gb: 48 },
+  'NVIDIA A40': { secure: 0.44, community: 0.35, vram_gb: 48 },
+  'NVIDIA L40': { secure: 0.82, community: 0.69, vram_gb: 48 },
+};
+
+function priceForGpu(name) {
+  const prices = gpuPriceCatalog[name];
+  if (!prices) return Infinity;
+  return Math.min(prices.secure || Infinity, prices.community || Infinity);
+}
+
+function defaultGpuTypeIds() {
+  return [
+    'NVIDIA GeForce RTX 5090',
+    'NVIDIA GeForce RTX 4090',
+    'NVIDIA L40S',
+    'NVIDIA RTX 6000 Ada Generation',
+    'NVIDIA RTX A6000',
+    'NVIDIA A40',
+    'NVIDIA L40',
+  ].filter((name) => priceForGpu(name) <= maxGpuPriceUsd);
+}
+
+function parseList(value) {
+  return String(value || '')
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
 
 function validateBundle({ print = true } = {}) {
   const validator = path.join(bundleDir, 'scripts', 'validate_runtime_bundle.mjs');
@@ -167,8 +203,20 @@ function buildCreatePayload() {
   const ref = argValue('ref', process.env.FANVUE_BOOTSTRAP_REPO_REF || process.env.FANVUE_BOOTSTRAP_REF || 'main');
   const profile = argValue('profile', process.env.FANVUE_TEST_PROFILE || 'smoke');
   const workflowName = argValue('workflow-name', process.env.FANVUE_WORKFLOW_NAME || '');
-  const imageName = argValue('image', process.env.RUNPOD_IMAGE_NAME || 'ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest');
-  const gpu = argValue('gpu', process.env.RUNPOD_GPU_TYPE || 'NVIDIA L40S');
+  const requestedImageName = argValue('image', process.env.RUNPOD_IMAGE_NAME || '');
+  const useTemplate = !requestedImageName || hasFlag('preinstalled-comfy-template') || process.env.FANVUE_PREINSTALLED_COMFY_TEMPLATE === 'true';
+  const imageName = requestedImageName || 'ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest';
+  const templateId = argValue('template-id', process.env.RUNPOD_TEMPLATE_ID || (useTemplate ? defaultComfyTemplateId : ''));
+  const explicitGpuList = parseList(argValue('gpu-type-ids', process.env.RUNPOD_GPU_TYPE_IDS || ''));
+  const gpu = argValue('gpu', process.env.RUNPOD_GPU_TYPE || '');
+  const gpuTypeIds = explicitGpuList.length ? explicitGpuList : (gpu ? [gpu] : defaultGpuTypeIds());
+  const overBudget = gpuTypeIds.filter((name) => priceForGpu(name) > maxGpuPriceUsd);
+  if (overBudget.length > 0) {
+    throw new Error(`GPU price guard failed; over $${maxGpuPriceUsd}/hour: ${overBudget.join(', ')}`);
+  }
+  if (gpuTypeIds.length === 0) {
+    throw new Error(`No GPU type is configured under $${maxGpuPriceUsd}/hour`);
+  }
   const name = argValue('name', `fanvue-direct-${profile}-${Date.now()}`);
   const autoRun = hasFlag('auto-run') || process.env.FANVUE_AUTO_RUN_PROMPT === 'true';
   const inputImageName = argValue('input-image-name', process.env.FANVUE_INPUT_IMAGE_NAME || '');
@@ -177,15 +225,26 @@ function buildCreatePayload() {
   const callbackUrl = argValue('callback-url', process.env.FANVUE_CALLBACK_URL || '');
   const callbackAuthHeader = argValue('callback-auth-header', process.env.FANVUE_CALLBACK_AUTH_HEADER || '');
 
-  return {
+  const payload = {
     name,
-    imageName,
-    gpuTypeIds: [gpu],
+    gpuTypeIds,
     gpuCount: Number(argValue('gpu-count', process.env.RUNPOD_GPU_COUNT || '1')),
     containerDiskInGb: Number(argValue('container-disk-gb', process.env.RUNPOD_CONTAINER_DISK_GB || '80')),
     volumeInGb: Number(argValue('volume-gb', process.env.RUNPOD_VOLUME_GB || '0')),
     ports: ['8188/http', '8888/http'],
-    dockerStartCmd: ['bash', '-lc', 'exec /opt/fanvue-comfy-runtime/runpod/entrypoint.sh'],
+    dockerStartCmd: useTemplate ? [
+      'bash',
+      '-lc',
+      [
+        'set -euo pipefail',
+        'mkdir -p /workspace/fanvue',
+        'if [ ! -d /workspace/fanvue/bootstrap/.git ]; then git clone --depth 1 --branch "${FANVUE_BOOTSTRAP_REPO_REF:-main}" "${FANVUE_BOOTSTRAP_REPO_URL}" /workspace/fanvue/bootstrap; fi',
+        'cd /workspace/fanvue/bootstrap',
+        'git fetch --depth 1 origin "${FANVUE_BOOTSTRAP_REPO_REF:-main}"',
+        'git checkout --detach FETCH_HEAD',
+        'exec bash runpod/entrypoint.sh',
+      ].join(' && '),
+    ] : ['bash', '-lc', 'exec /opt/fanvue-comfy-runtime/runpod/entrypoint.sh'],
     env: {
       FANVUE_BOOTSTRAP_REPO_URL: repo,
       FANVUE_BOOTSTRAP_REPO_REF: ref,
@@ -193,7 +252,8 @@ function buildCreatePayload() {
       FANVUE_FIRST_TEST_ONLY: String(argValue('first-test-only', process.env.FANVUE_FIRST_TEST_ONLY || 'true')),
       FANVUE_PREFLIGHT_MODE: argValue('preflight-mode', process.env.FANVUE_PREFLIGHT_MODE || 'real'),
       FANVUE_DOWNLOAD_DRY_RUN: String(argValue('download-dry-run', process.env.FANVUE_DOWNLOAD_DRY_RUN || 'false')),
-      FANVUE_NODE_INSTALL_DRY_RUN: String(argValue('node-install-dry-run', process.env.FANVUE_NODE_INSTALL_DRY_RUN || 'false')),
+      FANVUE_NODE_INSTALL_DRY_RUN: String(argValue('node-install-dry-run', process.env.FANVUE_NODE_INSTALL_DRY_RUN || (useTemplate ? 'true' : 'false'))),
+      FANVUE_SKIP_CUSTOM_NODE_INSTALL: String(argValue('skip-custom-node-install', process.env.FANVUE_SKIP_CUSTOM_NODE_INSTALL || (useTemplate ? 'true' : 'false'))),
       FANVUE_START_COMFYUI_EARLY: String(argValue('start-comfyui-early', process.env.FANVUE_START_COMFYUI_EARLY || 'false')),
       COMFYUI_PORT: '8188',
       FANVUE_WORKER_FETCH_RETRIES: String(argValue('worker-fetch-retries', process.env.FANVUE_WORKER_FETCH_RETRIES || '3')),
@@ -227,6 +287,12 @@ function buildCreatePayload() {
       GITHUB_TOKEN: process.env.GITHUB_TOKEN || '',
     },
   };
+  if (useTemplate && templateId) {
+    payload.templateId = templateId;
+  } else {
+    payload.imageName = imageName;
+  }
+  return payload;
 }
 
 async function listPods() {
@@ -252,6 +318,14 @@ async function createPod() {
       status: 'create_dry_run',
       env_file: envFileStatus,
       bundle_validation: hasFlag('skip-bundle-validate') ? 'skipped' : 'passed',
+      gpu_policy: {
+        max_price_usd_per_hour: maxGpuPriceUsd,
+        selected_gpu_type_ids: payload.gpuTypeIds || [],
+        catalog: gpuPriceCatalog,
+        preinstalled_comfy_template: Boolean(payload.templateId),
+        template_id: payload.templateId || '',
+        storage_policy: 'volumeInGb=0 by default; no persistent region-bound storage dependency',
+      },
       payload: redactedCreatePayload(payload),
     });
     return;

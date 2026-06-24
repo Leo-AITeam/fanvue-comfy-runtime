@@ -19,6 +19,7 @@ FANVUE_PREFLIGHT_MODE="${FANVUE_PREFLIGHT_MODE:-real}"
 FANVUE_FIRST_TEST_ONLY="${FANVUE_FIRST_TEST_ONLY:-true}"
 FANVUE_TEST_PROFILE="${FANVUE_TEST_PROFILE:-smoke}"
 FANVUE_BOOTSTRAP_STAGE="${FANVUE_BOOTSTRAP_STAGE:-all}"
+FANVUE_SKIP_CUSTOM_NODE_INSTALL="${FANVUE_SKIP_CUSTOM_NODE_INSTALL:-false}"
 
 mkdir -p "$FANVUE_DIR" "$OUTPUT_DIR" "$INPUT_DIR"
 
@@ -45,12 +46,16 @@ if [ "$FANVUE_BOOTSTRAP_STAGE" = "all" ] || [ "$FANVUE_BOOTSTRAP_STAGE" = "pre_m
   FANVUE_TEST_PROFILE="$FANVUE_TEST_PROFILE" \
   node "$BUNDLE_DIR/scripts/preflight.mjs"
 
-  echo "[fanvue-bootstrap] Installing custom nodes"
-  BUNDLE_DIR="$BUNDLE_DIR" \
-  COMFY_DIR="$COMFY_DIR" \
-  WORKSPACE_DIR="$WORKSPACE_DIR" \
-  FANVUE_FIRST_TEST_ONLY="$FANVUE_FIRST_TEST_ONLY" \
-  node "$BUNDLE_DIR/scripts/install_custom_nodes.mjs"
+  if [ "$FANVUE_SKIP_CUSTOM_NODE_INSTALL" = "true" ]; then
+    echo "[fanvue-bootstrap] Skipping custom-node install; expecting preinstalled ComfyUI template nodes"
+  else
+    echo "[fanvue-bootstrap] Installing custom nodes"
+    BUNDLE_DIR="$BUNDLE_DIR" \
+    COMFY_DIR="$COMFY_DIR" \
+    WORKSPACE_DIR="$WORKSPACE_DIR" \
+    FANVUE_FIRST_TEST_ONLY="$FANVUE_FIRST_TEST_ONLY" \
+    node "$BUNDLE_DIR/scripts/install_custom_nodes.mjs"
+  fi
 fi
 
 if [ "$FANVUE_BOOTSTRAP_STAGE" = "pre_models" ]; then
