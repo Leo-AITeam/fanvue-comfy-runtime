@@ -120,11 +120,12 @@
     "Video Lifestyle Adult v1": {
       "job_type": "video",
       "source_workflow": "workflows/WAN2.2-Text_to_Video_NSFW.json",
+      "api_prompt": "api_prompts/wan22_t2v_smoke.json",
       "input_mode": "text_to_video",
       "model_profile": "video_lifestyle_adult_v1",
-      "native_orchestrator_status": "manual_hold_until_gpu_video_smoke",
-      "safety": "queue_disabled_until_api_prompt_conversion",
-      "notes": "Registered but not queue-enabled. Requires Comfy API prompt conversion and a clean Wan 2.2 GPU smoke before activation."
+      "native_orchestrator_status": "api_prompt_ready_pending_gpu_video_smoke",
+      "safety": "queue_disabled_until_clean_gpu_video_smoke",
+      "notes": "Registered but not queue-enabled. API prompt is available for controlled Wan 2.2 smoke; queue activation still requires a clean GPU video pass."
     }
   },
   "replacement_profiles": {

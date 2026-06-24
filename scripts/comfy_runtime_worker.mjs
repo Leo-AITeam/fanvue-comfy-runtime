@@ -462,6 +462,61 @@ function buildPrompt(uploadedInputName) {
       templatePath: promptPath,
     };
   }
+  if (workflowName === 'Video Lifestyle Adult v1') {
+    const promptPath = bundlePath(env('FANVUE_API_PROMPT', path.join(bundleDir, 'api_prompts', 'wan22_t2v_smoke.json')));
+    const prompt = readJson(promptPath);
+    if (prompt['6']?.inputs) {
+      prompt['6'].inputs.text = env(
+        'FANVUE_POSITIVE_PROMPT',
+        jobString([['inputs', 'positive_prompt'], ['inputs', 'prompt']], prompt['6'].inputs.text)
+      );
+    }
+    if (prompt['7']?.inputs) {
+      prompt['7'].inputs.text = env(
+        'FANVUE_NEGATIVE_PROMPT',
+        jobString([['inputs', 'negative_prompt']], prompt['7'].inputs.text)
+      );
+    }
+    if (prompt['57']?.inputs) {
+      prompt['57'].inputs.noise_seed = Number(env(
+        'FANVUE_SEED',
+        String(jobNumber([['inputs', 'seed']], prompt['57'].inputs.noise_seed || Date.now()))
+      ));
+    }
+    if (prompt['61']?.inputs) {
+      prompt['61'].inputs.width = Number(env(
+        'FANVUE_WIDTH',
+        String(jobNumber([['inputs', 'width']], prompt['61'].inputs.width || 512))
+      ));
+      prompt['61'].inputs.height = Number(env(
+        'FANVUE_HEIGHT',
+        String(jobNumber([['inputs', 'height']], prompt['61'].inputs.height || 768))
+      ));
+      prompt['61'].inputs.length = Number(env(
+        'FANVUE_VIDEO_LENGTH',
+        String(jobNumber([['inputs', 'length'], ['inputs', 'frames']], prompt['61'].inputs.length || 17))
+      ));
+      prompt['61'].inputs.batch_size = Number(env(
+        'FANVUE_BATCH_SIZE',
+        String(jobNumber([['inputs', 'batch_size']], prompt['61'].inputs.batch_size || 1))
+      ));
+    }
+    if (prompt['86']?.inputs) {
+      prompt['86'].inputs.fps = Number(env(
+        'FANVUE_VIDEO_FPS',
+        String(jobNumber([['inputs', 'fps']], prompt['86'].inputs.fps || 16))
+      ));
+      prompt['86'].inputs.filename_prefix = env(
+        'FANVUE_FILENAME_PREFIX',
+        jobString([['output', 'filename_prefix']], prompt['86'].inputs.filename_prefix || 'fanvue_wan22_video_smoke')
+      );
+    }
+    return {
+      prompt,
+      replaced: 0,
+      templatePath: promptPath,
+    };
+  }
   const promptPath = bundlePath(env('FANVUE_API_PROMPT', path.join(bundleDir, 'api_prompts', 'flux2_klein_4b_smoke.json')));
   const prompt = readJson(promptPath);
   if (prompt['4']?.inputs) {
@@ -498,12 +553,40 @@ async function submitPrompt(prompt) {
 async function downloadOutputs(promptId, history) {
   const saved = [];
   const skipped = [];
-  for (const node of Object.values(history.outputs || {})) {
-    for (const image of node.images || []) {
+  for (const [nodeId, nodeOutput] of Object.entries(history.outputs || {})) {
+    const base64Values = Array.isArray(nodeOutput.base64_string)
+      ? nodeOutput.base64_string
+      : (typeof nodeOutput.base64_string === 'string' ? [nodeOutput.base64_string] : []);
+    const mimeValue = Array.isArray(nodeOutput.mime_type)
+      ? nodeOutput.mime_type[0]
+      : (typeof nodeOutput.mime_type === 'string' ? nodeOutput.mime_type : '');
+    for (let index = 0; index < base64Values.length; index += 1) {
+      const rawValue = String(base64Values[index] || '');
+      if (!rawValue) continue;
+      const dataMatch = rawValue.match(/^data:([^;]+);base64,(.*)$/s);
+      const mimeType = dataMatch?.[1] || mimeValue || 'video/mp4';
+      const base64 = dataMatch?.[2] || rawValue;
+      const extension = mimeType.includes('webm') ? 'webm' : (mimeType.includes('gif') ? 'gif' : 'mp4');
+      try {
+        const bytes = Buffer.from(base64, 'base64');
+        const filename = `${env('FANVUE_FILENAME_PREFIX', jobString([['output', 'filename_prefix']], 'fanvue_video'))}_${nodeId}_${index + 1}.${extension}`;
+        const destination = path.join(outputDir, 'worker', promptId, filename);
+        fs.mkdirSync(path.dirname(destination), { recursive: true });
+        fs.writeFileSync(destination, bytes);
+        saved.push({ path: destination, bytes: bytes.length, mime_type: mimeType, source: 'base64_string' });
+      } catch (error) {
+        skipped.push({ node_id: nodeId, output: 'base64_string', error: error.message });
+      }
+    }
+    const viewableOutputs = [
+      ...(nodeOutput.images || []).map((item) => ({ ...item, output_kind: 'image' })),
+      ...(nodeOutput.gifs || []).map((item) => ({ ...item, output_kind: 'gif' })),
+    ];
+    for (const output of viewableOutputs) {
       const params = new URLSearchParams({
-        filename: image.filename,
-        subfolder: image.subfolder || '',
-        type: image.type || 'output',
+        filename: output.filename,
+        subfolder: output.subfolder || '',
+        type: output.type || 'output',
       });
       const url = `${baseUrl}/view?${params.toString()}`;
       let response;
@@ -513,20 +596,20 @@ async function downloadOutputs(promptId, history) {
         response = result.response;
         attempt = result.attempt;
       } catch (error) {
-        skipped.push({ image, error: error.message });
+        skipped.push({ output, error: error.message });
         continue;
       }
       if (!response.ok) {
-        skipped.push({ image, status: response.status, status_text: response.statusText });
+        skipped.push({ output, status: response.status, status_text: response.statusText });
         continue;
       }
       const bytes = Buffer.from(await response.arrayBuffer());
-      const safeSubfolder = String(image.subfolder || '').replace(/[^a-zA-Z0-9._-]+/g, '_');
-      const filename = safeSubfolder ? `${safeSubfolder}_${image.filename}` : image.filename;
+      const safeSubfolder = String(output.subfolder || '').replace(/[^a-zA-Z0-9._-]+/g, '_');
+      const filename = safeSubfolder ? `${safeSubfolder}_${output.filename}` : output.filename;
       const destination = path.join(outputDir, 'worker', promptId, filename);
       fs.mkdirSync(path.dirname(destination), { recursive: true });
       fs.writeFileSync(destination, bytes);
-      saved.push({ path: destination, bytes: bytes.length, attempt });
+      saved.push({ path: destination, bytes: bytes.length, attempt, output_kind: output.output_kind });
     }
   }
   return { saved, skipped };
