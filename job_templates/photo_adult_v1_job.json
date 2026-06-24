@@ -1,0 +1,51 @@
+{
+  "schema_version": "generation_job.v1",
+  "job_id": "job_photo_adult_v1_example",
+  "character_id": "character_anna_novari_example",
+  "fan_id": null,
+  "request_id": "request_photo_adult_v1_example",
+  "job_type": "ppv_photo",
+  "content_tier": "explicit",
+  "priority": 50,
+  "status": "queued",
+  "workflow": {
+    "name": "Photo Adult v1",
+    "adapter": "Photo Adult v1",
+    "profile": "photo_adult_v1",
+    "input_mode": "text_to_image"
+  },
+  "inputs": {
+    "positive_prompt": "photorealistic private studio portrait, adult creator aesthetic, realistic skin texture, natural body proportions, high detail",
+    "negative_prompt": "low quality, blurry, distorted anatomy, extra limbs, watermark, text, logo",
+    "seed": 12345,
+    "width": 768,
+    "height": 1024,
+    "batch_size": 1
+  },
+  "output": {
+    "filename_prefix": "fanvue_photo_adult_v1",
+    "storage_target": "external",
+    "expected_files": 1
+  },
+  "callback": {
+    "enabled": false,
+    "url_env": null,
+    "auth_header_env": null,
+    "auth_value_env": null,
+    "fails_job": false
+  },
+  "runtime": {
+    "provider": "runpod",
+    "image": "ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest",
+    "disk_gb": 120,
+    "gpu_count": 1,
+    "gpu_type": "NVIDIA L40S",
+    "stop_policy": "always",
+    "timeout_seconds": 3600
+  },
+  "metadata": {
+    "purpose": "production_queue_activation_adult_photo",
+    "safety": "no_publish_until_manual_review",
+    "model_profile": "photo_adult_v1"
+  }
+}

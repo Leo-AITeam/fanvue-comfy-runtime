@@ -11,6 +11,8 @@
       "Face Swap.json"
     ],
     "photo": [
+      "z-image-turbo-worfklow.json",
+      "QWEN Edit Consistent Face.json",
       "OFMTechNSFW++.json",
       "Flux-Photoshope-NSFW.json",
       "LUSTIFY!.json",
@@ -18,6 +20,7 @@
     ],
     "ppv_photo": [
       "OFMTechNSFW++.json",
+      "Face_Detailer.json",
       "OFM TECH MILLION DOLLARS WORKFLOW.json",
       "LUSTIFY!.json"
     ],
@@ -32,7 +35,7 @@
       "daurenbekof_dataset_captioner.json"
     ],
     "video": [
-      "WAN2.2-Text to Video-NSFW.json",
+      "WAN2.2-Text_to_Video_NSFW.json",
       "Wan2.2_Animate_workflow.json",
       "ANIMATOR V2.5.json",
       "Animate X PrivateKI.json"
@@ -95,6 +98,58 @@
         "face_detailer": "014744d4-5c4e-45f6-a787-0b496032ef57"
       },
       "notes": "Validated by scripts/direct_image_chain_smoke.mjs on 2026-06-15. Use Qwen output as Face Detailer input."
+    },
+    "Photo Lifestyle v1": {
+      "job_type": "photo",
+      "api_prompt": "api_prompts/flux2_klein_4b_smoke.json",
+      "input_mode": "text_to_image",
+      "model_profile": "photo_lifestyle_v1",
+      "native_orchestrator_status": "queue_enabled_controlled",
+      "safety": "no_publish_until_manual_review",
+      "notes": "Activated queue profile for realistic lifestyle photo jobs. Uses the validated Flux/Klein worker path until the full local lifestyle workflow is converted to API prompt format."
+    },
+    "Photo Adult v1": {
+      "job_type": "ppv_photo",
+      "api_prompt": "api_prompts/flux2_klein_4b_smoke.json",
+      "input_mode": "text_to_image",
+      "model_profile": "photo_adult_v1",
+      "native_orchestrator_status": "queue_enabled_controlled",
+      "safety": "no_publish_until_manual_review",
+      "notes": "Activated queue profile for adult-tier still images. Uses the validated Flux/Klein worker path first; OFMTechNSFW++ remains the source workflow target for later native API conversion."
+    },
+    "Video Lifestyle Adult v1": {
+      "job_type": "video",
+      "source_workflow": "workflows/WAN2.2-Text_to_Video_NSFW.json",
+      "input_mode": "text_to_video",
+      "model_profile": "video_lifestyle_adult_v1",
+      "native_orchestrator_status": "manual_hold_until_gpu_video_smoke",
+      "safety": "queue_disabled_until_api_prompt_conversion",
+      "notes": "Registered but not queue-enabled. Requires Comfy API prompt conversion and a clean Wan 2.2 GPU smoke before activation."
+    }
+  },
+  "replacement_profiles": {
+    "first_full_2026_06_23": {
+      "purpose": "Maximally realistic Fanvue character output for lifestyle and 18+ photo/video without unavailable legacy exact model files.",
+      "photo_lifestyle_v1": [
+        "z-image-turbo-worfklow.json",
+        "QWEN Edit Consistent Face.json",
+        "Face_Detailer.json"
+      ],
+      "photo_adult_v1": [
+        "OFMTechNSFW++.json",
+        "Face_Detailer.json"
+      ],
+      "video_lifestyle_adult_v1": [
+        "WAN2.2-Text_to_Video_NSFW.json"
+      ],
+      "replaced_models": [
+        "AIKOZIMAGE_000002700.safetensors",
+        "Detailed Nipples XL v1.0.safetensors",
+        "Wan22_A14B_T2V_HIGH_Lightning_4steps_lora_250928_rank128_fp16.safetensors",
+        "Wan22_A14B_T2V_LOW_Lightning_4steps_lora_250928_rank64_fp16.safetensors",
+        "wan2.2_t2v_highnoise_sidemissionary_v1.0.safetensors",
+        "wan2.2_t2v_lownoise_sidemissionary_v1.0.safetensors"
+      ]
     }
   }
 }
