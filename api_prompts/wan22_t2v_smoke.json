@@ -47,33 +47,11 @@
       "shift": 8
     }
   },
-  "65": {
-    "class_type": "PathchSageAttentionKJ",
-    "inputs": {
-      "model": [
-        "54",
-        0
-      ],
-      "sage_attention": "auto",
-      "allow_compile": false
-    }
-  },
-  "66": {
-    "class_type": "PathchSageAttentionKJ",
-    "inputs": {
-      "model": [
-        "55",
-        0
-      ],
-      "sage_attention": "auto",
-      "allow_compile": false
-    }
-  },
   "67": {
     "class_type": "LoraLoaderModelOnly",
     "inputs": {
       "model": [
-        "65",
+        "54",
         0
       ],
       "lora_name": "wan2.2_t2v_lightx2v_4steps_lora_v1.1_high_noise.safetensors",
@@ -95,7 +73,7 @@
     "class_type": "LoraLoaderModelOnly",
     "inputs": {
       "model": [
-        "66",
+        "55",
         0
       ],
       "lora_name": "wan2.2_t2v_lightx2v_4steps_lora_v1.1_low_noise.safetensors",

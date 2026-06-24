@@ -623,7 +623,14 @@ async function waitHistory(promptId) {
     const { response } = await fetchWithRetry(`${baseUrl}/history/${promptId}`, {}, { retries: 1, delayMs: 0 });
     const body = await response.json().catch(async () => ({ raw: await response.text() }));
     const history = body[promptId];
-    if (history?.outputs) {
+    if (history?.status?.status_str === 'error') {
+      const errorMessage = history.status.messages
+        ?.flatMap((message) => Array.isArray(message) ? [message[1]] : [])
+        ?.find((message) => message?.exception_message)
+        ?.exception_message || 'ComfyUI execution failed';
+      throw new Error(`Prompt execution failed: ${errorMessage}`);
+    }
+    if (history?.status?.completed === true && history?.outputs) {
       const downloaded = await downloadOutputs(promptId, history);
       return {
         ok: true,
