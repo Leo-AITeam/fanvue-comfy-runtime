@@ -41,19 +41,11 @@ const smoke = profileRows('smoke');
 const faceDetailerSmoke = profileRows('face_detailer_smoke');
 const firstFull = profileRows('first_full');
 const firstFullMissing = firstFull.filter((item) => !item.source_url);
-const knownSourceGaps = {
-  'AIKOZIMAGE_000002700.safetensors': 'OFMTechNSFW++ checkpoint; source not verified yet.',
-  'Detailed Nipples XL v1.0.safetensors': 'OFMTechNSFW++ LoRA; similar files exist with different filenames, source not verified yet.',
-  'Wan22_A14B_T2V_HIGH_Lightning_4steps_lora_250928_rank128_fp16.safetensors': 'WAN2.2 text-to-video LoRA; searched candidate repo was empty.',
-  'Wan22_A14B_T2V_LOW_Lightning_4steps_lora_250928_rank64_fp16.safetensors': 'WAN2.2 text-to-video LoRA; no verified direct source yet.',
-  'wan2.2_t2v_highnoise_sidemissionary_v1.0.safetensors': 'WAN2.2 text-to-video checkpoint; no verified direct source yet.',
-  'wan2.2_t2v_lownoise_sidemissionary_v1.0.safetensors': 'WAN2.2 text-to-video checkpoint; no verified direct source yet.',
-};
 
 function missingRows(rows) {
   if (!rows.length) return 'No missing first full model sources.';
   return rows
-    .map((row) => `- \`${row.name}\` — ${knownSourceGaps[row.name] || 'source not verified yet.'}`)
+    .map((row) => `- \`${row.name}\` — source not verified yet.`)
     .join('\n');
 }
 
@@ -83,26 +75,19 @@ ${table(faceDetailerSmoke)}
 
 ## First Full Profile
 
-This profile remains blocked until every missing \`source_url\` is filled with a direct download URL.
+${firstFullMissing.length
+  ? 'This profile remains blocked until every missing `source_url` is filled with a direct download URL.'
+  : 'This profile is source-complete. It covers realistic lifestyle stills, adult-capable stills, identity/edit/detail, and controlled Wan 2.2 video smoke coverage.'}
 
-Use the CSV importer to apply verified direct URLs safely:
+Use these checks after future model changes:
 
 \`\`\`bash
-node scripts/import_model_sources_csv.mjs . model_sources_first_test_template.csv --dry-run
-node scripts/import_model_sources_csv.mjs . model_sources_first_test_template.csv --strict
 node scripts/model_readiness_report.mjs . docs/MODEL_READINESS.md
-node scripts/verify_model_sources.mjs . first_full
+node scripts/export_model_source_tables.mjs .
 node scripts/validate_runtime_bundle.mjs .
 \`\`\`
 
-The importer matches by exact model filename, reports unknown or duplicate rows,
-and can fail in \`--strict\` mode until all \`first_full\` sources are filled.
-
-Runtime preflight also fails \`FANVUE_TEST_PROFILE=first_full\` in real mode while
-any selected model is missing a \`source_url\`. Use \`smoke\` or
-\`face_detailer_smoke\` for safe GPU checks until the list below is empty.
-
-See \`docs/MISSING_MODEL_SOURCES.md\` for the handoff list and import format.
+See \`docs/MISSING_MODEL_SOURCES.md\` for the legacy replacement table and import format.
 
 ### Remaining Source Gaps
 

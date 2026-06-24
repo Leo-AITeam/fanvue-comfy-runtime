@@ -9,15 +9,18 @@
   },
   "default_workflows": {
     "photo": {
-      "name": "OFMTechNSFW++",
-      "file": "workflows/OFMTechNSFW++.json",
+      "name": "Z-Image Turbo Lifestyle",
+      "file": "workflows/z-image-turbo-worfklow.json",
       "input_mode": "text_to_image",
+      "model_profile": "photo_lifestyle_v1",
       "first_real_test": true
     },
     "ppv_photo": {
-      "name": "OFMTechNSFW++",
+      "name": "OFMTechNSFW++ Source-Complete Replacement",
       "file": "workflows/OFMTechNSFW++.json",
-      "input_mode": "text_to_image"
+      "input_mode": "text_to_image",
+      "model_profile": "photo_adult_v1",
+      "first_real_test": false
     },
     "face_variations": {
       "name": "QWEN Edit Consistent Face",
@@ -35,15 +38,19 @@
       "input_mode": "image_to_image"
     },
     "video": {
-      "name": "WAN2.2 Text to Video NSFW",
+      "name": "WAN2.2 Text to Video Source-Complete Replacement",
       "file": "workflows/WAN2.2-Text_to_Video_NSFW.json",
       "input_mode": "text_to_video",
-      "phase": "later"
+      "model_profile": "video_lifestyle_adult_v1",
+      "phase": "controlled_smoke_after_photo"
     }
   },
   "first_test_chain": [
     "photo",
-    "quality_check"
+    "face_variations",
+    "quality_check",
+    "ppv_photo",
+    "video"
   ],
   "required_inputs": {
     "photo": [

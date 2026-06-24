@@ -1,47 +1,88 @@
 # First GPU Test Model URLs
 
-## Smoke profile
+Updated: 2026-06-23
 
-The first RunPod smoke test uses `FANVUE_TEST_PROFILE=smoke` and only public HuggingFace model URLs:
+## Smoke Profile
 
-| File | Target dir |
-|---|---|
-| `flux-2-klein-4b.safetensors` | `ComfyUI/models/diffusion_models` |
-| `qwen_3_4b.safetensors` | `ComfyUI/models/text_encoders` |
-| `flux2-vae.safetensors` | `ComfyUI/models/vae` |
+The first RunPod smoke test uses `FANVUE_TEST_PROFILE=smoke` and only public model URLs.
 
-This verifies bootstrap wiring before the private/custom model set is complete.
+| # | File | Type | Target dir | Source |
+|---:|---|---|---|---|
+| 1 | `4x_NMKD-Superscale-SP_178000_G.pth` | detector_or_upscale | `ComfyUI/models` | ready |
+| 2 | `4x-UltraSharpV2.pth` | detector_or_upscale | `ComfyUI/models` | ready |
+| 3 | `ae.safetensors` | model | `ComfyUI/models/vae` | ready |
+| 4 | `bbox/face_yolov8m.pt` | detector_or_upscale | `ComfyUI/models` | ready |
+| 5 | `bbox/nipple.pt` | detector_or_upscale | `ComfyUI/models` | ready |
+| 6 | `bbox/pussyV2.pt` | detector_or_upscale | `ComfyUI/models` | ready |
+| 7 | `controlnet-union-sdxl-promax.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
+| 8 | `depth_anything_v2_vitl.pth` | detector_or_upscale | `ComfyUI/models` | ready |
+| 9 | `dmd2_sdxl_4step_lora_fp16.safetensors` | lora | `ComfyUI/models/loras` | ready |
+| 10 | `flux-2-klein-4b.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |
+| 11 | `flux-2-klein-9b.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
+| 12 | `flux2-vae.safetensors` | vae | `ComfyUI/models/vae` | ready |
+| 13 | `lustifySDXLNSFW_ggwpV7.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
+| 14 | `qwen_2.5_vl_7b_fp8_scaled.safetensors` | model | `ComfyUI/models/text_encoders` | ready |
+| 15 | `qwen_3_4b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready |
+| 16 | `qwen_3_8b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready |
+| 17 | `qwen_image_edit_2509_fp8_e4m3fn.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |
+| 18 | `qwen_image_vae.safetensors` | vae | `ComfyUI/models/vae` | ready |
+| 19 | `sam_vit_b_01ec64.pth` | detector_or_upscale | `ComfyUI/models/sams` | ready |
+| 20 | `segm/person_yolov8m-seg.pt` | detector_or_upscale | `ComfyUI/models/ultralytics` | ready |
+| 21 | `umt5_xxl_fp8_e4m3fn_scaled.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready |
+| 22 | `wan_2.1_vae.safetensors` | vae | `ComfyUI/models/vae` | ready |
+| 23 | `wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
+| 24 | `wan2.2_t2v_lightx2v_4steps_lora_v1.1_high_noise.safetensors` | lora | `ComfyUI/models/loras` | ready |
+| 25 | `wan2.2_t2v_lightx2v_4steps_lora_v1.1_low_noise.safetensors` | lora | `ComfyUI/models/loras` | ready |
+| 26 | `wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
+| 27 | `x1_ITF_SkinDiffDetail_Lite_v1.pth` | detector_or_upscale | `ComfyUI/models` | ready |
+| 28 | `z_image_turbo_bf16.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |
 
-## Full first test
+## First Full Replacement Profile
 
-Fill source_url in models_manifest.json for these files before real RunPod creation.
+`first_full` is now source-complete and replaces the unavailable exact model names with public, role-equivalent model lanes:
 
-| # | File | Type | Target dir |
-|---:|---|---|---|
-| 1 | `4x-UltraSharpV2.pth` | detector_or_upscale | `ComfyUI/models` |
-| 2 | `4x_NMKD-Superscale-SP_178000_G.pth` | detector_or_upscale | `ComfyUI/models` |
-| 3 | `AIKOZIMAGE_000002700.safetensors` | model | `ComfyUI/models/checkpoints` |
-| 4 | `Detailed Nipples XL v1.0.safetensors` | lora | `ComfyUI/models/loras` |
-| 5 | `Wan22_A14B_T2V_HIGH_Lightning_4steps_lora_250928_rank128_fp16.safetensors` | lora | `ComfyUI/models/loras` |
-| 6 | `Wan22_A14B_T2V_LOW_Lightning_4steps_lora_250928_rank64_fp16.safetensors` | lora | `ComfyUI/models/loras` |
-| 7 | `ae.safetensors` | model | `ComfyUI/models/checkpoints` |
-| 8 | `bbox/face_yolov8m.pt` | detector_or_upscale | `ComfyUI/models` |
-| 9 | `bbox/nipple.pt` | detector_or_upscale | `ComfyUI/models` |
-| 10 | `bbox/pussyV2.pt` | detector_or_upscale | `ComfyUI/models` |
-| 11 | `controlnet-union-sdxl-promax.safetensors` | model | `ComfyUI/models/checkpoints` |
-| 12 | `depth_anything_v2_vitl.pth` | detector_or_upscale | `ComfyUI/models` |
-| 13 | `dmd2_sdxl_4step_lora_fp16.safetensors` | lora | `ComfyUI/models/loras` |
-| 14 | `flux-2-klein-9b.safetensors` | model | `ComfyUI/models/checkpoints` |
-| 15 | `flux2-vae.safetensors` | vae | `ComfyUI/models/vae` |
-| 16 | `lustifySDXLNSFW_ggwpV7.safetensors` | model | `ComfyUI/models/checkpoints` |
-| 17 | `qwen_3_4b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` |
-| 18 | `qwen_3_8b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` |
-| 19 | `sam_vit_b_01ec64.pth` | detector_or_upscale | `ComfyUI/models` |
-| 20 | `umt5_xxl_fp8_e4m3fn_scaled.safetensors` | text_encoder | `ComfyUI/models/text_encoders` |
-| 21 | `wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors` | model | `ComfyUI/models/checkpoints` |
-| 22 | `wan2.2_t2v_highnoise_sidemissionary_v1.0.safetensors` | model | `ComfyUI/models/checkpoints` |
-| 23 | `wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors` | model | `ComfyUI/models/checkpoints` |
-| 24 | `wan2.2_t2v_lownoise_sidemissionary_v1.0.safetensors` | model | `ComfyUI/models/checkpoints` |
-| 25 | `wan_2.1_vae.safetensors` | vae | `ComfyUI/models/vae` |
-| 26 | `x1_ITF_SkinDiffDetail_Lite_v1.pth` | detector_or_upscale | `ComfyUI/models` |
-| 27 | `z_image_turbo_bf16.safetensors` | model | `ComfyUI/models/checkpoints` |
+- `photo_lifestyle_v1`: Z-Image/Qwen/Face Detailer realistic lifestyle stills.
+- `photo_adult_v1`: source-complete adult-capable still-image path using Lustify SDXL plus public LoRA/detail gates.
+- `video_lifestyle_adult_v1`: Wan 2.2 T2V high/low noise models plus public lightx2v LoRAs.
+
+Run this before live GPU work:
+
+```bash
+node scripts/model_readiness_report.mjs . docs/MODEL_READINESS.md
+node scripts/export_model_source_tables.mjs .
+node scripts/validate_runtime_bundle.mjs .
+```
+
+| # | File | Type | Target dir | Source |
+|---:|---|---|---|---|
+| 1 | `4x_NMKD-Superscale-SP_178000_G.pth` | detector_or_upscale | `ComfyUI/models` | ready |
+| 2 | `4x-UltraSharpV2.pth` | detector_or_upscale | `ComfyUI/models` | ready |
+| 3 | `ae.safetensors` | model | `ComfyUI/models/vae` | ready |
+| 4 | `bbox/face_yolov8m.pt` | detector_or_upscale | `ComfyUI/models` | ready |
+| 5 | `bbox/nipple.pt` | detector_or_upscale | `ComfyUI/models` | ready |
+| 6 | `bbox/pussyV2.pt` | detector_or_upscale | `ComfyUI/models` | ready |
+| 7 | `controlnet-union-sdxl-promax.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
+| 8 | `depth_anything_v2_vitl.pth` | detector_or_upscale | `ComfyUI/models` | ready |
+| 9 | `dmd2_sdxl_4step_lora_fp16.safetensors` | lora | `ComfyUI/models/loras` | ready |
+| 10 | `flux-2-klein-9b.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
+| 11 | `flux2-vae.safetensors` | vae | `ComfyUI/models/vae` | ready |
+| 12 | `lustifySDXLNSFW_ggwpV7.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
+| 13 | `qwen_2.5_vl_7b_fp8_scaled.safetensors` | model | `ComfyUI/models/text_encoders` | ready |
+| 14 | `qwen_3_4b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready |
+| 15 | `qwen_3_8b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready |
+| 16 | `qwen_image_edit_2509_fp8_e4m3fn.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |
+| 17 | `qwen_image_vae.safetensors` | vae | `ComfyUI/models/vae` | ready |
+| 18 | `sam_vit_b_01ec64.pth` | detector_or_upscale | `ComfyUI/models/sams` | ready |
+| 19 | `segm/person_yolov8m-seg.pt` | detector_or_upscale | `ComfyUI/models/ultralytics` | ready |
+| 20 | `umt5_xxl_fp8_e4m3fn_scaled.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready |
+| 21 | `wan_2.1_vae.safetensors` | vae | `ComfyUI/models/vae` | ready |
+| 22 | `wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
+| 23 | `wan2.2_t2v_lightx2v_4steps_lora_v1.1_high_noise.safetensors` | lora | `ComfyUI/models/loras` | ready |
+| 24 | `wan2.2_t2v_lightx2v_4steps_lora_v1.1_low_noise.safetensors` | lora | `ComfyUI/models/loras` | ready |
+| 25 | `wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
+| 26 | `x1_ITF_SkinDiffDetail_Lite_v1.pth` | detector_or_upscale | `ComfyUI/models` | ready |
+| 27 | `z_image_turbo_bf16.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |
+
+## Legacy Replacements
+
+The old six missing files are retained only in `legacy_missing_replaced_2026_06_23`; see `docs/MISSING_MODEL_SOURCES.md`.

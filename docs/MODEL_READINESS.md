@@ -8,7 +8,7 @@ Generated from `models_manifest.json`.
 |---|---:|---:|
 | smoke | 3 | 0 |
 | face_detailer_smoke | 4 | 0 |
-| first_full | 27 | 6 |
+| first_full | 27 | 0 |
 
 ## Smoke Profile
 
@@ -33,62 +33,48 @@ This is the current safe GPU image-to-image profile for the Face Detailer adapte
 
 ## First Full Profile
 
-This profile remains blocked until every missing `source_url` is filled with a direct download URL.
+This profile is source-complete. It covers realistic lifestyle stills, adult-capable stills, identity/edit/detail, and controlled Wan 2.2 video smoke coverage.
 
-Use the CSV importer to apply verified direct URLs safely:
+Use these checks after future model changes:
 
 ```bash
-node scripts/import_model_sources_csv.mjs . model_sources_first_test_template.csv --dry-run
-node scripts/import_model_sources_csv.mjs . model_sources_first_test_template.csv --strict
 node scripts/model_readiness_report.mjs . docs/MODEL_READINESS.md
-node scripts/verify_model_sources.mjs . first_full
+node scripts/export_model_source_tables.mjs .
 node scripts/validate_runtime_bundle.mjs .
 ```
 
-The importer matches by exact model filename, reports unknown or duplicate rows,
-and can fail in `--strict` mode until all `first_full` sources are filled.
-
-Runtime preflight also fails `FANVUE_TEST_PROFILE=first_full` in real mode while
-any selected model is missing a `source_url`. Use `smoke` or
-`face_detailer_smoke` for safe GPU checks until the list below is empty.
-
-See `docs/MISSING_MODEL_SOURCES.md` for the handoff list and import format.
+See `docs/MISSING_MODEL_SOURCES.md` for the legacy replacement table and import format.
 
 ### Remaining Source Gaps
 
-- `AIKOZIMAGE_000002700.safetensors` — OFMTechNSFW++ checkpoint; source not verified yet.
-- `Detailed Nipples XL v1.0.safetensors` — OFMTechNSFW++ LoRA; similar files exist with different filenames, source not verified yet.
-- `Wan22_A14B_T2V_HIGH_Lightning_4steps_lora_250928_rank128_fp16.safetensors` — WAN2.2 text-to-video LoRA; searched candidate repo was empty.
-- `Wan22_A14B_T2V_LOW_Lightning_4steps_lora_250928_rank64_fp16.safetensors` — WAN2.2 text-to-video LoRA; no verified direct source yet.
-- `wan2.2_t2v_highnoise_sidemissionary_v1.0.safetensors` — WAN2.2 text-to-video checkpoint; no verified direct source yet.
-- `wan2.2_t2v_lownoise_sidemissionary_v1.0.safetensors` — WAN2.2 text-to-video checkpoint; no verified direct source yet.
+No missing first full model sources.
 
 | # | File | Type | Target dir | Source URL |
 |---:|---|---|---|---|
 | 1 | `4x-UltraSharpV2.pth` | detector_or_upscale | `ComfyUI/models` | ready |
 | 2 | `4x_NMKD-Superscale-SP_178000_G.pth` | detector_or_upscale | `ComfyUI/models` | ready |
-| 3 | `AIKOZIMAGE_000002700.safetensors` | model | `ComfyUI/models/checkpoints` | missing |
-| 4 | `Detailed Nipples XL v1.0.safetensors` | lora | `ComfyUI/models/loras` | missing |
-| 5 | `Wan22_A14B_T2V_HIGH_Lightning_4steps_lora_250928_rank128_fp16.safetensors` | lora | `ComfyUI/models/loras` | missing |
-| 6 | `Wan22_A14B_T2V_LOW_Lightning_4steps_lora_250928_rank64_fp16.safetensors` | lora | `ComfyUI/models/loras` | missing |
-| 7 | `ae.safetensors` | model | `ComfyUI/models/vae` | ready |
-| 8 | `bbox/face_yolov8m.pt` | detector_or_upscale | `ComfyUI/models` | ready |
-| 9 | `bbox/nipple.pt` | detector_or_upscale | `ComfyUI/models` | ready |
-| 10 | `bbox/pussyV2.pt` | detector_or_upscale | `ComfyUI/models` | ready |
-| 11 | `controlnet-union-sdxl-promax.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
-| 12 | `depth_anything_v2_vitl.pth` | detector_or_upscale | `ComfyUI/models` | ready |
-| 13 | `dmd2_sdxl_4step_lora_fp16.safetensors` | lora | `ComfyUI/models/loras` | ready |
-| 14 | `flux-2-klein-9b.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
-| 15 | `flux2-vae.safetensors` | vae | `ComfyUI/models/vae` | ready |
-| 16 | `lustifySDXLNSFW_ggwpV7.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
-| 17 | `qwen_3_4b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready |
-| 18 | `qwen_3_8b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready |
-| 19 | `sam_vit_b_01ec64.pth` | detector_or_upscale | `ComfyUI/models/sams` | ready |
+| 3 | `ae.safetensors` | model | `ComfyUI/models/vae` | ready |
+| 4 | `bbox/face_yolov8m.pt` | detector_or_upscale | `ComfyUI/models` | ready |
+| 5 | `bbox/nipple.pt` | detector_or_upscale | `ComfyUI/models` | ready |
+| 6 | `bbox/pussyV2.pt` | detector_or_upscale | `ComfyUI/models` | ready |
+| 7 | `controlnet-union-sdxl-promax.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
+| 8 | `depth_anything_v2_vitl.pth` | detector_or_upscale | `ComfyUI/models` | ready |
+| 9 | `dmd2_sdxl_4step_lora_fp16.safetensors` | lora | `ComfyUI/models/loras` | ready |
+| 10 | `flux-2-klein-9b.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
+| 11 | `flux2-vae.safetensors` | vae | `ComfyUI/models/vae` | ready |
+| 12 | `lustifySDXLNSFW_ggwpV7.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
+| 13 | `qwen_2.5_vl_7b_fp8_scaled.safetensors` | model | `ComfyUI/models/text_encoders` | ready |
+| 14 | `qwen_3_4b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready |
+| 15 | `qwen_3_8b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready |
+| 16 | `qwen_image_edit_2509_fp8_e4m3fn.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |
+| 17 | `qwen_image_vae.safetensors` | vae | `ComfyUI/models/vae` | ready |
+| 18 | `sam_vit_b_01ec64.pth` | detector_or_upscale | `ComfyUI/models/sams` | ready |
+| 19 | `segm/person_yolov8m-seg.pt` | detector_or_upscale | `ComfyUI/models/ultralytics` | ready |
 | 20 | `umt5_xxl_fp8_e4m3fn_scaled.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready |
 | 21 | `wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
-| 22 | `wan2.2_t2v_highnoise_sidemissionary_v1.0.safetensors` | model | `ComfyUI/models/checkpoints` | missing |
-| 23 | `wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
-| 24 | `wan2.2_t2v_lownoise_sidemissionary_v1.0.safetensors` | model | `ComfyUI/models/checkpoints` | missing |
-| 25 | `wan_2.1_vae.safetensors` | vae | `ComfyUI/models/vae` | ready |
-| 26 | `x1_ITF_SkinDiffDetail_Lite_v1.pth` | detector_or_upscale | `ComfyUI/models` | ready |
-| 27 | `z_image_turbo_bf16.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |
+| 22 | `wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
+| 23 | `wan_2.1_vae.safetensors` | vae | `ComfyUI/models/vae` | ready |
+| 24 | `x1_ITF_SkinDiffDetail_Lite_v1.pth` | detector_or_upscale | `ComfyUI/models` | ready |
+| 25 | `z_image_turbo_bf16.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |
+| 26 | `wan2.2_t2v_lightx2v_4steps_lora_v1.1_high_noise.safetensors` | lora | `ComfyUI/models/loras` | ready |
+| 27 | `wan2.2_t2v_lightx2v_4steps_lora_v1.1_low_noise.safetensors` | lora | `ComfyUI/models/loras` | ready |

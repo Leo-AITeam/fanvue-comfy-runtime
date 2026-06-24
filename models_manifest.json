@@ -1,11 +1,11 @@
 {
   "generated_at": "2026-06-06",
   "selected_workflows": [
-    "OFMTechNSFW++.json",
-    "OFM-LAB_faceswap_CLOUD_READY.json",
-    "Face_Detailer.json",
+    "z-image-turbo-worfklow.json",
     "QWEN Edit Consistent Face.json",
-    "WAN2.2-Text to Video-NSFW.json"
+    "Face_Detailer.json",
+    "OFMTechNSFW++.json",
+    "WAN2.2-Text_to_Video_NSFW.json"
   ],
   "models": [
     {
@@ -35,54 +35,64 @@
       "type": "model",
       "source_url": null,
       "target_dir": "ComfyUI/models/checkpoints",
-      "required_for_first_test": true,
+      "required_for_first_test": false,
       "test_profiles": [
-        "first_full"
-      ]
+        "legacy_missing_replaced_2026_06_23"
+      ],
+      "replaced_on": "2026-06-23",
+      "replacement_policy": "Replaced by source-complete public model stack; keep only as legacy reference."
     },
     {
       "name": "Detailed Nipples XL v1.0.safetensors",
       "type": "lora",
       "source_url": null,
       "target_dir": "ComfyUI/models/loras",
-      "required_for_first_test": true,
+      "required_for_first_test": false,
       "test_profiles": [
-        "first_full"
-      ]
+        "legacy_missing_replaced_2026_06_23"
+      ],
+      "replaced_on": "2026-06-23",
+      "replacement_policy": "Replaced by source-complete public model stack; keep only as legacy reference."
     },
     {
       "name": "QWEN\\Qwen-Image-Lightning-8steps-V1.0.safetensors",
       "type": "lora",
       "source_url": null,
       "target_dir": "ComfyUI/models/loras",
-      "required_for_first_test": false
+      "required_for_first_test": false,
+      "test_profiles": []
     },
     {
       "name": "QWEN\\qwen-boreal-portraits-portraits-high-rank.safetensors",
       "type": "lora",
       "source_url": null,
       "target_dir": "ComfyUI/models/loras",
-      "required_for_first_test": false
+      "required_for_first_test": false,
+      "test_profiles": []
     },
     {
       "name": "Wan22_A14B_T2V_HIGH_Lightning_4steps_lora_250928_rank128_fp16.safetensors",
       "type": "lora",
       "source_url": null,
       "target_dir": "ComfyUI/models/loras",
-      "required_for_first_test": true,
+      "required_for_first_test": false,
       "test_profiles": [
-        "first_full"
-      ]
+        "legacy_missing_replaced_2026_06_23"
+      ],
+      "replaced_on": "2026-06-23",
+      "replacement_policy": "Replaced by source-complete public model stack; keep only as legacy reference."
     },
     {
       "name": "Wan22_A14B_T2V_LOW_Lightning_4steps_lora_250928_rank64_fp16.safetensors",
       "type": "lora",
       "source_url": null,
       "target_dir": "ComfyUI/models/loras",
-      "required_for_first_test": true,
+      "required_for_first_test": false,
       "test_profiles": [
-        "first_full"
-      ]
+        "legacy_missing_replaced_2026_06_23"
+      ],
+      "replaced_on": "2026-06-23",
+      "replacement_policy": "Replaced by source-complete public model stack; keep only as legacy reference."
     },
     {
       "name": "ae.safetensors",
@@ -181,8 +191,8 @@
       "target_dir": "ComfyUI/models/vae",
       "required_for_first_test": true,
       "test_profiles": [
-        "smoke",
-        "first_full"
+        "first_full",
+        "smoke"
       ]
     },
     {
@@ -202,8 +212,9 @@
       "source_url": "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors",
       "target_dir": "ComfyUI/models/text_encoders",
       "min_bytes": 7000000000,
-      "required_for_first_test": false,
+      "required_for_first_test": true,
       "test_profiles": [
+        "first_full",
         "qwen_edit_smoke"
       ]
     },
@@ -216,8 +227,8 @@
       "required_for_first_test": true,
       "test_profiles": [
         "face_detailer_smoke",
-        "smoke",
-        "first_full"
+        "first_full",
+        "smoke"
       ]
     },
     {
@@ -237,8 +248,9 @@
       "source_url": "https://huggingface.co/Comfy-Org/Qwen-Image-Edit_ComfyUI/resolve/main/split_files/diffusion_models/qwen_image_edit_2509_fp8_e4m3fn.safetensors",
       "target_dir": "ComfyUI/models/diffusion_models",
       "expected_bytes": 20430698424,
-      "required_for_first_test": false,
+      "required_for_first_test": true,
       "test_profiles": [
+        "first_full",
         "qwen_edit_smoke"
       ]
     },
@@ -248,8 +260,9 @@
       "source_url": "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/vae/qwen_image_vae.safetensors",
       "expected_bytes": 253806246,
       "target_dir": "ComfyUI/models/vae",
-      "required_for_first_test": false,
+      "required_for_first_test": true,
       "test_profiles": [
+        "first_full",
         "qwen_edit_smoke"
       ]
     },
@@ -270,7 +283,10 @@
       "type": "detector_or_upscale",
       "source_url": "https://huggingface.co/Bingsu/adetailer/resolve/main/person_yolov8m-seg.pt",
       "target_dir": "ComfyUI/models/ultralytics",
-      "required_for_first_test": false
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full"
+      ]
     },
     {
       "name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
@@ -299,10 +315,12 @@
       "type": "model",
       "source_url": null,
       "target_dir": "ComfyUI/models/checkpoints",
-      "required_for_first_test": true,
+      "required_for_first_test": false,
       "test_profiles": [
-        "first_full"
-      ]
+        "legacy_missing_replaced_2026_06_23"
+      ],
+      "replaced_on": "2026-06-23",
+      "replacement_policy": "Replaced by source-complete public model stack; keep only as legacy reference."
     },
     {
       "name": "wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors",
@@ -320,10 +338,12 @@
       "type": "model",
       "source_url": null,
       "target_dir": "ComfyUI/models/checkpoints",
-      "required_for_first_test": true,
+      "required_for_first_test": false,
       "test_profiles": [
-        "first_full"
-      ]
+        "legacy_missing_replaced_2026_06_23"
+      ],
+      "replaced_on": "2026-06-23",
+      "replacement_policy": "Replaced by source-complete public model stack; keep only as legacy reference."
     },
     {
       "name": "wan_2.1_vae.safetensors",
@@ -369,6 +389,38 @@
       "test_profiles": [
         "smoke"
       ]
+    },
+    {
+      "name": "wan2.2_t2v_lightx2v_4steps_lora_v1.1_high_noise.safetensors",
+      "type": "lora",
+      "source_url": "https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/loras/wan2.2_t2v_lightx2v_4steps_lora_v1.1_high_noise.safetensors",
+      "min_bytes": 1000000000,
+      "target_dir": "ComfyUI/models/loras",
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full",
+        "video_lifestyle_adult_v1"
+      ],
+      "replaces": [
+        "Wan22_A14B_T2V_HIGH_Lightning_4steps_lora_250928_rank128_fp16.safetensors",
+        "wan2.2_t2v_highnoise_sidemissionary_v1.0.safetensors"
+      ]
+    },
+    {
+      "name": "wan2.2_t2v_lightx2v_4steps_lora_v1.1_low_noise.safetensors",
+      "type": "lora",
+      "source_url": "https://huggingface.co/Comfy-Org/Wan_2.2_ComfyUI_Repackaged/resolve/main/split_files/loras/wan2.2_t2v_lightx2v_4steps_lora_v1.1_low_noise.safetensors",
+      "min_bytes": 1000000000,
+      "target_dir": "ComfyUI/models/loras",
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full",
+        "video_lifestyle_adult_v1"
+      ],
+      "replaces": [
+        "Wan22_A14B_T2V_LOW_Lightning_4steps_lora_250928_rank64_fp16.safetensors",
+        "wan2.2_t2v_lownoise_sidemissionary_v1.0.safetensors"
+      ]
     }
   ],
   "custom_node_type_hints": [
@@ -404,7 +456,21 @@
       "workflow": "OFM-LAB_faceswap_CLOUD_READY.json"
     },
     "first_full": {
-      "description": "Original first production-oriented Fanvue workflow set. Requires private/custom model URLs."
+      "description": "Source-complete realistic photo + adult photo + short video baseline replacing unavailable legacy exact model files.",
+      "source_complete": true,
+      "required_workflows": [
+        "z-image-turbo-worfklow.json",
+        "QWEN Edit Consistent Face.json",
+        "Face_Detailer.json",
+        "OFMTechNSFW++.json",
+        "WAN2.2-Text_to_Video_NSFW.json"
+      ],
+      "child_profiles": [
+        "photo_lifestyle_v1",
+        "photo_adult_v1",
+        "video_lifestyle_adult_v1"
+      ],
+      "notes": "The legacy exact OFM/WAN blockers were replaced by public source-complete model roles. Adult-specific motion/style should be controlled by prompts and quality gates until vetted specialty LoRAs are sourced."
     },
     "face_detailer_smoke": {
       "description": "Minimal public-download image-to-image Face Detailer smoke profile."
@@ -413,6 +479,42 @@
       "description": "Minimal public-download Qwen Image Edit prompt profile.",
       "api_prompt": "api_prompts/qwen_image_smoke.json",
       "source_workflow": "workflows/QWEN Edit Consistent Face.json"
+    },
+    "photo_lifestyle_v1": {
+      "description": "Photorealistic lifestyle image baseline with Z-Image, Qwen edit consistency, and Face Detailer.",
+      "source_complete": true,
+      "required_workflows": [
+        "z-image-turbo-worfklow.json",
+        "QWEN Edit Consistent Face.json",
+        "Face_Detailer.json"
+      ]
+    },
+    "photo_adult_v1": {
+      "description": "Adult-capable still-image baseline using source-complete Lustify SDXL plus public DMD2 LoRA and downstream detail/quality gates.",
+      "source_complete": true,
+      "required_workflows": [
+        "OFMTechNSFW++.json",
+        "Face_Detailer.json"
+      ]
+    },
+    "video_lifestyle_adult_v1": {
+      "description": "Short Wan 2.2 T2V baseline using public high/low noise models and public lightx2v 4-step LoRAs. Use prompts and manual review for lifestyle vs adult mode.",
+      "source_complete": true,
+      "required_workflows": [
+        "WAN2.2-Text_to_Video_NSFW.json"
+      ]
+    },
+    "legacy_missing_replaced_2026_06_23": {
+      "description": "Unavailable exact model names retained only as legacy references after replacement.",
+      "source_complete": false,
+      "models": [
+        "AIKOZIMAGE_000002700.safetensors",
+        "Detailed Nipples XL v1.0.safetensors",
+        "Wan22_A14B_T2V_HIGH_Lightning_4steps_lora_250928_rank128_fp16.safetensors",
+        "Wan22_A14B_T2V_LOW_Lightning_4steps_lora_250928_rank64_fp16.safetensors",
+        "wan2.2_t2v_highnoise_sidemissionary_v1.0.safetensors",
+        "wan2.2_t2v_lownoise_sidemissionary_v1.0.safetensors"
+      ]
     }
   }
 }
