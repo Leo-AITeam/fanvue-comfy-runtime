@@ -132,6 +132,10 @@ function parseList(value) {
     .filter(Boolean);
 }
 
+function shellQuote(value) {
+  return `'${String(value).replaceAll("'", "'\\''")}'`;
+}
+
 function validateBundle({ print = true } = {}) {
   const validator = path.join(bundleDir, 'scripts', 'validate_runtime_bundle.mjs');
   if (!fs.existsSync(validator)) {
@@ -224,6 +228,15 @@ function buildCreatePayload() {
   const filenamePrefix = argValue('filename-prefix', process.env.FANVUE_FILENAME_PREFIX || `fanvue_direct_${profile}`);
   const callbackUrl = argValue('callback-url', process.env.FANVUE_CALLBACK_URL || '');
   const callbackAuthHeader = argValue('callback-auth-header', process.env.FANVUE_CALLBACK_AUTH_HEADER || '');
+  const templateBootstrapScript = [
+    'set -euo pipefail',
+    'mkdir -p /workspace/fanvue',
+    'if [ ! -d /workspace/fanvue/bootstrap/.git ]; then git clone --depth 1 --branch "${FANVUE_BOOTSTRAP_REPO_REF:-main}" "${FANVUE_BOOTSTRAP_REPO_URL}" /workspace/fanvue/bootstrap; fi',
+    'cd /workspace/fanvue/bootstrap',
+    'git fetch --depth 1 origin "${FANVUE_BOOTSTRAP_REPO_REF:-main}"',
+    'git checkout --detach FETCH_HEAD',
+    'exec bash runpod/entrypoint.sh',
+  ].join(' && ');
 
   const payload = {
     name,
@@ -232,19 +245,9 @@ function buildCreatePayload() {
     containerDiskInGb: Number(argValue('container-disk-gb', process.env.RUNPOD_CONTAINER_DISK_GB || '80')),
     volumeInGb: Number(argValue('volume-gb', process.env.RUNPOD_VOLUME_GB || '0')),
     ports: ['8188/http', '8888/http'],
-    dockerStartCmd: useTemplate ? [
-      'bash',
-      '-lc',
-      [
-        'set -euo pipefail',
-        'mkdir -p /workspace/fanvue',
-        'if [ ! -d /workspace/fanvue/bootstrap/.git ]; then git clone --depth 1 --branch "${FANVUE_BOOTSTRAP_REPO_REF:-main}" "${FANVUE_BOOTSTRAP_REPO_URL}" /workspace/fanvue/bootstrap; fi',
-        'cd /workspace/fanvue/bootstrap',
-        'git fetch --depth 1 origin "${FANVUE_BOOTSTRAP_REPO_REF:-main}"',
-        'git checkout --detach FETCH_HEAD',
-        'exec bash runpod/entrypoint.sh',
-      ].join(' && '),
-    ] : ['bash', '-lc', 'exec /opt/fanvue-comfy-runtime/runpod/entrypoint.sh'],
+    dockerStartCmd: useTemplate
+      ? `bash -lc ${shellQuote(templateBootstrapScript)}`
+      : ['bash', '-lc', 'exec /opt/fanvue-comfy-runtime/runpod/entrypoint.sh'],
     env: {
       FANVUE_BOOTSTRAP_REPO_URL: repo,
       FANVUE_BOOTSTRAP_REPO_REF: ref,
