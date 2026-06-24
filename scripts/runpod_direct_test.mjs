@@ -96,7 +96,8 @@ const envFile = path.resolve(argValue('local-env-file', process.env.FANVUE_ENV_F
 const envFileStatus = hasFlag('no-env-file') ? { loaded: false, skipped: true, file: envFile } : loadEnvFile(envFile);
 const apiBase = process.env.RUNPOD_REST_BASE_URL || 'https://rest.runpod.io/v1';
 const defaultComfyTemplateId = process.env.RUNPOD_COMFY_TEMPLATE_ID || 'cw3nka7d08';
-const defaultComfyImageName = process.env.RUNPOD_COMFY_IMAGE_NAME || 'runpod/comfyui:cuda12.8';
+const defaultRuntimeImageName = process.env.RUNPOD_RUNTIME_IMAGE_NAME || 'ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest';
+const directComfyImageName = process.env.RUNPOD_COMFY_IMAGE_NAME || 'runpod/comfyui:cuda12.8';
 const maxGpuPriceUsd = Number(process.env.RUNPOD_MAX_GPU_PRICE_USD || '1');
 const gpuPriceCatalog = {
   'NVIDIA GeForce RTX 5090': { secure: 0.99, community: 0.69, vram_gb: 32 },
@@ -206,9 +207,9 @@ function buildCreatePayload() {
   const workflowName = argValue('workflow-name', process.env.FANVUE_WORKFLOW_NAME || '');
   const requestedImageName = argValue('image', process.env.RUNPOD_IMAGE_NAME || '');
   const useTemplate = hasFlag('preinstalled-comfy-template') || process.env.FANVUE_PREINSTALLED_COMFY_TEMPLATE === 'true';
-  const imageName = requestedImageName || defaultComfyImageName;
+  const imageName = requestedImageName || defaultRuntimeImageName;
   const templateId = argValue('template-id', process.env.RUNPOD_TEMPLATE_ID || (useTemplate ? defaultComfyTemplateId : ''));
-  const useBootstrapFromRepo = useTemplate || imageName === defaultComfyImageName;
+  const useBootstrapFromRepo = useTemplate || imageName === directComfyImageName;
   const explicitGpuList = parseList(argValue('gpu-type-ids', process.env.RUNPOD_GPU_TYPE_IDS || ''));
   const gpu = argValue('gpu', process.env.RUNPOD_GPU_TYPE || '');
   const gpuTypeIds = explicitGpuList.length ? explicitGpuList : (gpu ? [gpu] : defaultGpuTypeIds());
@@ -325,7 +326,7 @@ async function createPod() {
         max_price_usd_per_hour: maxGpuPriceUsd,
         selected_gpu_type_ids: payload.gpuTypeIds || [],
         catalog: gpuPriceCatalog,
-        preinstalled_comfy_image: payload.imageName === defaultComfyImageName,
+        preinstalled_comfy_image: payload.imageName === directComfyImageName,
         preinstalled_comfy_template: Boolean(payload.templateId),
         image_name: payload.imageName || '',
         template_id: payload.templateId || '',
