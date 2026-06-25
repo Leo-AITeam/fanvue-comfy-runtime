@@ -205,7 +205,8 @@
           "enum": [
             "always",
             "on_success",
-            "manual_debug"
+            "manual_debug",
+            "callback_archiver"
           ]
         },
         "timeout_seconds": {

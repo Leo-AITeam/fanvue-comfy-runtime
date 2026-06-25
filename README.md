@@ -36,6 +36,16 @@ ghcr.io/leo-aiteam/fanvue-comfy-runtime:photo-latest
 
 The photo pack bakes the `photo_lifestyle_v1` model stack into the image so pod
 startup validates existing model files instead of downloading them each run.
+
+For production video generation after video smoke approval, use:
+
+```text
+ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-latest
+```
+
+The video pack bakes the source-complete Wan 2.2 stack used by
+`video_lifestyle_v1` and `video_adult_v1`. Queue claiming should stay disabled
+until the first clean GPU video smoke pass.
 See `docs/RUNTIME_IMAGE_PACKS.md`.
 
 The runtime auto-detects ComfyUI in common RunPod paths, including:

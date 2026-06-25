@@ -127,6 +127,26 @@
       "native_orchestrator_status": "api_prompt_ready_pending_gpu_video_smoke",
       "safety": "queue_disabled_until_clean_gpu_video_smoke",
       "notes": "Registered but not queue-enabled. API prompt is available for controlled Wan 2.2 smoke; queue activation still requires a clean GPU video pass."
+    },
+    "Video Lifestyle v1": {
+      "job_type": "video",
+      "source_workflow": "workflows/WAN2.2-Text_to_Video_NSFW.json",
+      "api_prompt": "api_prompts/wan22_t2v_smoke.json",
+      "input_mode": "text_to_video",
+      "model_profile": "video_lifestyle_v1",
+      "native_orchestrator_status": "video_pack_ready_pending_gpu_smoke",
+      "safety": "queue_disabled_until_clean_gpu_video_smoke",
+      "notes": "Lifestyle video profile for the dedicated video-latest runtime pack. Uses the public source-complete Wan 2.2 stack."
+    },
+    "Video Adult v1": {
+      "job_type": "video",
+      "source_workflow": "workflows/WAN2.2-Text_to_Video_NSFW.json",
+      "api_prompt": "api_prompts/wan22_t2v_smoke.json",
+      "input_mode": "text_to_video",
+      "model_profile": "video_adult_v1",
+      "native_orchestrator_status": "video_pack_ready_pending_gpu_smoke",
+      "safety": "queue_disabled_until_clean_gpu_video_smoke",
+      "notes": "Adult-tier video profile for the dedicated video-latest runtime pack. Uses the public source-complete Wan 2.2 stack."
     }
   },
   "replacement_profiles": {
@@ -142,6 +162,12 @@
         "Face_Detailer.json"
       ],
       "video_lifestyle_adult_v1": [
+        "WAN2.2-Text_to_Video_NSFW.json"
+      ],
+      "video_lifestyle_v1": [
+        "WAN2.2-Text_to_Video_NSFW.json"
+      ],
+      "video_adult_v1": [
         "WAN2.2-Text_to_Video_NSFW.json"
       ],
       "replaced_models": [

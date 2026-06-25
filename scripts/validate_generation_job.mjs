@@ -242,7 +242,7 @@ function validateOutputCallbackRuntime(job, checks) {
     checks.push(issue(Number.isInteger(job.runtime.gpu_count) && job.runtime.gpu_count >= 1, 'runtime.gpu_count', {
       value: job.runtime.gpu_count,
     }));
-    checks.push(issue(['always', 'on_success', 'manual_debug'].includes(job.runtime.stop_policy), 'runtime.stop_policy', {
+    checks.push(issue(['always', 'on_success', 'manual_debug', 'callback_archiver'].includes(job.runtime.stop_policy), 'runtime.stop_policy', {
       value: job.runtime.stop_policy,
     }));
     if (Object.hasOwn(job.runtime, 'timeout_seconds')) {

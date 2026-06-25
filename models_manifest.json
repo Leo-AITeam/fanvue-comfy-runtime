@@ -299,7 +299,9 @@
       "required_for_first_test": true,
       "test_profiles": [
         "first_full",
-        "video_lifestyle_adult_v1"
+        "video_lifestyle_adult_v1",
+        "video_lifestyle_v1",
+        "video_adult_v1"
       ]
     },
     {
@@ -311,7 +313,9 @@
       "required_for_first_test": true,
       "test_profiles": [
         "first_full",
-        "video_lifestyle_adult_v1"
+        "video_lifestyle_adult_v1",
+        "video_lifestyle_v1",
+        "video_adult_v1"
       ]
     },
     {
@@ -335,7 +339,9 @@
       "required_for_first_test": true,
       "test_profiles": [
         "first_full",
-        "video_lifestyle_adult_v1"
+        "video_lifestyle_adult_v1",
+        "video_lifestyle_v1",
+        "video_adult_v1"
       ]
     },
     {
@@ -359,7 +365,9 @@
       "required_for_first_test": true,
       "test_profiles": [
         "first_full",
-        "video_lifestyle_adult_v1"
+        "video_lifestyle_adult_v1",
+        "video_lifestyle_v1",
+        "video_adult_v1"
       ]
     },
     {
@@ -406,7 +414,9 @@
       "required_for_first_test": true,
       "test_profiles": [
         "first_full",
-        "video_lifestyle_adult_v1"
+        "video_lifestyle_adult_v1",
+        "video_lifestyle_v1",
+        "video_adult_v1"
       ],
       "replaces": [
         "Wan22_A14B_T2V_HIGH_Lightning_4steps_lora_250928_rank128_fp16.safetensors",
@@ -422,7 +432,9 @@
       "required_for_first_test": true,
       "test_profiles": [
         "first_full",
-        "video_lifestyle_adult_v1"
+        "video_lifestyle_adult_v1",
+        "video_lifestyle_v1",
+        "video_adult_v1"
       ],
       "replaces": [
         "Wan22_A14B_T2V_LOW_Lightning_4steps_lora_250928_rank64_fp16.safetensors",
@@ -506,6 +518,44 @@
     "video_lifestyle_adult_v1": {
       "description": "Minimal source-complete Wan 2.2 text-to-video smoke profile.",
       "source_complete": true,
+      "required_models": [
+        "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors",
+        "wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors",
+        "wan_2.1_vae.safetensors",
+        "wan2.2_t2v_lightx2v_4steps_lora_v1.1_high_noise.safetensors",
+        "wan2.2_t2v_lightx2v_4steps_lora_v1.1_low_noise.safetensors"
+      ],
+      "required_workflows": [
+        "WAN2.2-Text_to_Video_NSFW.json"
+      ],
+      "required_api_prompts": [
+        "api_prompts/wan22_t2v_smoke.json"
+      ]
+    },
+    "video_lifestyle_v1": {
+      "description": "Lifestyle Wan 2.2 text-to-video profile using the source-complete video pack.",
+      "source_complete": true,
+      "inherits_model_stack": "video_lifestyle_adult_v1",
+      "required_models": [
+        "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+        "wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors",
+        "wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors",
+        "wan_2.1_vae.safetensors",
+        "wan2.2_t2v_lightx2v_4steps_lora_v1.1_high_noise.safetensors",
+        "wan2.2_t2v_lightx2v_4steps_lora_v1.1_low_noise.safetensors"
+      ],
+      "required_workflows": [
+        "WAN2.2-Text_to_Video_NSFW.json"
+      ],
+      "required_api_prompts": [
+        "api_prompts/wan22_t2v_smoke.json"
+      ]
+    },
+    "video_adult_v1": {
+      "description": "Adult-tier Wan 2.2 text-to-video profile using the source-complete video pack.",
+      "source_complete": true,
+      "inherits_model_stack": "video_lifestyle_adult_v1",
       "required_models": [
         "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
         "wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors",

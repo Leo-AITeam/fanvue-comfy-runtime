@@ -36,6 +36,14 @@ const chainJobBase64 = Buffer.from(
   fs.readFileSync(path.join(root, 'job_templates', 'qwen_to_face_detailer_chain_job.json'), 'utf8'),
   'utf8'
 ).toString('base64');
+const videoLifestyleJobBase64 = Buffer.from(
+  fs.readFileSync(path.join(root, 'job_templates', 'video_lifestyle_v1_job.json'), 'utf8'),
+  'utf8'
+).toString('base64');
+const videoAdultJobBase64 = Buffer.from(
+  fs.readFileSync(path.join(root, 'job_templates', 'video_adult_v1_job.json'), 'utf8'),
+  'utf8'
+).toString('base64');
 const checks = [
   run('syntax.validate_runtime_bundle', ['--check', 'scripts/validate_runtime_bundle.mjs']),
   run('syntax.runpod_direct_test', ['--check', 'scripts/runpod_direct_test.mjs']),
@@ -72,6 +80,16 @@ const checks = [
     'scripts/validate_generation_job.mjs',
     '.',
     'job_templates/qwen_to_face_detailer_chain_job.json',
+  ]),
+  run('generation_job.video_lifestyle_v1_validate', [
+    'scripts/validate_generation_job.mjs',
+    '.',
+    'job_templates/video_lifestyle_v1_job.json',
+  ]),
+  run('generation_job.video_adult_v1_validate', [
+    'scripts/validate_generation_job.mjs',
+    '.',
+    'job_templates/video_adult_v1_job.json',
   ]),
   run('model_sources.import_dry_run', [
     'scripts/import_model_sources_csv.mjs',
@@ -122,6 +140,26 @@ const checks = [
       FANVUE_TEST_PROFILE: 'photo_lifestyle_v1',
       FANVUE_DOWNLOAD_DRY_RUN: 'true',
       FANVUE_DOWNLOAD_REPORT: path.join(outDir, 'download-photo-lifestyle-v1-report.json'),
+    },
+  }),
+  run('download_models.video_lifestyle_v1_dry_run', ['scripts/download_models.mjs'], {
+    env: {
+      BUNDLE_DIR: root,
+      WORKSPACE_DIR: path.join(outDir, 'download-video-lifestyle-v1'),
+      COMFY_DIR: path.join(outDir, 'download-video-lifestyle-v1', 'ComfyUI'),
+      FANVUE_TEST_PROFILE: 'video_lifestyle_v1',
+      FANVUE_DOWNLOAD_DRY_RUN: 'true',
+      FANVUE_DOWNLOAD_REPORT: path.join(outDir, 'download-video-lifestyle-v1-report.json'),
+    },
+  }),
+  run('download_models.video_adult_v1_dry_run', ['scripts/download_models.mjs'], {
+    env: {
+      BUNDLE_DIR: root,
+      WORKSPACE_DIR: path.join(outDir, 'download-video-adult-v1'),
+      COMFY_DIR: path.join(outDir, 'download-video-adult-v1', 'ComfyUI'),
+      FANVUE_TEST_PROFILE: 'video_adult_v1',
+      FANVUE_DOWNLOAD_DRY_RUN: 'true',
+      FANVUE_DOWNLOAD_REPORT: path.join(outDir, 'download-video-adult-v1-report.json'),
     },
   }),
   run('download_models.first_full_dry_run', ['scripts/download_models.mjs'], {
@@ -213,6 +251,34 @@ const checks = [
       FANVUE_CALLBACK_DRY_RUN: 'true',
       FANVUE_WORKER_REPORT: path.join(workerRoot, 'fanvue-job-base64', 'fanvue_worker_report.json'),
       FANVUE_WORKER_REPORT_MIRROR: path.join(workerRoot, 'ComfyUI-job-base64', 'output', 'fanvue_worker_report.json'),
+    },
+  }),
+  run('worker.video_lifestyle_v1_job_base64_dry_run', ['scripts/comfy_runtime_worker.mjs'], {
+    env: {
+      BUNDLE_DIR: root,
+      FANVUE_DIR: path.join(workerRoot, 'video-lifestyle-v1'),
+      COMFY_DIR: path.join(workerRoot, 'ComfyUI-video-lifestyle-v1'),
+      OUTPUT_DIR: path.join(workerRoot, 'video-lifestyle-v1', 'output'),
+      FANVUE_WORKER_DRY_RUN: 'true',
+      FANVUE_JOB_JSON_BASE64: videoLifestyleJobBase64,
+      FANVUE_TEST_PROFILE: 'video_lifestyle_v1',
+      FANVUE_CALLBACK_DRY_RUN: 'true',
+      FANVUE_WORKER_REPORT: path.join(workerRoot, 'video-lifestyle-v1', 'fanvue_worker_report.json'),
+      FANVUE_WORKER_REPORT_MIRROR: path.join(workerRoot, 'ComfyUI-video-lifestyle-v1', 'output', 'fanvue_worker_report.json'),
+    },
+  }),
+  run('worker.video_adult_v1_job_base64_dry_run', ['scripts/comfy_runtime_worker.mjs'], {
+    env: {
+      BUNDLE_DIR: root,
+      FANVUE_DIR: path.join(workerRoot, 'video-adult-v1'),
+      COMFY_DIR: path.join(workerRoot, 'ComfyUI-video-adult-v1'),
+      OUTPUT_DIR: path.join(workerRoot, 'video-adult-v1', 'output'),
+      FANVUE_WORKER_DRY_RUN: 'true',
+      FANVUE_JOB_JSON_BASE64: videoAdultJobBase64,
+      FANVUE_TEST_PROFILE: 'video_adult_v1',
+      FANVUE_CALLBACK_DRY_RUN: 'true',
+      FANVUE_WORKER_REPORT: path.join(workerRoot, 'video-adult-v1', 'fanvue_worker_report.json'),
+      FANVUE_WORKER_REPORT_MIRROR: path.join(workerRoot, 'ComfyUI-video-adult-v1', 'output', 'fanvue_worker_report.json'),
     },
   }),
 ];

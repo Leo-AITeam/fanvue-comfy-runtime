@@ -473,7 +473,12 @@ function buildPrompt(uploadedInputName) {
       templatePath: promptPath,
     };
   }
-  if (workflowName === 'Video Lifestyle Adult v1') {
+  if (
+    workflowName === 'Video Lifestyle Adult v1' ||
+    workflowName === 'Video Lifestyle v1' ||
+    workflowName === 'Video Adult v1' ||
+    ['video_lifestyle_adult_v1', 'video_lifestyle_v1', 'video_adult_v1'].includes(testProfile)
+  ) {
     const promptPath = bundlePath(env('FANVUE_API_PROMPT', path.join(bundleDir, 'api_prompts', 'wan22_t2v_smoke.json')));
     const prompt = readJson(promptPath);
     if (prompt['6']?.inputs) {

@@ -54,6 +54,8 @@ paused
 ```
 
 The runtime should always stop the RunPod pod when `runtime.stop_policy` is `always`.
+For production queue jobs, `callback_archiver` means the worker reports completion
+to n8n and the callback archiver stops the pod after output archival.
 
 ## Content Tier
 

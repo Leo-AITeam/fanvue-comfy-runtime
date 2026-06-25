@@ -1,0 +1,53 @@
+{
+  "schema_version": "generation_job.v1",
+  "job_id": "job_video_lifestyle_v1_example",
+  "character_id": "character_anna_novari_example",
+  "fan_id": null,
+  "request_id": "request_video_lifestyle_v1_example",
+  "job_type": "video",
+  "content_tier": "teasing",
+  "priority": 70,
+  "status": "paused",
+  "workflow": {
+    "name": "Video Lifestyle v1",
+    "adapter": "Video Lifestyle v1",
+    "profile": "video_lifestyle_v1",
+    "input_mode": "text_to_video"
+  },
+  "inputs": {
+    "positive_prompt": "photorealistic lifestyle short video of an adult creator, natural movement, realistic skin texture, soft cinematic lighting",
+    "negative_prompt": "low quality, flicker, distorted anatomy, extra limbs, watermark, text, logo",
+    "seed": 12345,
+    "width": 512,
+    "height": 768,
+    "length": 17,
+    "fps": 16,
+    "batch_size": 1
+  },
+  "output": {
+    "filename_prefix": "fanvue_video_lifestyle_v1",
+    "storage_target": "external",
+    "expected_files": 1
+  },
+  "callback": {
+    "enabled": false,
+    "url_env": null,
+    "auth_header_env": null,
+    "auth_value_env": null,
+    "fails_job": false
+  },
+  "runtime": {
+    "provider": "runpod",
+    "image": "ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-latest",
+    "disk_gb": 180,
+    "gpu_count": 1,
+    "gpu_type": "NVIDIA RTX 4090 or equivalent",
+    "stop_policy": "callback_archiver",
+    "timeout_seconds": 5400
+  },
+  "metadata": {
+    "purpose": "video_lifestyle_profile_manual_hold",
+    "safety": "requires_video_gpu_smoke_before_queue_enable",
+    "model_profile": "video_lifestyle_v1"
+  }
+}

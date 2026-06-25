@@ -8,6 +8,7 @@ on:
     paths:
       - Dockerfile
       - Dockerfile.photo
+      - Dockerfile.video
       - bootstrap_fanvue_comfyui.sh
       - runpod/**
       - scripts/**
@@ -59,3 +60,13 @@ jobs:
           tags: |
             ghcr.io/leo-aiteam/fanvue-comfy-runtime:photo-latest
             ghcr.io/leo-aiteam/fanvue-comfy-runtime:photo-${{ github.sha }}
+
+      - name: Build and push video runtime
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.video
+          push: true
+          tags: |
+            ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-latest
+            ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-${{ github.sha }}
