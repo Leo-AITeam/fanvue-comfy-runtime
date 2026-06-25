@@ -101,12 +101,13 @@
     },
     "Photo Lifestyle v1": {
       "job_type": "photo",
-      "api_prompt": "api_prompts/flux2_klein_4b_smoke.json",
+      "source_workflow": "workflows/z-image-turbo-worfklow.json",
+      "api_prompt": "api_prompts/photo_lifestyle_v1.json",
       "input_mode": "text_to_image",
       "model_profile": "photo_lifestyle_v1",
-      "native_orchestrator_status": "queue_enabled_controlled",
+      "native_orchestrator_status": "production_prompt_ready",
       "safety": "no_publish_until_manual_review",
-      "notes": "Activated queue profile for realistic lifestyle photo jobs. Uses the validated Flux/Klein worker path until the full local lifestyle workflow is converted to API prompt format."
+      "notes": "Converted from the Z-Image Turbo local workflow to a native ComfyUI API prompt for production lifestyle photo jobs."
     },
     "Photo Adult v1": {
       "job_type": "ppv_photo",

@@ -118,6 +118,7 @@ const workflowName = env(
   'FANVUE_WORKFLOW_NAME',
   jobString([['workflow', 'name'], ['workflow', 'adapter']], env('FANVUE_TEST_PROFILE', 'smoke'))
 );
+const testProfile = env('FANVUE_TEST_PROFILE', 'smoke');
 
 function bundlePath(value) {
   if (!value) return value;
@@ -131,7 +132,7 @@ function resultBase() {
     job_type: env('FANVUE_JOB_TYPE', jobString([['job_type']], 'photo')),
     content_tier: env('FANVUE_CONTENT_TIER', jobString([['content_tier']], 'sfw')),
     workflow_name: workflowName,
-    test_profile: env('FANVUE_TEST_PROFILE', 'smoke'),
+    test_profile: testProfile,
     input: generationJob?.payload?.inputs || null,
     output_config: generationJob?.payload?.output || null,
     metadata: generationJob?.payload?.metadata || null,
@@ -519,6 +520,61 @@ function buildPrompt(uploadedInputName) {
       prompt['86'].inputs.filename_prefix = env(
         'FANVUE_FILENAME_PREFIX',
         jobString([['output', 'filename_prefix']], prompt['86'].inputs.filename_prefix || 'fanvue_wan22_video_smoke')
+      );
+    }
+    return {
+      prompt,
+      replaced: 0,
+      templatePath: promptPath,
+    };
+  }
+  if (workflowName === 'Photo Lifestyle v1' || testProfile === 'photo_lifestyle_v1') {
+    const promptPath = bundlePath(env('FANVUE_API_PROMPT', path.join(bundleDir, 'api_prompts', 'photo_lifestyle_v1.json')));
+    const prompt = readJson(promptPath);
+    if (prompt['6']?.inputs) {
+      prompt['6'].inputs.text = env(
+        'FANVUE_POSITIVE_PROMPT',
+        jobString([['inputs', 'positive_prompt'], ['inputs', 'prompt']], prompt['6'].inputs.text)
+      );
+    }
+    if (prompt['7']?.inputs) {
+      prompt['7'].inputs.text = env(
+        'FANVUE_NEGATIVE_PROMPT',
+        jobString([['inputs', 'negative_prompt']], prompt['7'].inputs.text)
+      );
+    }
+    if (prompt['13']?.inputs) {
+      prompt['13'].inputs.width = Number(env(
+        'FANVUE_WIDTH',
+        String(jobNumber([['inputs', 'width']], prompt['13'].inputs.width || 768))
+      ));
+      prompt['13'].inputs.height = Number(env(
+        'FANVUE_HEIGHT',
+        String(jobNumber([['inputs', 'height']], prompt['13'].inputs.height || 1024))
+      ));
+      prompt['13'].inputs.batch_size = Number(env(
+        'FANVUE_BATCH_SIZE',
+        String(jobNumber([['inputs', 'batch_size']], prompt['13'].inputs.batch_size || 1))
+      ));
+    }
+    if (prompt['3']?.inputs) {
+      prompt['3'].inputs.seed = Number(env(
+        'FANVUE_SEED',
+        String(jobNumber([['inputs', 'seed']], prompt['3'].inputs.seed || Date.now()))
+      ));
+      prompt['3'].inputs.steps = Number(env(
+        'FANVUE_STEPS',
+        String(jobNumber([['inputs', 'steps']], prompt['3'].inputs.steps || 9))
+      ));
+      prompt['3'].inputs.cfg = Number(env(
+        'FANVUE_CFG',
+        String(jobNumber([['inputs', 'cfg']], prompt['3'].inputs.cfg || 1))
+      ));
+    }
+    if (prompt['9']?.inputs) {
+      prompt['9'].inputs.filename_prefix = env(
+        'FANVUE_FILENAME_PREFIX',
+        jobString([['output', 'filename_prefix']], prompt['9'].inputs.filename_prefix || 'fanvue_photo_lifestyle_v1')
       );
     }
     return {

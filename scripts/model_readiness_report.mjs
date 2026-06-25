@@ -39,6 +39,7 @@ function table(rows) {
 
 const smoke = profileRows('smoke');
 const faceDetailerSmoke = profileRows('face_detailer_smoke');
+const photoLifestyle = profileRows('photo_lifestyle_v1');
 const firstFull = profileRows('first_full');
 const firstFullMissing = firstFull.filter((item) => !item.source_url);
 
@@ -59,6 +60,7 @@ Generated from \`models_manifest.json\`.
 |---|---:|---:|
 | smoke | ${smoke.length} | ${smoke.filter((item) => !item.source_url).length} |
 | face_detailer_smoke | ${faceDetailerSmoke.length} | ${faceDetailerSmoke.filter((item) => !item.source_url).length} |
+| photo_lifestyle_v1 | ${photoLifestyle.length} | ${photoLifestyle.filter((item) => !item.source_url).length} |
 | first_full | ${firstFull.length} | ${firstFullMissing.length} |
 
 ## Smoke Profile
@@ -72,6 +74,12 @@ ${table(smoke)}
 This is the current safe GPU image-to-image profile for the Face Detailer adapter.
 
 ${table(faceDetailerSmoke)}
+
+## Photo Lifestyle v1 Profile
+
+This is the production realistic lifestyle still-image baseline.
+
+${table(photoLifestyle)}
 
 ## First Full Profile
 

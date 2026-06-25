@@ -103,7 +103,8 @@
       "required_for_first_test": true,
       "test_profiles": [
         "face_detailer_smoke",
-        "first_full"
+        "first_full",
+        "photo_lifestyle_v1"
       ]
     },
     {
@@ -228,6 +229,7 @@
       "test_profiles": [
         "face_detailer_smoke",
         "first_full",
+        "photo_lifestyle_v1",
         "smoke"
       ]
     },
@@ -380,7 +382,8 @@
       "required_for_first_test": true,
       "test_profiles": [
         "face_detailer_smoke",
-        "first_full"
+        "first_full",
+        "photo_lifestyle_v1"
       ]
     },
     {
@@ -485,12 +488,11 @@
       "source_workflow": "workflows/QWEN Edit Consistent Face.json"
     },
     "photo_lifestyle_v1": {
-      "description": "Photorealistic lifestyle image baseline with Z-Image, Qwen edit consistency, and Face Detailer.",
+      "description": "Photorealistic lifestyle image baseline with Z-Image, Qwen text encoder, and dedicated API prompt.",
       "source_complete": true,
+      "api_prompt": "api_prompts/photo_lifestyle_v1.json",
       "required_workflows": [
-        "z-image-turbo-worfklow.json",
-        "QWEN Edit Consistent Face.json",
-        "Face_Detailer.json"
+        "z-image-turbo-worfklow.json"
       ]
     },
     "photo_adult_v1": {

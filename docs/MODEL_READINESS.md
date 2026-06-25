@@ -8,6 +8,7 @@ Generated from `models_manifest.json`.
 |---|---:|---:|
 | smoke | 3 | 0 |
 | face_detailer_smoke | 4 | 0 |
+| photo_lifestyle_v1 | 3 | 0 |
 | first_full | 27 | 0 |
 
 ## Smoke Profile
@@ -30,6 +31,16 @@ This is the current safe GPU image-to-image profile for the Face Detailer adapte
 | 2 | `qwen_3_4b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready |
 | 3 | `sam_vit_b_01ec64.pth` | detector_or_upscale | `ComfyUI/models/sams` | ready |
 | 4 | `z_image_turbo_bf16.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |
+
+## Photo Lifestyle v1 Profile
+
+This is the production realistic lifestyle still-image baseline.
+
+| # | File | Type | Target dir | Source URL |
+|---:|---|---|---|---|
+| 1 | `ae.safetensors` | model | `ComfyUI/models/vae` | ready |
+| 2 | `qwen_3_4b.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready |
+| 3 | `z_image_turbo_bf16.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |
 
 ## First Full Profile
 
@@ -71,8 +82,8 @@ No missing first full model sources.
 | 18 | `sam_vit_b_01ec64.pth` | detector_or_upscale | `ComfyUI/models/sams` | ready |
 | 19 | `segm/person_yolov8m-seg.pt` | detector_or_upscale | `ComfyUI/models/ultralytics` | ready |
 | 20 | `umt5_xxl_fp8_e4m3fn_scaled.safetensors` | text_encoder | `ComfyUI/models/text_encoders` | ready |
-| 21 | `wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
-| 22 | `wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors` | model | `ComfyUI/models/checkpoints` | ready |
+| 21 | `wan2.2_t2v_high_noise_14B_fp8_scaled.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |
+| 22 | `wan2.2_t2v_low_noise_14B_fp8_scaled.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |
 | 23 | `wan_2.1_vae.safetensors` | vae | `ComfyUI/models/vae` | ready |
 | 24 | `x1_ITF_SkinDiffDetail_Lite_v1.pth` | detector_or_upscale | `ComfyUI/models` | ready |
 | 25 | `z_image_turbo_bf16.safetensors` | model | `ComfyUI/models/diffusion_models` | ready |
