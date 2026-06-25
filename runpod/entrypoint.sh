@@ -11,6 +11,15 @@ LOG_FILE="$FANVUE_DIR/fanvue_runtime.log"
 
 mkdir -p "$FANVUE_DIR"
 touch "$LOG_FILE"
+cat > "$FANVUE_DIR/runtime_boot_report.json" <<JSON
+{
+  "ok": true,
+  "status": "booting",
+  "generated_at": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "fanvue_dir": "$FANVUE_DIR",
+  "log_file": "$LOG_FILE"
+}
+JSON
 
 if [ "${FANVUE_DIAGNOSTIC_HTTP:-true}" = "true" ]; then
   python3 -m http.server "${FANVUE_DIAGNOSTIC_PORT:-8888}" --directory "$FANVUE_DIR" &
@@ -37,6 +46,15 @@ export WORKSPACE_DIR FANVUE_DIR BUNDLE_DIR COMFY_DIR
 
 if [ -n "$REPO_URL" ]; then
   echo "[fanvue-runpod] Cloning bootstrap repo: $REPO_URL ($REPO_REF)"
+  cat > "$FANVUE_DIR/runtime_boot_report.json" <<JSON
+{
+  "ok": true,
+  "status": "cloning_bootstrap_repo",
+  "generated_at": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "repo_ref": "$REPO_REF",
+  "bundle_dir": "$BUNDLE_DIR"
+}
+JSON
   if [ "$BUNDLE_DIR" = "$DEFAULT_BUNDLE_DIR" ]; then
     BUNDLE_DIR="$FANVUE_DIR/bootstrap"
     export BUNDLE_DIR
@@ -55,6 +73,15 @@ else
 fi
 
 chmod +x "$BUNDLE_DIR/bootstrap_fanvue_comfyui.sh"
+cat > "$FANVUE_DIR/runtime_boot_report.json" <<JSON
+{
+  "ok": true,
+  "status": "bootstrap_repo_ready",
+  "generated_at": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "bundle_dir": "$BUNDLE_DIR",
+  "comfy_dir": "$COMFY_DIR"
+}
+JSON
 
 if [ "${FANVUE_START_COMFYUI_EARLY:-false}" = "true" ]; then
   echo "[fanvue-runpod] Running pre-model bootstrap before ComfyUI start"

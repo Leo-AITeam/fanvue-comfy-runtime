@@ -21,6 +21,34 @@ function matchesProfile(item) {
 }
 
 const models = (manifest.models || []).filter((item) => matchesProfile(item));
+const results = [];
+
+function writeReport(status = 'downloading', extra = {}) {
+  const report = {
+    ok: status === 'completed'
+      ? results.every((item) => !['failed', 'existing_invalid_dry_run'].includes(item.status))
+      : true,
+    status,
+    generated_at: new Date().toISOString(),
+    workspace_dir: workspaceDir,
+    comfy_dir: comfyDir,
+    test_profile: testProfile,
+    first_test_only: firstTestOnly,
+    selected_model_count: models.length,
+    completed_model_count: results.length,
+    downloaded_plan: results,
+    ...extra,
+  };
+  fs.mkdirSync(path.dirname(reportPath), { recursive: true });
+  fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
+  if (mirrorReportPath) {
+    fs.mkdirSync(path.dirname(mirrorReportPath), { recursive: true });
+    fs.writeFileSync(mirrorReportPath, JSON.stringify(report, null, 2));
+  }
+  return report;
+}
+
+writeReport(dryRun ? 'dry_run_planning' : 'starting');
 
 function expectedBytes(item) {
   const value = Number(item.expected_bytes || 0);
@@ -58,11 +86,11 @@ function targetPath(item) {
   return path.join(workspaceDir, targetDir, cleanName);
 }
 
-const results = [];
 for (const item of models) {
   const destination = targetPath(item);
   if (!item.source_url) {
     results.push({ name: item.name, status: 'missing_source_url', destination });
+    writeReport('downloading', { current_model: { name: item.name, status: 'missing_source_url' } });
     continue;
   }
   if (fs.existsSync(destination)) {
@@ -70,17 +98,21 @@ for (const item of models) {
     if (!validation.ok) {
       if (dryRun) {
         results.push({ name: item.name, status: 'existing_invalid_dry_run', destination, ...validation });
+        writeReport('dry_run_planning', { current_model: { name: item.name, status: 'existing_invalid_dry_run' } });
         continue;
       }
       fs.unlinkSync(destination);
       results.push({ name: item.name, status: 'existing_invalid_removed', destination, ...validation });
+      writeReport('downloading', { current_model: { name: item.name, status: 'existing_invalid_removed' } });
     } else {
       results.push({ name: item.name, status: 'already_exists', destination, ...validation });
+      writeReport('downloading', { current_model: { name: item.name, status: 'already_exists' } });
       continue;
     }
   }
   if (dryRun) {
     results.push({ name: item.name, status: 'dry_run', destination, source_url: item.source_url });
+    writeReport('dry_run_planning', { current_model: { name: item.name, status: 'dry_run' } });
     continue;
   }
 
@@ -90,6 +122,15 @@ for (const item of models) {
   let finalStatus = { ok: false, bytes: 0, reason: 'not_started' };
   let curlStatus = 0;
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+    writeReport('downloading', {
+      current_model: {
+        name: item.name,
+        destination,
+        attempt,
+        max_attempts: maxAttempts,
+        status: 'downloading',
+      },
+    });
     const curl = spawnSync(
       'curl',
       ['-L', '--fail', '--retry', '3', '--retry-delay', '2', '-o', destination, item.source_url],
@@ -99,6 +140,16 @@ for (const item of models) {
     if (curl.status !== 0) {
       finalStatus = { ok: false, bytes: 0, reason: 'curl_failed', attempt, curl_status: curl.status };
       if (fs.existsSync(destination)) fs.unlinkSync(destination);
+      writeReport('downloading', {
+        current_model: {
+          name: item.name,
+          destination,
+          attempt,
+          max_attempts: maxAttempts,
+          status: 'retrying_after_curl_failed',
+          curl_status: curl.status,
+        },
+      });
       continue;
     }
     finalStatus = validateFileSize(item, destination);
@@ -115,24 +166,16 @@ for (const item of models) {
     destination,
     ...finalStatus,
   });
+  writeReport(finalStatus.ok ? 'downloading' : 'failed', {
+    current_model: {
+      name: item.name,
+      destination,
+      status: finalStatus.ok ? 'downloaded' : 'failed',
+      ...finalStatus,
+    },
+  });
   if (!finalStatus.ok) process.exit(curlStatus || 41);
 }
 
-const report = {
-  ok: results.every((item) => !['failed', 'existing_invalid_dry_run'].includes(item.status)),
-  generated_at: new Date().toISOString(),
-  workspace_dir: workspaceDir,
-  comfy_dir: comfyDir,
-  test_profile: testProfile,
-  first_test_only: firstTestOnly,
-  selected_model_count: models.length,
-  downloaded_plan: results,
-};
-
-fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
-if (mirrorReportPath) {
-  fs.mkdirSync(path.dirname(mirrorReportPath), { recursive: true });
-  fs.writeFileSync(mirrorReportPath, JSON.stringify(report, null, 2));
-}
+const report = writeReport('completed');
 console.log(JSON.stringify(report, null, 2));
