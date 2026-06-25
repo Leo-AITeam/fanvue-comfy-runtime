@@ -1,0 +1,25 @@
+FROM ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest
+
+ENV BUNDLE_DIR=/opt/fanvue-comfy-runtime \
+    WORKSPACE_DIR=/opt/comfyui-baked \
+    COMFY_DIR=/opt/comfyui-baked \
+    FANVUE_FIRST_TEST_ONLY=true \
+    FANVUE_TEST_PROFILE=photo_lifestyle_v1 \
+    FANVUE_PREFLIGHT_MODE=real \
+    FANVUE_DOWNLOAD_DRY_RUN=false \
+    FANVUE_START_COMFYUI_EARLY=false \
+    FANVUE_RUNTIME_PACK=photo \
+    COMFYUI_PORT=8188
+
+RUN mkdir -p /opt/comfyui-baked/output \
+  && BUNDLE_DIR=/opt/fanvue-comfy-runtime \
+    WORKSPACE_DIR=/opt/comfyui-baked \
+    COMFY_DIR=/opt/comfyui-baked \
+    FANVUE_FIRST_TEST_ONLY=true \
+    FANVUE_TEST_PROFILE=photo_lifestyle_v1 \
+    FANVUE_DOWNLOAD_REPORT=/opt/fanvue-comfy-runtime/baked_photo_models_report.json \
+    FANVUE_DOWNLOAD_REPORT_MIRROR=/opt/comfyui-baked/output/fanvue_download_models_report.json \
+    node /opt/fanvue-comfy-runtime/scripts/download_models.mjs
+
+ENTRYPOINT []
+CMD ["/opt/fanvue-comfy-runtime/runpod/entrypoint.sh"]

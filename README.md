@@ -27,6 +27,17 @@ ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest
 
 This image extends the current ComfyUI base image and sets the Fanvue entrypoint directly. This is more reliable than passing `dockerStartCmd` to the base image, because some base images keep their own entrypoint and ignore a replacement CMD.
 
+For production photo generation, use the model-baked photo pack after the
+GitHub Actions build succeeds:
+
+```text
+ghcr.io/leo-aiteam/fanvue-comfy-runtime:photo-latest
+```
+
+The photo pack bakes the `photo_lifestyle_v1` model stack into the image so pod
+startup validates existing model files instead of downloading them each run.
+See `docs/RUNTIME_IMAGE_PACKS.md`.
+
 The runtime auto-detects ComfyUI in common RunPod paths, including:
 
 ```text

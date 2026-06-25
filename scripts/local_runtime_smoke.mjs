@@ -114,6 +114,16 @@ const checks = [
       FANVUE_DOWNLOAD_REPORT: path.join(outDir, 'download-qwen-edit-report.json'),
     },
   }),
+  run('download_models.photo_lifestyle_v1_dry_run', ['scripts/download_models.mjs'], {
+    env: {
+      BUNDLE_DIR: root,
+      WORKSPACE_DIR: path.join(outDir, 'download-photo-lifestyle-v1'),
+      COMFY_DIR: path.join(outDir, 'download-photo-lifestyle-v1', 'ComfyUI'),
+      FANVUE_TEST_PROFILE: 'photo_lifestyle_v1',
+      FANVUE_DOWNLOAD_DRY_RUN: 'true',
+      FANVUE_DOWNLOAD_REPORT: path.join(outDir, 'download-photo-lifestyle-v1-report.json'),
+    },
+  }),
   run('download_models.first_full_dry_run', ['scripts/download_models.mjs'], {
     env: {
       BUNDLE_DIR: root,
