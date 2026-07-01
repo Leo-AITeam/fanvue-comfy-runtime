@@ -1,0 +1,15 @@
+FROM ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest
+
+ENV BUNDLE_DIR=/opt/fanvue-comfy-runtime \
+    WORKSPACE_DIR=/workspace \
+    COMFY_DIR=/workspace/ComfyUI \
+    FANVUE_FIRST_TEST_ONLY=true \
+    FANVUE_TEST_PROFILE=video_lifestyle_v1 \
+    FANVUE_PREFLIGHT_MODE=real \
+    FANVUE_DOWNLOAD_DRY_RUN=false \
+    FANVUE_START_COMFYUI_EARLY=false \
+    FANVUE_RUNTIME_PACK=video-smoke \
+    COMFYUI_PORT=8188
+
+ENTRYPOINT []
+CMD ["/opt/fanvue-comfy-runtime/runpod/entrypoint.sh"]

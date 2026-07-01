@@ -2,6 +2,16 @@ name: Build Fanvue Video Runtime Image
 
 on:
   workflow_dispatch:
+    inputs:
+      pack:
+        description: Video image pack to build
+        required: true
+        default: smoke
+        type: choice
+        options:
+          - smoke
+          - full
+          - all
 
 permissions:
   contents: read
@@ -24,7 +34,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Build and push video smoke runtime
+        if: ${{ inputs.pack == 'smoke' || inputs.pack == 'all' }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.video-smoke
+          push: true
+          tags: |
+            ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-smoke-latest
+            ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-smoke-${{ github.sha }}
+
       - name: Build and push video runtime
+        if: ${{ inputs.pack == 'full' || inputs.pack == 'all' }}
         uses: docker/build-push-action@v6
         with:
           context: .

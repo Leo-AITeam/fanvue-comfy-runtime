@@ -9,6 +9,7 @@ on:
       - Dockerfile
       - Dockerfile.photo
       - Dockerfile.video
+      - Dockerfile.video-smoke
       - bootstrap_fanvue_comfyui.sh
       - runpod/**
       - scripts/**
@@ -70,3 +71,13 @@ jobs:
           tags: |
             ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-latest
             ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-${{ github.sha }}
+
+      - name: Build and push video smoke runtime
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.video-smoke
+          push: true
+          tags: |
+            ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-smoke-latest
+            ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-smoke-${{ github.sha }}

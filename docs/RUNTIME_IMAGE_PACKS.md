@@ -7,9 +7,11 @@ The runtime is split into a small default image and heavier model-baked packs.
 ```text
 ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest
 ghcr.io/leo-aiteam/fanvue-comfy-runtime:photo-latest
+ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-smoke-latest
 ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-latest
 ghcr.io/leo-aiteam/fanvue-comfy-runtime:<git-sha>
 ghcr.io/leo-aiteam/fanvue-comfy-runtime:photo-<git-sha>
+ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-smoke-<git-sha>
 ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-<git-sha>
 ```
 
@@ -33,10 +35,18 @@ The intended n8n routing is:
 ```text
 photo_lifestyle_v1 -> ghcr.io/leo-aiteam/fanvue-comfy-runtime:photo-latest
 photo_adult_v1     -> ghcr.io/leo-aiteam/fanvue-comfy-runtime:photo-latest
-video_lifestyle_v1 -> ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-latest
+video_lifestyle_v1 -> ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-smoke-latest until video-latest boot is proven
 video_adult_v1     -> ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-latest
 other profiles     -> ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest
 ```
+
+## Video Smoke Pack
+
+`video-smoke-latest` is built from `Dockerfile.video-smoke`. It does not bake
+the Wan 2.2 model files into the container layer. The image keeps the dedicated
+video profile environment, but lets the normal entrypoint download/validate
+models after the container has started. This is the safer first RunPod smoke
+target when the full baked video layer is too large to reach `dockerStartCmd`.
 
 ## Video Pack
 
