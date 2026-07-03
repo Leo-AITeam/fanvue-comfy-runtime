@@ -172,9 +172,10 @@ function validateWorkflow(job, mapping, checks) {
   }
 }
 
-function validateInputs(job, checks) {
+function validateInputs(job, mapping, checks) {
   if (!isObject(job.inputs)) return;
   const inputs = job.inputs;
+  const adapter = mapping.api_prompt_adapters?.[job.workflow?.adapter];
   const commonPromptTypes = new Set(['photo', 'ppv_photo', 'face_variations', 'video']);
   if (commonPromptTypes.has(job.job_type)) {
     for (const key of ['positive_prompt', 'negative_prompt', 'seed']) {
@@ -198,6 +199,13 @@ function validateInputs(job, checks) {
     for (const key of ['source_face_image', 'target_image', 'seed']) {
       checks.push(issue(Object.hasOwn(inputs, key), 'inputs.required_field', { job_type: job.job_type, field: key }));
     }
+  }
+  if (adapter?.requires_source_face_input) {
+    const hasSourceFace = typeof inputs.source_face_image === 'string' && inputs.source_face_image.length > 0;
+    const hasSourceFacePath = typeof inputs.source_face_image_path === 'string' && inputs.source_face_image_path.length > 0;
+    checks.push(issue(hasSourceFace || hasSourceFacePath, 'inputs.source_face_image_required', {
+      adapter: job.workflow?.adapter,
+    }));
   }
   if (Object.hasOwn(inputs, 'seed')) {
     checks.push(issue(Number.isInteger(inputs.seed) || inputs.seed === 'random', 'inputs.seed', { value: inputs.seed }));
@@ -274,7 +282,7 @@ function validateJob(file) {
   const checks = [];
   validateRequiredObject(job, checks);
   validateWorkflow(job, mapping, checks);
-  validateInputs(job, checks);
+  validateInputs(job, mapping, checks);
   validateOutputCallbackRuntime(job, checks);
   validateTransitions(job, checks);
   return { job, checks };

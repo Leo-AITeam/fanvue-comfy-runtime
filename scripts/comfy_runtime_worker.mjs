@@ -384,17 +384,26 @@ async function waitForComfy() {
   throw new Error(`ComfyUI readiness timeout. Last error: ${lastError}`);
 }
 
-async function uploadInputImage() {
-  const inputPath = env('FANVUE_INPUT_IMAGE_PATH', jobString([['inputs', 'input_image_path']]));
-  const inputName = env('FANVUE_INPUT_IMAGE_NAME', jobString([
-    ['inputs', 'input_image'],
-    ['inputs', 'source_image_name'],
-  ]));
-  if (!inputPath && inputName) return inputName;
-  if (!inputPath) return '';
+async function uploadImage({ inputPath, inputName, filename, subfolder, label }) {
+  if (!inputPath && inputName) {
+    return {
+      name: inputName,
+      attempt: 0,
+      response: null,
+      source: 'preuploaded',
+      label,
+    };
+  }
+  if (!inputPath) {
+    return {
+      name: '',
+      attempt: 0,
+      response: null,
+      source: 'none',
+      label,
+    };
+  }
 
-  const filename = env('FANVUE_UPLOAD_FILENAME', path.basename(inputPath));
-  const subfolder = env('FANVUE_INPUT_SUBFOLDER', 'fanvue/runtime');
   const bytes = fs.readFileSync(inputPath);
   const form = new FormData();
   form.append('image', new Blob([bytes]), filename);
@@ -404,12 +413,90 @@ async function uploadInputImage() {
 
   const { response, attempt } = await fetchWithRetry(`${baseUrl}/upload/image`, { method: 'POST', body: form });
   const body = await response.json().catch(async () => ({ raw: await response.text() }));
-  if (!response.ok) throw new Error(`Input upload failed: ${response.status} ${JSON.stringify(body)}`);
+  if (!response.ok) throw new Error(`${label} upload failed: ${response.status} ${JSON.stringify(body)}`);
   return {
     name: body.subfolder ? `${body.subfolder}/${body.name || filename}` : (body.name || filename),
     attempt,
     response: body,
+    source: 'uploaded',
+    label,
   };
+}
+
+async function uploadInputImage() {
+  const inputPath = env('FANVUE_INPUT_IMAGE_PATH', jobString([['inputs', 'input_image_path']]));
+  const inputName = env('FANVUE_INPUT_IMAGE_NAME', jobString([
+    ['inputs', 'input_image'],
+    ['inputs', 'source_image_name'],
+  ]));
+  return uploadImage({
+    inputPath,
+    inputName,
+    filename: env('FANVUE_UPLOAD_FILENAME', inputPath ? path.basename(inputPath) : 'input.png'),
+    subfolder: env('FANVUE_INPUT_SUBFOLDER', 'fanvue/runtime'),
+    label: 'Input image',
+  });
+}
+
+async function uploadSourceFaceImage() {
+  const inputPath = env('FANVUE_SOURCE_FACE_IMAGE_PATH', jobString([['inputs', 'source_face_image_path']]));
+  const inputName = env('FANVUE_SOURCE_FACE_IMAGE_NAME', jobString([['inputs', 'source_face_image']]));
+  return uploadImage({
+    inputPath,
+    inputName,
+    filename: env('FANVUE_SOURCE_FACE_UPLOAD_FILENAME', inputPath ? path.basename(inputPath) : 'source_face.png'),
+    subfolder: env('FANVUE_SOURCE_FACE_SUBFOLDER', 'fanvue/runtime/faces'),
+    label: 'Source face image',
+  });
+}
+
+function applyPhotoLifestyleInputs(prompt) {
+  if (prompt['6']?.inputs) {
+    prompt['6'].inputs.text = env(
+      'FANVUE_POSITIVE_PROMPT',
+      jobString([['inputs', 'positive_prompt'], ['inputs', 'prompt']], prompt['6'].inputs.text)
+    );
+  }
+  if (prompt['7']?.inputs) {
+    prompt['7'].inputs.text = env(
+      'FANVUE_NEGATIVE_PROMPT',
+      jobString([['inputs', 'negative_prompt']], prompt['7'].inputs.text)
+    );
+  }
+  if (prompt['13']?.inputs) {
+    prompt['13'].inputs.width = Number(env(
+      'FANVUE_WIDTH',
+      String(jobNumber([['inputs', 'width']], prompt['13'].inputs.width || 768))
+    ));
+    prompt['13'].inputs.height = Number(env(
+      'FANVUE_HEIGHT',
+      String(jobNumber([['inputs', 'height']], prompt['13'].inputs.height || 1024))
+    ));
+    prompt['13'].inputs.batch_size = Number(env(
+      'FANVUE_BATCH_SIZE',
+      String(jobNumber([['inputs', 'batch_size']], prompt['13'].inputs.batch_size || 1))
+    ));
+  }
+  if (prompt['3']?.inputs) {
+    prompt['3'].inputs.seed = Number(env(
+      'FANVUE_SEED',
+      String(jobNumber([['inputs', 'seed']], prompt['3'].inputs.seed || Date.now()))
+    ));
+    prompt['3'].inputs.steps = Number(env(
+      'FANVUE_STEPS',
+      String(jobNumber([['inputs', 'steps']], prompt['3'].inputs.steps || 9))
+    ));
+    prompt['3'].inputs.cfg = Number(env(
+      'FANVUE_CFG',
+      String(jobNumber([['inputs', 'cfg']], prompt['3'].inputs.cfg || 1))
+    ));
+  }
+  if (prompt['9']?.inputs) {
+    prompt['9'].inputs.filename_prefix = env(
+      'FANVUE_FILENAME_PREFIX',
+      jobString([['output', 'filename_prefix']], prompt['9'].inputs.filename_prefix || 'fanvue_photo_lifestyle_v1')
+    );
+  }
 }
 
 function buildFaceDetailerPrompt(loadImageName) {
@@ -445,9 +532,38 @@ function buildFaceDetailerPrompt(loadImageName) {
   return { prompt, replaced, templatePath: resolvedTemplatePath };
 }
 
-function buildPrompt(uploadedInputName) {
+function buildPhotoLifestyleFaceLockPrompt(sourceFaceName) {
+  if (!sourceFaceName) throw new Error('Photo Lifestyle Face Lock v1 requires source_face_image or FANVUE_SOURCE_FACE_IMAGE_NAME');
+  const promptPath = bundlePath(env(
+    'FANVUE_API_PROMPT',
+    path.join(bundleDir, 'api_prompts', 'photo_lifestyle_face_lock_v1_template.json')
+  ));
+  const prompt = readJson(promptPath);
+  let replaced = 0;
+  for (const node of Object.values(prompt)) {
+    if (!node || typeof node !== 'object' || !node.inputs) continue;
+    for (const [key, value] of Object.entries(node.inputs)) {
+      if (value === '__SOURCE_FACE_IMAGE__') {
+        node.inputs[key] = sourceFaceName;
+        replaced += 1;
+      }
+    }
+  }
+  if (!replaced) throw new Error('Face-lock prompt placeholder __SOURCE_FACE_IMAGE__ was not found');
+  applyPhotoLifestyleInputs(prompt);
+  return {
+    prompt,
+    replaced,
+    templatePath: promptPath,
+  };
+}
+
+function buildPrompt(uploadedInputName, uploadedSourceFaceName = '') {
   if (workflowName === 'Qwen to Face Detailer Chain') {
     throw new Error('Qwen to Face Detailer Chain requires scripts/direct_image_chain_smoke.mjs, not comfy_runtime_worker.mjs');
+  }
+  if (workflowName === 'Photo Lifestyle Face Lock v1' || testProfile === 'photo_lifestyle_face_lock_v1') {
+    return buildPhotoLifestyleFaceLockPrompt(uploadedSourceFaceName);
   }
   if (uploadedInputName || workflowName === 'Face Detailer Smoke') {
     return buildFaceDetailerPrompt(uploadedInputName || env('FANVUE_INPUT_IMAGE_NAME', jobString([['inputs', 'input_image']])));
@@ -536,52 +652,7 @@ function buildPrompt(uploadedInputName) {
   if (workflowName === 'Photo Lifestyle v1' || testProfile === 'photo_lifestyle_v1') {
     const promptPath = bundlePath(env('FANVUE_API_PROMPT', path.join(bundleDir, 'api_prompts', 'photo_lifestyle_v1.json')));
     const prompt = readJson(promptPath);
-    if (prompt['6']?.inputs) {
-      prompt['6'].inputs.text = env(
-        'FANVUE_POSITIVE_PROMPT',
-        jobString([['inputs', 'positive_prompt'], ['inputs', 'prompt']], prompt['6'].inputs.text)
-      );
-    }
-    if (prompt['7']?.inputs) {
-      prompt['7'].inputs.text = env(
-        'FANVUE_NEGATIVE_PROMPT',
-        jobString([['inputs', 'negative_prompt']], prompt['7'].inputs.text)
-      );
-    }
-    if (prompt['13']?.inputs) {
-      prompt['13'].inputs.width = Number(env(
-        'FANVUE_WIDTH',
-        String(jobNumber([['inputs', 'width']], prompt['13'].inputs.width || 768))
-      ));
-      prompt['13'].inputs.height = Number(env(
-        'FANVUE_HEIGHT',
-        String(jobNumber([['inputs', 'height']], prompt['13'].inputs.height || 1024))
-      ));
-      prompt['13'].inputs.batch_size = Number(env(
-        'FANVUE_BATCH_SIZE',
-        String(jobNumber([['inputs', 'batch_size']], prompt['13'].inputs.batch_size || 1))
-      ));
-    }
-    if (prompt['3']?.inputs) {
-      prompt['3'].inputs.seed = Number(env(
-        'FANVUE_SEED',
-        String(jobNumber([['inputs', 'seed']], prompt['3'].inputs.seed || Date.now()))
-      ));
-      prompt['3'].inputs.steps = Number(env(
-        'FANVUE_STEPS',
-        String(jobNumber([['inputs', 'steps']], prompt['3'].inputs.steps || 9))
-      ));
-      prompt['3'].inputs.cfg = Number(env(
-        'FANVUE_CFG',
-        String(jobNumber([['inputs', 'cfg']], prompt['3'].inputs.cfg || 1))
-      ));
-    }
-    if (prompt['9']?.inputs) {
-      prompt['9'].inputs.filename_prefix = env(
-        'FANVUE_FILENAME_PREFIX',
-        jobString([['output', 'filename_prefix']], prompt['9'].inputs.filename_prefix || 'fanvue_photo_lifestyle_v1')
-      );
-    }
+    applyPhotoLifestyleInputs(prompt);
     return {
       prompt,
       replaced: 0,
@@ -595,6 +666,26 @@ function buildPrompt(uploadedInputName) {
       'FANVUE_POSITIVE_PROMPT',
       jobString([['inputs', 'positive_prompt'], ['inputs', 'prompt']], prompt['4'].inputs.text)
     );
+  }
+  if (prompt['6']?.inputs) {
+    prompt['6'].inputs.width = Number(env(
+      'FANVUE_WIDTH',
+      String(jobNumber([['inputs', 'width']], prompt['6'].inputs.width || 512))
+    ));
+    prompt['6'].inputs.height = Number(env(
+      'FANVUE_HEIGHT',
+      String(jobNumber([['inputs', 'height']], prompt['6'].inputs.height || 512))
+    ));
+    prompt['6'].inputs.batch_size = Number(env(
+      'FANVUE_BATCH_SIZE',
+      String(jobNumber([['inputs', 'batch_size']], prompt['6'].inputs.batch_size || 1))
+    ));
+  }
+  if (prompt['7']?.inputs) {
+    prompt['7'].inputs.noise_seed = Number(env(
+      'FANVUE_SEED',
+      String(jobNumber([['inputs', 'seed']], prompt['7'].inputs.noise_seed || Date.now()))
+    ));
   }
   if (prompt['13']?.inputs) {
     prompt['13'].inputs.filename_prefix = env(
@@ -803,7 +894,21 @@ async function main() {
       ? { name: env('FANVUE_INPUT_IMAGE_NAME'), attempt: 0, response: null }
       : await uploadInputImage();
     const uploadedInputName = uploadedInput.name;
-    const built = buildPrompt(uploadedInputName);
+    const needsSourceFace = workflowName === 'Photo Lifestyle Face Lock v1' || testProfile === 'photo_lifestyle_face_lock_v1';
+    let uploadedSourceFace = { name: '', attempt: 0, response: null, source: 'none' };
+    if (needsSourceFace) {
+      uploadedSourceFace = dryRun
+        ? {
+            name: env('FANVUE_SOURCE_FACE_IMAGE_NAME', jobString([['inputs', 'source_face_image']])),
+            attempt: 0,
+            response: null,
+            source: 'dry_run',
+            label: 'Source face image',
+          }
+        : await uploadSourceFaceImage();
+    }
+    const uploadedSourceFaceName = uploadedSourceFace.name;
+    const built = buildPrompt(uploadedInputName, uploadedSourceFaceName);
     const promptPreviewPath = env('FANVUE_WORKER_PROMPT_PREVIEW', path.join(fanvueDir, 'fanvue_worker_prompt.json'));
     writeJson(promptPreviewPath, built.prompt);
 
@@ -812,7 +917,9 @@ async function main() {
         ok: true,
         status: 'dry_run_ready',
         uploaded_input_name: uploadedInputName || null,
+        uploaded_source_face_name: uploadedSourceFaceName || null,
         upload: uploadedInput,
+        source_face_upload: uploadedSourceFace,
         prompt_preview_path: promptPreviewPath,
         prompt_node_count: Object.keys(built.prompt).length,
         prompt_template: built.templatePath,
@@ -828,7 +935,9 @@ async function main() {
         ok: true,
         status: 'completed',
         uploaded_input_name: uploadedInputName || null,
+        uploaded_source_face_name: uploadedSourceFaceName || null,
         upload: uploadedInput,
+        source_face_upload: uploadedSourceFace,
         prompt_preview_path: promptPreviewPath,
         prompt_template: built.templatePath,
         replaced: built.replaced,

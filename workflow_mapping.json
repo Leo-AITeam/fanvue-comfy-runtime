@@ -109,6 +109,18 @@
       "safety": "no_publish_until_manual_review",
       "notes": "Converted from the Z-Image Turbo local workflow to a native ComfyUI API prompt for production lifestyle photo jobs."
     },
+    "Photo Lifestyle Face Lock v1": {
+      "job_type": "photo",
+      "source_workflow": "workflows/z-image-turbo-worfklow.json",
+      "api_prompt_template": "api_prompts/photo_lifestyle_face_lock_v1_template.json",
+      "input_mode": "text_to_image",
+      "model_profile": "photo_lifestyle_v1",
+      "requires_source_face_input": true,
+      "source_face_placeholder": "__SOURCE_FACE_IMAGE__",
+      "native_orchestrator_status": "api_prompt_ready_pending_gpu_schema_smoke",
+      "safety": "no_publish_until_manual_review",
+      "notes": "Lifestyle photo generation with ReActor post-process face lock. Requires a canonical approved source face image uploaded to ComfyUI input storage."
+    },
     "Photo Adult v1": {
       "job_type": "ppv_photo",
       "api_prompt": "api_prompts/flux2_klein_4b_smoke.json",

@@ -39,11 +39,12 @@ does not need face swap and should stay fast.
 The intended n8n routing is:
 
 ```text
-photo_lifestyle_v1 -> ghcr.io/leo-aiteam/fanvue-comfy-runtime:photo-latest
-photo_adult_v1     -> ghcr.io/leo-aiteam/fanvue-comfy-runtime:photo-latest
-video_lifestyle_v1 -> ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-smoke-latest until video-latest boot is proven
-video_adult_v1     -> ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-latest
-other profiles     -> ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest
+photo_lifestyle_v1           -> ghcr.io/leo-aiteam/fanvue-comfy-runtime:photo-latest
+photo_lifestyle_face_lock_v1 -> ghcr.io/leo-aiteam/fanvue-comfy-runtime:photo-latest
+photo_adult_v1               -> ghcr.io/leo-aiteam/fanvue-comfy-runtime:photo-latest
+video_lifestyle_v1           -> ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-smoke-latest until video-latest boot is proven
+video_adult_v1               -> ghcr.io/leo-aiteam/fanvue-comfy-runtime:video-latest
+other profiles               -> ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest
 ```
 
 ## Video Smoke Pack

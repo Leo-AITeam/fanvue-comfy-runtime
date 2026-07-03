@@ -1,0 +1,56 @@
+{
+  "schema_version": "generation_job.v1",
+  "job_id": "job_photo_lifestyle_face_lock_v1_example",
+  "character_id": "character_anna_novari_example",
+  "fan_id": null,
+  "request_id": "request_photo_lifestyle_face_lock_v1_example",
+  "job_type": "photo",
+  "content_tier": "sfw",
+  "priority": 50,
+  "status": "queued",
+  "workflow": {
+    "name": "Photo Lifestyle Face Lock v1",
+    "adapter": "Photo Lifestyle Face Lock v1",
+    "profile": "photo_lifestyle_v1",
+    "input_mode": "text_to_image"
+  },
+  "inputs": {
+    "source_face_image": "fanvue/runtime/faces/anna_canonical_face.png",
+    "positive_prompt": "Subject & Face Structure: A hyper-realistic, high-fidelity close-up lifestyle portrait of Anna Novari, a 24-year-old Eastern European woman. She has a balanced soft oval face, delicate symmetrical features, softly defined high cheekbones, a smooth clean jawline, and a delicate chin. Skin & Complexion: realistic micro-pores, fine natural skin texture, subtle imperfections, warm honey-beige and soft golden-tan undertone, natural sun-kissed dewy glow, no airbrushing. Eyes & Expression: large deep-set almond-shaped grey-blue eyes with subtle green flecks, warm confident playful slight squint, natural long individual eyelashes, natural feathered light ash-brown eyebrows. Nose & Mouth: slim straight proportioned nose, naturally plump pinkish-nude lips with realistic lip lines and a faint relaxed half-smile. Hair: very long thick silky straight natural wheat blonde hair with cool ash-blonde undertones and soft golden highlights, realistic flyaways, natural volume, slightly casual middle part, strands framing the face and falling over the shoulders. Style: premium sporty lounge aesthetic, fitted white ribbed crop top, candid phone selfie energy, realistic lifestyle photography, natural daylight, minimalist apartment interior, 85mm lens look, shallow depth of field, tack-sharp focus on eyes and skin texture.",
+    "negative_prompt": "different person, face drift, inconsistent identity, wrong hair color, white hair, platinum hair, brunette, short hair, doll face, plastic skin, waxy skin, airbrushed skin, over-smoothed skin, AI-looking, uncanny valley, CGI, 3d render, cartoon, anime, fake eyes, crossed eyes, lazy eye, distorted iris, asymmetrical eyes, bad teeth, deformed mouth, distorted face, low quality, blurry, overexposed, underexposed, watermark, text, logo, extra fingers, missing fingers, fused fingers, malformed fingers, bad hands, extra hands, extra arms, extra legs, malformed limbs, bad anatomy, dislocated shoulders, broken wrists, duplicate body, cropped face, out of frame",
+    "seed": 12345,
+    "width": 768,
+    "height": 1024,
+    "batch_size": 1,
+    "steps": 9,
+    "cfg": 1
+  },
+  "output": {
+    "filename_prefix": "fanvue_photo_lifestyle_face_lock_v1",
+    "storage_target": "external",
+    "expected_files": 1
+  },
+  "callback": {
+    "enabled": false,
+    "url_env": null,
+    "auth_header_env": null,
+    "auth_value_env": null,
+    "fails_job": false
+  },
+  "runtime": {
+    "provider": "runpod",
+    "image": "ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest",
+    "disk_gb": 120,
+    "gpu_count": 1,
+    "gpu_type": "NVIDIA L40S",
+    "stop_policy": "manual_debug",
+    "timeout_seconds": 3600
+  },
+  "metadata": {
+    "purpose": "anna_novari_face_lock_lifestyle_photo",
+    "safety": "no_publish_until_manual_review",
+    "model_profile": "photo_lifestyle_v1",
+    "identity_lock": "reactor_inswapper_128",
+    "requires_gpu_schema_smoke": true
+  }
+}
