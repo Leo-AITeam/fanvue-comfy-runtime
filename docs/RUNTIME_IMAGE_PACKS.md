@@ -24,11 +24,17 @@ photo profile models into `/opt/comfyui-baked`:
 ae.safetensors
 qwen_3_4b.safetensors
 z_image_turbo_bf16.safetensors
+inswapper_128.onnx
 ```
 
 The entrypoint still runs the normal bootstrap. On pod start,
 `download_models.mjs` validates the baked files and reports them as
 `already_exists` instead of downloading them again.
+
+`inswapper_128.onnx` is placed under `ComfyUI/models/insightface` so the
+pre-baked `ComfyUI-ReActor` node exposes a usable `swap_model` for face-lock
+workflows. `face_detailer_smoke` still disables ReActor because that smoke test
+does not need face swap and should stay fast.
 
 The intended n8n routing is:
 

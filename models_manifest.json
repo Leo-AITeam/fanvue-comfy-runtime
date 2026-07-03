@@ -16,6 +16,7 @@
       "target_dir": "ComfyUI/models",
       "required_for_first_test": true,
       "test_profiles": [
+        "face_detailer_smoke",
         "first_full"
       ]
     },
@@ -104,6 +105,7 @@
       "test_profiles": [
         "face_detailer_smoke",
         "first_full",
+        "photo_adult_v1",
         "photo_lifestyle_v1"
       ]
     },
@@ -115,7 +117,8 @@
       "target_dir": "ComfyUI/models",
       "required_for_first_test": true,
       "test_profiles": [
-        "first_full"
+        "first_full",
+        "photo_adult_v1"
       ]
     },
     {
@@ -147,7 +150,8 @@
       "target_dir": "ComfyUI/models/checkpoints",
       "required_for_first_test": true,
       "test_profiles": [
-        "first_full"
+        "first_full",
+        "photo_adult_v1"
       ],
       "expected_bytes": 2513342408
     },
@@ -159,7 +163,8 @@
       "target_dir": "ComfyUI/models",
       "required_for_first_test": true,
       "test_profiles": [
-        "first_full"
+        "first_full",
+        "photo_adult_v1"
       ]
     },
     {
@@ -170,7 +175,8 @@
       "target_dir": "ComfyUI/models/loras",
       "required_for_first_test": true,
       "test_profiles": [
-        "first_full"
+        "first_full",
+        "photo_adult_v1"
       ]
     },
     {
@@ -197,6 +203,21 @@
       ]
     },
     {
+      "name": "inswapper_128.onnx",
+      "type": "face_swap",
+      "source_url": "https://huggingface.co/datasets/Gourieff/ReActor/resolve/main/models/inswapper_128.onnx",
+      "min_bytes": 500000000,
+      "target_dir": "ComfyUI/models/insightface",
+      "required_for_first_test": true,
+      "test_profiles": [
+        "first_full",
+        "photo_lifestyle_v1",
+        "photo_adult_v1"
+      ],
+      "runtime_role": "reactor_face_lock",
+      "notes": "Required by ComfyUI-ReActor so ReActorFaceSwap exposes a non-empty swap_model list."
+    },
+    {
       "name": "lustifySDXLNSFW_ggwpV7.safetensors",
       "type": "model",
       "source_url": "https://huggingface.co/aboba2005/lustifySDXLNSFW_ggwpV7/resolve/main/lustifySDXLNSFW_ggwpV7.safetensors",
@@ -204,7 +225,8 @@
       "target_dir": "ComfyUI/models/checkpoints",
       "required_for_first_test": true,
       "test_profiles": [
-        "first_full"
+        "first_full",
+        "photo_adult_v1"
       ]
     },
     {
@@ -229,6 +251,7 @@
       "test_profiles": [
         "face_detailer_smoke",
         "first_full",
+        "photo_adult_v1",
         "photo_lifestyle_v1",
         "smoke"
       ]
@@ -277,7 +300,8 @@
       "required_for_first_test": true,
       "test_profiles": [
         "face_detailer_smoke",
-        "first_full"
+        "first_full",
+        "photo_adult_v1"
       ]
     },
     {
@@ -287,7 +311,8 @@
       "target_dir": "ComfyUI/models/ultralytics",
       "required_for_first_test": true,
       "test_profiles": [
-        "first_full"
+        "first_full",
+        "photo_adult_v1"
       ]
     },
     {
@@ -391,6 +416,7 @@
       "test_profiles": [
         "face_detailer_smoke",
         "first_full",
+        "photo_adult_v1",
         "photo_lifestyle_v1"
       ]
     },
@@ -460,6 +486,9 @@
     "ModelSamplingSD3",
     "PathchSageAttentionKJ",
     "ReferenceLatent",
+    "ReActorFaceSwap",
+    "ReActorLoadFaceModel",
+    "ReActorSaveFaceModel",
     "SAMLoader",
     "UltralyticsDetectorProvider",
     "UpscaleModelLoader"
@@ -500,16 +529,35 @@
       "source_workflow": "workflows/QWEN Edit Consistent Face.json"
     },
     "photo_lifestyle_v1": {
-      "description": "Photorealistic lifestyle image baseline with Z-Image, Qwen text encoder, and dedicated API prompt.",
+      "description": "Photorealistic lifestyle image baseline with Z-Image, Qwen text encoder, ReActor face-lock support, and dedicated API prompt.",
       "source_complete": true,
       "api_prompt": "api_prompts/photo_lifestyle_v1.json",
+      "required_models": [
+        "ae.safetensors",
+        "qwen_3_4b.safetensors",
+        "z_image_turbo_bf16.safetensors",
+        "inswapper_128.onnx"
+      ],
       "required_workflows": [
         "z-image-turbo-worfklow.json"
       ]
     },
     "photo_adult_v1": {
-      "description": "Adult-capable still-image baseline using source-complete Lustify SDXL plus public DMD2 LoRA and downstream detail/quality gates.",
+      "description": "Adult-capable still-image baseline using source-complete Lustify SDXL, public DMD2 LoRA, ReActor face-lock support, and downstream detail/quality gates.",
       "source_complete": true,
+      "required_models": [
+        "ae.safetensors",
+        "bbox/face_yolov8m.pt",
+        "controlnet-union-sdxl-promax.safetensors",
+        "depth_anything_v2_vitl.pth",
+        "dmd2_sdxl_4step_lora_fp16.safetensors",
+        "inswapper_128.onnx",
+        "lustifySDXLNSFW_ggwpV7.safetensors",
+        "qwen_3_4b.safetensors",
+        "sam_vit_b_01ec64.pth",
+        "segm/person_yolov8m-seg.pt",
+        "z_image_turbo_bf16.safetensors"
+      ],
       "required_workflows": [
         "OFMTechNSFW++.json",
         "Face_Detailer.json"

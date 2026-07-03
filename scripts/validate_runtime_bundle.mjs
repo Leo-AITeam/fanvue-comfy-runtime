@@ -99,10 +99,10 @@ function validateModelProfiles() {
   const checks = [];
   const manifest = readJson('models_manifest.json');
   const models = manifest.models || [];
-  for (const profile of ['smoke', 'face_detailer_smoke', 'qwen_edit_smoke', 'photo_lifestyle_v1', 'video_lifestyle_v1', 'video_adult_v1', 'first_full']) {
+  for (const profile of ['smoke', 'face_detailer_smoke', 'qwen_edit_smoke', 'photo_lifestyle_v1', 'photo_adult_v1', 'video_lifestyle_v1', 'video_adult_v1', 'first_full']) {
     const selected = models.filter((item) => modelMatchesProfile(item, profile));
     const missing = selected.filter((item) => !item.source_url).map((item) => item.name);
-    const mustBeComplete = ['smoke', 'face_detailer_smoke', 'qwen_edit_smoke', 'photo_lifestyle_v1', 'video_lifestyle_v1', 'video_adult_v1'].includes(profile);
+    const mustBeComplete = ['smoke', 'face_detailer_smoke', 'qwen_edit_smoke', 'photo_lifestyle_v1', 'photo_adult_v1', 'video_lifestyle_v1', 'video_adult_v1'].includes(profile);
     checks.push(result(mustBeComplete ? missing.length === 0 : true, `models.${profile}.source_urls`, {
       selected_model_count: selected.length,
       missing_source_count: missing.length,
@@ -110,6 +110,35 @@ function validateModelProfiles() {
     }));
   }
   return checks;
+}
+
+function validateFaceLockModel() {
+  const manifest = readJson('models_manifest.json');
+  const models = manifest.models || [];
+  const model = models.find((item) => item.name === 'inswapper_128.onnx');
+  const requiredProfiles = ['first_full', 'photo_lifestyle_v1', 'photo_adult_v1'];
+  const profiles = Array.isArray(model?.test_profiles) ? model.test_profiles : [];
+  const missingProfiles = requiredProfiles.filter((profile) => !profiles.includes(profile));
+
+  return [
+    result(Boolean(model), 'models.face_lock.inswapper.exists', {
+      name: 'inswapper_128.onnx',
+    }),
+    result(Boolean(model?.source_url), 'models.face_lock.inswapper.source_url', {
+      name: 'inswapper_128.onnx',
+      source_url: model?.source_url || null,
+    }),
+    result(model?.target_dir === 'ComfyUI/models/insightface', 'models.face_lock.inswapper.target_dir', {
+      name: 'inswapper_128.onnx',
+      target_dir: model?.target_dir || null,
+      expected: 'ComfyUI/models/insightface',
+    }),
+    result(missingProfiles.length === 0, 'models.face_lock.inswapper.profiles', {
+      name: 'inswapper_128.onnx',
+      required_profiles: requiredProfiles,
+      missing_profiles: missingProfiles,
+    }),
+  ];
 }
 
 function validateCustomNodes() {
@@ -250,6 +279,7 @@ if (exists('api_prompts/face_detailer_smoke_template.json')) {
 
 checks.push(...validateWorkflowMapping());
 checks.push(...validateModelProfiles());
+checks.push(...validateFaceLockModel());
 checks.push(...validateCustomNodes());
 checks.push(...validateRuntimePatchGuards());
 checks.push(...validateUtilityScripts());
