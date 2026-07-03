@@ -106,6 +106,7 @@
         "face_detailer_smoke",
         "first_full",
         "photo_adult_v1",
+        "photo_lifestyle_face_lock_v1",
         "photo_lifestyle_v1"
       ]
     },
@@ -211,6 +212,7 @@
       "required_for_first_test": true,
       "test_profiles": [
         "first_full",
+        "photo_lifestyle_face_lock_v1",
         "photo_lifestyle_v1",
         "photo_adult_v1"
       ],
@@ -252,6 +254,7 @@
         "face_detailer_smoke",
         "first_full",
         "photo_adult_v1",
+        "photo_lifestyle_face_lock_v1",
         "photo_lifestyle_v1",
         "smoke"
       ]
@@ -417,6 +420,7 @@
         "face_detailer_smoke",
         "first_full",
         "photo_adult_v1",
+        "photo_lifestyle_face_lock_v1",
         "photo_lifestyle_v1"
       ]
     },
@@ -532,6 +536,20 @@
       "description": "Photorealistic lifestyle image baseline with Z-Image, Qwen text encoder, ReActor face-lock support, and dedicated API prompt.",
       "source_complete": true,
       "api_prompt": "api_prompts/photo_lifestyle_v1.json",
+      "required_models": [
+        "ae.safetensors",
+        "qwen_3_4b.safetensors",
+        "z_image_turbo_bf16.safetensors",
+        "inswapper_128.onnx"
+      ],
+      "required_workflows": [
+        "z-image-turbo-worfklow.json"
+      ]
+    },
+    "photo_lifestyle_face_lock_v1": {
+      "description": "Photorealistic lifestyle image baseline with explicit ReActor face-lock API prompt for Anna/character identity tests.",
+      "source_complete": true,
+      "api_prompt": "api_prompts/photo_lifestyle_face_lock_v1_template.json",
       "required_models": [
         "ae.safetensors",
         "qwen_3_4b.safetensors",

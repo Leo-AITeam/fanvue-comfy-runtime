@@ -111,7 +111,7 @@
       "swap_model": "inswapper_128.onnx",
       "facedetection": "retinaface_resnet50",
       "face_restore_model": "none",
-      "face_restore_visibility": 0,
+      "face_restore_visibility": 0.1,
       "codeformer_weight": 0.5,
       "detect_gender_input": "no",
       "detect_gender_source": "no",
