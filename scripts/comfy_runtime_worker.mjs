@@ -438,8 +438,48 @@ async function uploadInputImage() {
   });
 }
 
+async function downloadFile(url, outputPath, headers = {}) {
+  const { response } = await fetchWithRetry(url, { headers });
+  if (!response.ok) {
+    const body = await response.text().catch(() => '');
+    throw new Error(`Download failed: ${response.status} ${body.slice(0, 300)}`);
+  }
+  const bytes = Buffer.from(await response.arrayBuffer());
+  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+  fs.writeFileSync(outputPath, bytes);
+  return outputPath;
+}
+
+async function resolveSourceFacePath() {
+  const directPath = env('FANVUE_SOURCE_FACE_IMAGE_PATH', jobString([['inputs', 'source_face_image_path']]));
+  if (directPath) return directPath;
+
+  const sourceUrl = env('FANVUE_SOURCE_FACE_IMAGE_URL', jobString([['inputs', 'source_face_image_url']]));
+  if (sourceUrl) {
+    return downloadFile(
+      sourceUrl,
+      path.join(fanvueDir, 'inputs', env('FANVUE_SOURCE_FACE_UPLOAD_FILENAME', 'source_face.png'))
+    );
+  }
+
+  const bucket = env('FANVUE_SOURCE_FACE_BUCKET', jobString([['inputs', 'source_face_storage', 'bucket']]));
+  const storagePath = env('FANVUE_SOURCE_FACE_STORAGE_PATH', jobString([['inputs', 'source_face_storage', 'path']]));
+  const supabaseUrl = env('SUPABASE_URL', env('FANVUE_SUPABASE_URL')).replace(/\/+$/, '');
+  const supabaseKey = env('SUPABASE_SERVICE_ROLE_KEY', env('FANVUE_SUPABASE_SERVICE_ROLE_KEY', env('SUPABASE_ANON_KEY', env('FANVUE_SUPABASE_ANON_KEY'))));
+  if (bucket && storagePath && supabaseUrl && supabaseKey) {
+    const encodedPath = storagePath.split('/').map(encodeURIComponent).join('/');
+    return downloadFile(
+      `${supabaseUrl}/storage/v1/object/${encodeURIComponent(bucket)}/${encodedPath}`,
+      path.join(fanvueDir, 'inputs', env('FANVUE_SOURCE_FACE_UPLOAD_FILENAME', path.basename(storagePath) || 'source_face.png')),
+      { Authorization: `Bearer ${supabaseKey}`, apikey: supabaseKey }
+    );
+  }
+
+  return '';
+}
+
 async function uploadSourceFaceImage() {
-  const inputPath = env('FANVUE_SOURCE_FACE_IMAGE_PATH', jobString([['inputs', 'source_face_image_path']]));
+  const inputPath = await resolveSourceFacePath();
   const inputName = env('FANVUE_SOURCE_FACE_IMAGE_NAME', jobString([['inputs', 'source_face_image']]));
   return uploadImage({
     inputPath,
