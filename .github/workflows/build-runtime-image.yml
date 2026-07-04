@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - codex/activate-generation-workflow-profiles
     paths:
       - Dockerfile
       - Dockerfile.photo
