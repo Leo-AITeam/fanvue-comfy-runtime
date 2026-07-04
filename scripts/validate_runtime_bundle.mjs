@@ -128,10 +128,10 @@ function validateFaceLockModel() {
       name: 'inswapper_128.onnx',
       source_url: model?.source_url || null,
     }),
-    result(model?.target_dir === 'ComfyUI/models/reactor', 'models.face_lock.inswapper.target_dir', {
+    result(model?.target_dir === 'ComfyUI/models/insightface', 'models.face_lock.inswapper.target_dir', {
       name: 'inswapper_128.onnx',
       target_dir: model?.target_dir || null,
-      expected: 'ComfyUI/models/reactor',
+      expected: 'ComfyUI/models/insightface',
     }),
     result(missingProfiles.length === 0, 'models.face_lock.inswapper.profiles', {
       name: 'inswapper_128.onnx',

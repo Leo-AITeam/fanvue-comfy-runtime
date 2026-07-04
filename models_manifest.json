@@ -208,7 +208,7 @@
       "type": "face_swap",
       "source_url": "https://huggingface.co/datasets/Gourieff/ReActor/resolve/main/models/inswapper_128.onnx",
       "min_bytes": 500000000,
-      "target_dir": "ComfyUI/models/reactor",
+      "target_dir": "ComfyUI/models/insightface",
       "required_for_first_test": true,
       "test_profiles": [
         "first_full",
@@ -217,7 +217,7 @@
         "photo_adult_v1"
       ],
       "runtime_role": "reactor_face_lock",
-      "notes": "Required by ComfyUI-ReActor so ReActorFaceSwap exposes a non-empty swap_model list."
+      "notes": "Required by ComfyUI-ReActor so ReActorFaceSwap exposes a non-empty swap_model list. ReActor scans ComfyUI/models/insightface for inswapper_128.onnx; ComfyUI/models/reactor is used for saved face models."
     },
     {
       "name": "lustifySDXLNSFW_ggwpV7.safetensors",
