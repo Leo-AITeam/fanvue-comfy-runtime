@@ -208,7 +208,7 @@
       "type": "face_swap",
       "source_url": "https://huggingface.co/datasets/Gourieff/ReActor/resolve/main/models/inswapper_128.onnx",
       "min_bytes": 500000000,
-      "target_dir": "ComfyUI/models/insightface",
+      "target_dir": "ComfyUI/models/reactor",
       "required_for_first_test": true,
       "test_profiles": [
         "first_full",

@@ -31,7 +31,7 @@ The entrypoint still runs the normal bootstrap. On pod start,
 `download_models.mjs` validates the baked files and reports them as
 `already_exists` instead of downloading them again.
 
-`inswapper_128.onnx` is placed under `ComfyUI/models/insightface` so the
+`inswapper_128.onnx` is placed under `ComfyUI/models/reactor` so the
 pre-baked `ComfyUI-ReActor` node exposes a usable `swap_model` for face-lock
 workflows. `face_detailer_smoke` still disables ReActor because that smoke test
 does not need face swap and should stay fast.
