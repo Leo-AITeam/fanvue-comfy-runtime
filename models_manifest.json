@@ -240,7 +240,8 @@
       "required_for_first_test": true,
       "test_profiles": [
         "first_full",
-        "qwen_edit_smoke"
+        "qwen_edit_smoke",
+        "qwen_anna_identity_edit_v1"
       ]
     },
     {
@@ -279,7 +280,8 @@
       "required_for_first_test": true,
       "test_profiles": [
         "first_full",
-        "qwen_edit_smoke"
+        "qwen_edit_smoke",
+        "qwen_anna_identity_edit_v1"
       ]
     },
     {
@@ -291,7 +293,8 @@
       "required_for_first_test": true,
       "test_profiles": [
         "first_full",
-        "qwen_edit_smoke"
+        "qwen_edit_smoke",
+        "qwen_anna_identity_edit_v1"
       ]
     },
     {
@@ -531,6 +534,19 @@
       "description": "Minimal public-download Qwen Image Edit prompt profile.",
       "api_prompt": "api_prompts/qwen_image_smoke.json",
       "source_workflow": "workflows/QWEN Edit Consistent Face.json"
+    },
+    "qwen_anna_identity_edit_v1": {
+      "description": "Qwen Image Edit identity-reference profile for generating Anna Novari LoRA dataset candidates from the approved canonical face.",
+      "source_complete": true,
+      "api_prompt": "api_prompts/qwen_anna_identity_edit_v1_template.json",
+      "required_models": [
+        "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+        "qwen_image_edit_2509_fp8_e4m3fn.safetensors",
+        "qwen_image_vae.safetensors"
+      ],
+      "required_workflows": [
+        "QWEN Edit Consistent Face.json"
+      ]
     },
     "photo_lifestyle_v1": {
       "description": "Photorealistic lifestyle image baseline with Z-Image, Qwen text encoder, ReActor face-lock support, and dedicated API prompt.",

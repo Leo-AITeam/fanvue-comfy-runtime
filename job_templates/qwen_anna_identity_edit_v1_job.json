@@ -1,0 +1,57 @@
+{
+  "schema_version": "generation_job.v1",
+  "job_id": "job_qwen_anna_identity_edit_v1_example",
+  "character_id": "character_anna_novari_example",
+  "fan_id": null,
+  "request_id": "request_qwen_anna_identity_edit_v1_example",
+  "job_type": "photo",
+  "content_tier": "sfw",
+  "priority": 60,
+  "status": "queued",
+  "workflow": {
+    "name": "Qwen Anna Identity Edit v1",
+    "adapter": "Qwen Anna Identity Edit v1",
+    "profile": "qwen_anna_identity_edit_v1",
+    "input_mode": "image_to_image"
+  },
+  "inputs": {
+    "source_face_image": "fanvue/runtime/faces/anna_canonical_face.png",
+    "positive_prompt": "Use the provided reference image as the strict identity anchor for Anna Novari, a fictional 24-year-old Eastern European woman. Create a new hyper-realistic SFW lifestyle portrait of the same person, preserving the same soft oval face, cheekbone geometry, jawline, grey-blue almond eyes, slim straight nose, naturally plump pink-nude lips, faint confident half-smile, honey-beige golden-tan skin tone, and very long natural wheat-blonde hair with ash-blonde undertones and soft golden highlights. Keep the hair color family close to the reference: not white, not platinum, not yellow. Natural smartphone/lifestyle realism, real skin texture, visible pores, subtle imperfections, individual eyelashes and brows, realistic flyaway hairs, soft window light, minimalist apartment interior, fitted white or neutral lounge top. Do not change the face identity, age, ethnicity, eye color, hair color family, facial proportions, or expression character. Avoid beauty filter skin, plastic smoothness, doll face, glamour retouch, overly perfect symmetry, extra fingers, extra hands, fused fingers, distorted hands, warped anatomy, deformed eyes, mismatched eyes, artifacts, watermark, text, logo.",
+    "negative_prompt": "different person, face drift, inconsistent identity, wrong hair color, white hair, platinum hair, yellow hair, brunette, black hair, short hair, doll face, plastic skin, waxy skin, airbrushed skin, over-smoothed skin, AI-looking, uncanny valley, CGI, 3d render, cartoon, anime, fake eyes, crossed eyes, lazy eye, distorted iris, asymmetrical eyes, bad teeth, deformed mouth, distorted face, low quality, blurry, overexposed, underexposed, watermark, text, logo, extra fingers, missing fingers, fused fingers, malformed fingers, bad hands, extra hands, extra arms, extra legs, malformed limbs, bad anatomy, dislocated shoulders, broken wrists, duplicate body, cropped face, out of frame",
+    "seed": 12345,
+    "width": 768,
+    "height": 1152,
+    "batch_size": 1,
+    "steps": 10,
+    "cfg": 1,
+    "denoise": 1
+  },
+  "output": {
+    "filename_prefix": "fanvue_qwen_anna_identity_edit_v1",
+    "storage_target": "external",
+    "expected_files": 1
+  },
+  "callback": {
+    "enabled": false,
+    "url_env": null,
+    "auth_header_env": null,
+    "auth_value_env": null,
+    "fails_job": false
+  },
+  "runtime": {
+    "provider": "runpod",
+    "image": "ghcr.io/leo-aiteam/fanvue-comfy-runtime:photo-latest",
+    "disk_gb": 120,
+    "gpu_count": 1,
+    "gpu_type": "NVIDIA L40S",
+    "stop_policy": "manual_debug",
+    "timeout_seconds": 3600
+  },
+  "metadata": {
+    "purpose": "anna_novari_identity_dataset_candidate",
+    "safety": "no_publish_until_manual_review",
+    "model_profile": "qwen_anna_identity_edit_v1",
+    "identity_lock": "qwen_image_edit_reference_image",
+    "requires_manual_approval_before_lora_pack": true
+  }
+}

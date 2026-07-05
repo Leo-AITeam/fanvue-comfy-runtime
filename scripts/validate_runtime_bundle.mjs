@@ -99,10 +99,10 @@ function validateModelProfiles() {
   const checks = [];
   const manifest = readJson('models_manifest.json');
   const models = manifest.models || [];
-  for (const profile of ['smoke', 'face_detailer_smoke', 'qwen_edit_smoke', 'photo_lifestyle_v1', 'photo_adult_v1', 'video_lifestyle_v1', 'video_adult_v1', 'first_full']) {
+  for (const profile of ['smoke', 'face_detailer_smoke', 'qwen_edit_smoke', 'qwen_anna_identity_edit_v1', 'photo_lifestyle_v1', 'photo_adult_v1', 'video_lifestyle_v1', 'video_adult_v1', 'first_full']) {
     const selected = models.filter((item) => modelMatchesProfile(item, profile));
     const missing = selected.filter((item) => !item.source_url).map((item) => item.name);
-    const mustBeComplete = ['smoke', 'face_detailer_smoke', 'qwen_edit_smoke', 'photo_lifestyle_v1', 'photo_adult_v1', 'video_lifestyle_v1', 'video_adult_v1'].includes(profile);
+    const mustBeComplete = ['smoke', 'face_detailer_smoke', 'qwen_edit_smoke', 'qwen_anna_identity_edit_v1', 'photo_lifestyle_v1', 'photo_adult_v1', 'video_lifestyle_v1', 'video_adult_v1'].includes(profile);
     checks.push(result(mustBeComplete ? missing.length === 0 : true, `models.${profile}.source_urls`, {
       selected_model_count: selected.length,
       missing_source_count: missing.length,

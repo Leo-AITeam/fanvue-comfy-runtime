@@ -1,0 +1,136 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "qwen_image_edit_2509_fp8_e4m3fn.safetensors",
+      "weight_dtype": "fp8_e4m3fn"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    }
+  },
+  "4": {
+    "class_type": "ModelSamplingAuraFlow",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "shift": 5
+    }
+  },
+  "5": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "__SOURCE_FACE_IMAGE__"
+    }
+  },
+  "6": {
+    "class_type": "ImageScaleToTotalPixels",
+    "inputs": {
+      "image": [
+        "5",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "megapixels": 1,
+      "resolution_steps": 64
+    }
+  },
+  "7": {
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ],
+      "image1": [
+        "6",
+        0
+      ],
+      "prompt": "Use the provided reference image as the strict identity anchor for Anna Novari, a fictional 24-year-old Eastern European woman. Create a new hyper-realistic SFW lifestyle portrait of the same person, preserving the same soft oval face, cheekbone geometry, jawline, grey-blue almond eyes, slim straight nose, naturally plump pink-nude lips, faint confident half-smile, honey-beige golden-tan skin tone, and very long natural wheat-blonde hair with ash-blonde undertones and soft golden highlights. Keep the hair color family close to the reference: not white, not platinum, not yellow. Natural smartphone/lifestyle realism, real skin texture, visible pores, subtle imperfections, individual eyelashes and brows, realistic flyaway hairs, soft window light, minimalist apartment interior, fitted white or neutral lounge top. Do not change the face identity, age, ethnicity, eye color, hair color family, facial proportions, or expression character. Avoid beauty filter skin, plastic smoothness, doll face, glamour retouch, overly perfect symmetry, extra fingers, extra hands, fused fingers, distorted hands, warped anatomy, deformed eyes, mismatched eyes, artifacts, watermark, text, logo."
+    }
+  },
+  "8": {
+    "class_type": "ConditioningZeroOut",
+    "inputs": {
+      "conditioning": [
+        "7",
+        0
+      ]
+    }
+  },
+  "9": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 768,
+      "height": 1152,
+      "batch_size": 1
+    }
+  },
+  "10": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "positive": [
+        "7",
+        0
+      ],
+      "negative": [
+        "8",
+        0
+      ],
+      "latent_image": [
+        "9",
+        0
+      ],
+      "seed": 476535445,
+      "steps": 10,
+      "cfg": 1,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1
+    }
+  },
+  "11": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "10",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "12": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "11",
+        0
+      ],
+      "filename_prefix": "fanvue_qwen_anna_identity_edit_v1"
+    }
+  }
+}

@@ -171,6 +171,15 @@ async function fetchWithRetry(url, options = {}, config = {}) {
   throw lastError || new Error(`Request failed: ${url}`);
 }
 
+async function readResponseBody(response) {
+  const text = await response.text();
+  try {
+    return text ? JSON.parse(text) : null;
+  } catch {
+    return { raw: text.slice(0, 1000) };
+  }
+}
+
 async function updateSupabaseJobStatus(status, patch = {}) {
   if (!supabaseStatusUpdates) return { ok: true, status: 'disabled' };
   const jobId = env('FANVUE_JOB_ID', jobString([['job_id']]));
@@ -412,7 +421,7 @@ async function uploadImage({ inputPath, inputName, filename, subfolder, label })
   form.append('overwrite', 'true');
 
   const { response, attempt } = await fetchWithRetry(`${baseUrl}/upload/image`, { method: 'POST', body: form });
-  const body = await response.json().catch(async () => ({ raw: await response.text() }));
+  const body = await readResponseBody(response);
   if (!response.ok) throw new Error(`${label} upload failed: ${response.status} ${JSON.stringify(body)}`);
   return {
     name: body.subfolder ? `${body.subfolder}/${body.name || filename}` : (body.name || filename),
@@ -598,9 +607,81 @@ function buildPhotoLifestyleFaceLockPrompt(sourceFaceName) {
   };
 }
 
+function buildQwenAnnaIdentityEditPrompt(sourceFaceName) {
+  if (!sourceFaceName) throw new Error('Qwen Anna Identity Edit v1 requires source_face_image or FANVUE_SOURCE_FACE_IMAGE_NAME');
+  const promptPath = bundlePath(env(
+    'FANVUE_API_PROMPT',
+    path.join(bundleDir, 'api_prompts', 'qwen_anna_identity_edit_v1_template.json')
+  ));
+  const prompt = readJson(promptPath);
+  let replaced = 0;
+  for (const node of Object.values(prompt)) {
+    if (!node || typeof node !== 'object' || !node.inputs) continue;
+    for (const [key, value] of Object.entries(node.inputs)) {
+      if (value === '__SOURCE_FACE_IMAGE__') {
+        node.inputs[key] = sourceFaceName;
+        replaced += 1;
+      }
+    }
+  }
+  if (!replaced) throw new Error('Qwen Anna identity prompt placeholder __SOURCE_FACE_IMAGE__ was not found');
+  if (prompt['7']?.inputs) {
+    prompt['7'].inputs.prompt = env(
+      'FANVUE_POSITIVE_PROMPT',
+      jobString([['inputs', 'positive_prompt'], ['inputs', 'prompt']], prompt['7'].inputs.prompt)
+    );
+  }
+  if (prompt['9']?.inputs) {
+    prompt['9'].inputs.width = Number(env(
+      'FANVUE_WIDTH',
+      String(jobNumber([['inputs', 'width']], prompt['9'].inputs.width || 768))
+    ));
+    prompt['9'].inputs.height = Number(env(
+      'FANVUE_HEIGHT',
+      String(jobNumber([['inputs', 'height']], prompt['9'].inputs.height || 1152))
+    ));
+    prompt['9'].inputs.batch_size = Number(env(
+      'FANVUE_BATCH_SIZE',
+      String(jobNumber([['inputs', 'batch_size']], prompt['9'].inputs.batch_size || 1))
+    ));
+  }
+  if (prompt['10']?.inputs) {
+    prompt['10'].inputs.seed = Number(env(
+      'FANVUE_SEED',
+      String(jobNumber([['inputs', 'seed']], prompt['10'].inputs.seed || Date.now()))
+    ));
+    prompt['10'].inputs.steps = Number(env(
+      'FANVUE_STEPS',
+      String(jobNumber([['inputs', 'steps']], prompt['10'].inputs.steps || 10))
+    ));
+    prompt['10'].inputs.cfg = Number(env(
+      'FANVUE_CFG',
+      String(jobNumber([['inputs', 'cfg']], prompt['10'].inputs.cfg || 1))
+    ));
+    prompt['10'].inputs.denoise = Number(env(
+      'FANVUE_DENOISE',
+      String(jobNumber([['inputs', 'denoise']], prompt['10'].inputs.denoise || 1))
+    ));
+  }
+  if (prompt['12']?.inputs) {
+    prompt['12'].inputs.filename_prefix = env(
+      'FANVUE_FILENAME_PREFIX',
+      jobString([['output', 'filename_prefix']], prompt['12'].inputs.filename_prefix || 'fanvue_qwen_anna_identity_edit_v1')
+    );
+  }
+  return {
+    prompt,
+    replaced,
+    templatePath: promptPath,
+  };
+}
+
 function buildPrompt(uploadedInputName, uploadedSourceFaceName = '') {
   if (workflowName === 'Qwen to Face Detailer Chain') {
     throw new Error('Qwen to Face Detailer Chain requires scripts/direct_image_chain_smoke.mjs, not comfy_runtime_worker.mjs');
+  }
+  if (workflowName === 'Qwen Anna Identity Edit v1' || testProfile === 'qwen_anna_identity_edit_v1') {
+    return buildQwenAnnaIdentityEditPrompt(uploadedSourceFaceName);
   }
   if (workflowName === 'Photo Lifestyle Face Lock v1' || testProfile === 'photo_lifestyle_face_lock_v1') {
     return buildPhotoLifestyleFaceLockPrompt(uploadedSourceFaceName);
@@ -747,7 +828,7 @@ async function submitPrompt(prompt) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ prompt, client_id: clientId }),
   });
-  const body = await response.json().catch(async () => ({ raw: await response.text() }));
+  const body = await readResponseBody(response);
   if (!response.ok) throw new Error(`Prompt submit failed: ${response.status} ${JSON.stringify(body)}`);
   return { ...body, _attempt: attempt };
 }
@@ -833,7 +914,7 @@ async function waitHistory(promptId) {
   const started = Date.now();
   while (Date.now() - started < timeoutMs) {
     const { response } = await fetchWithRetry(`${baseUrl}/history/${promptId}`, {}, { retries: 1, delayMs: 0 });
-    const body = await response.json().catch(async () => ({ raw: await response.text() }));
+    const body = await readResponseBody(response);
     const history = body[promptId];
     if (history?.status?.status_str === 'error') {
       const errorMessage = history.status.messages
@@ -934,7 +1015,12 @@ async function main() {
       ? { name: env('FANVUE_INPUT_IMAGE_NAME'), attempt: 0, response: null }
       : await uploadInputImage();
     const uploadedInputName = uploadedInput.name;
-    const needsSourceFace = workflowName === 'Photo Lifestyle Face Lock v1' || testProfile === 'photo_lifestyle_face_lock_v1';
+    const needsSourceFace = (
+      workflowName === 'Photo Lifestyle Face Lock v1' ||
+      workflowName === 'Qwen Anna Identity Edit v1' ||
+      testProfile === 'photo_lifestyle_face_lock_v1' ||
+      testProfile === 'qwen_anna_identity_edit_v1'
+    );
     let uploadedSourceFace = { name: '', attempt: 0, response: null, source: 'none' };
     if (needsSourceFace) {
       uploadedSourceFace = dryRun
