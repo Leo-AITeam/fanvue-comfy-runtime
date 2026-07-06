@@ -223,7 +223,8 @@
       "required_for_first_test": false,
       "test_profiles": [
         "anna_sdxlbase_test",
-        "anna_sdxlbase_v2_test"
+        "anna_sdxlbase_v2_test",
+        "anna_sdxlbase_v3_test"
       ]
     },
     {
@@ -258,6 +259,23 @@
       "required_for_first_test": false,
       "test_profiles": [
         "anna_sdxlbase_v2_test"
+      ]
+    },
+    {
+      "name": "anna_x_model_v3.safetensors",
+      "type": "lora",
+      "source_url_env": "ANNA_LORA_TEST_ASSET_URL",
+      "decrypt": {
+        "algorithm": "aes-256-cbc",
+        "pbkdf2": true,
+        "iter": 200000,
+        "key_env": "ANNA_LORA_TEST_ASSET_KEY"
+      },
+      "expected_bytes": 456491364,
+      "target_dir": "ComfyUI/models/loras",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_sdxlbase_v3_test"
       ]
     },
     {
