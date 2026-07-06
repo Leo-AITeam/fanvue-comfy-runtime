@@ -17,8 +17,8 @@
         1
       ],
       "lora_name": "anna_x_model_v1.safetensors",
-      "strength_model": 0.8,
-      "strength_clip": 0.75
+      "strength_model": 1.0,
+      "strength_clip": 0.9
     }
   },
   "6": {
