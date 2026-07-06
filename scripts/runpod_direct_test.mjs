@@ -79,6 +79,9 @@ function redactedCreatePayload(payload) {
     'FANVUE_WORKER_TOKEN',
     'FANVUE_SUPABASE_WORKER_TOKEN',
     'GITHUB_TOKEN',
+    'HF_TOKEN',
+    'ANNA_LORA_TEST_ASSET_URL',
+    'ANNA_LORA_TEST_ASSET_KEY',
   ]);
   const env = { ...(payload.env || {}) };
   for (const name of secretEnvNames) {
@@ -289,6 +292,9 @@ function buildCreatePayload() {
         : '',
       FANVUE_WORKER_TOKEN: process.env.FANVUE_WORKER_TOKEN || process.env.FANVUE_SUPABASE_WORKER_TOKEN || '',
       GITHUB_TOKEN: process.env.GITHUB_TOKEN || '',
+      HF_TOKEN: process.env.HF_TOKEN || '',
+      ANNA_LORA_TEST_ASSET_URL: process.env.ANNA_LORA_TEST_ASSET_URL || '',
+      ANNA_LORA_TEST_ASSET_KEY: process.env.ANNA_LORA_TEST_ASSET_KEY || '',
     },
   };
   if (useTemplate && templateId) {
