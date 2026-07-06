@@ -93,6 +93,23 @@ function redactedCreatePayload(payload) {
   };
 }
 
+function redactSecrets(value) {
+  if (Array.isArray(value)) return value.map(redactSecrets);
+  if (value && typeof value === 'object') {
+    const out = {};
+    for (const [key, nested] of Object.entries(value)) {
+      out[key] = /token|key|secret|password|authorization|env/i.test(key) ? '***' : redactSecrets(nested);
+    }
+    return out;
+  }
+  if (typeof value === 'string') {
+    return value
+      .replace(/rpa_[A-Za-z0-9_-]+/g, '<RUNPOD_API_KEY>')
+      .replace(/hf_[A-Za-z0-9_-]+/g, '<HF_TOKEN>');
+  }
+  return value;
+}
+
 const command = argValue('command', args[0] || 'help');
 const bundleDir = path.resolve(argValue('bundle-dir', process.env.BUNDLE_DIR || '.'));
 const envFile = path.resolve(argValue('local-env-file', process.env.FANVUE_ENV_FILE || path.join(bundleDir, '.env.local')));
@@ -306,13 +323,13 @@ function buildCreatePayload() {
 }
 
 async function listPods() {
-  output(await runpodFetch('/pods'));
+  output(redactSecrets(await runpodFetch('/pods')));
 }
 
 async function checkPod() {
   const podId = argValue('pod-id');
   if (!podId) throw new Error('--pod-id is required');
-  output(await runpodFetch(`/pods/${podId}`));
+  output(redactSecrets(await runpodFetch(`/pods/${podId}`)));
 }
 
 async function createPod() {
@@ -353,14 +370,14 @@ async function createPod() {
     pod_id: podId,
     comfyui_url: podId ? podProxyUrl(podId) : null,
     diagnostics_url: podId ? podProxyUrl(podId, 8888) : null,
-    result,
+    result: redactSecrets(result),
   });
 }
 
 async function stopPod() {
   const podId = argValue('pod-id');
   if (!podId) throw new Error('--pod-id is required');
-  output(await runpodFetch(`/pods/${podId}/stop`, { method: 'POST', body: '{}' }));
+  output(redactSecrets(await runpodFetch(`/pods/${podId}/stop`, { method: 'POST', body: '{}' })));
 }
 
 async function waitForComfy() {
