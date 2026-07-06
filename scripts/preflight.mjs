@@ -27,7 +27,7 @@ function matchesProfile(item) {
 }
 
 const selectedModels = (models.models || []).filter((item) => matchesProfile(item));
-const missingModelUrls = selectedModels.filter((item) => !item.source_url);
+const missingModelUrls = selectedModels.filter((item) => !item.source_url && !item.source_url_env);
 const selectedNodes = (nodes.nodes || []).filter((item) =>
   testProfile === 'api_smoke' ? false :
   firstTestOnly ? item.required_for_first_test : true
