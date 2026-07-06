@@ -291,7 +291,7 @@ function buildCreatePayload() {
         ? process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.FANVUE_SUPABASE_SERVICE_ROLE_KEY || ''
         : '',
       FANVUE_WORKER_TOKEN: process.env.FANVUE_WORKER_TOKEN || process.env.FANVUE_SUPABASE_WORKER_TOKEN || '',
-      GITHUB_TOKEN: process.env.GITHUB_TOKEN || '',
+      GITHUB_TOKEN: process.env.FANVUE_PASS_GITHUB_TOKEN_TO_POD === 'true' ? process.env.GITHUB_TOKEN || '' : '',
       HF_TOKEN: process.env.HF_TOKEN || '',
       ANNA_LORA_TEST_ASSET_URL: process.env.ANNA_LORA_TEST_ASSET_URL || '',
       ANNA_LORA_TEST_ASSET_KEY: process.env.ANNA_LORA_TEST_ASSET_KEY || '',
