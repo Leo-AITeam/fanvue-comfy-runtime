@@ -1,0 +1,102 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sd_xl_base_1.0.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "clip": [
+        "1",
+        1
+      ],
+      "lora_name": "anna_x_model_v2.safetensors",
+      "strength_model": 1.0,
+      "strength_clip": 0.9
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        1
+      ],
+      "text": "anna_x_model, woman, realistic iPhone portrait photo, centered head and shoulders, straight head, direct eye contact, neutral calm face, natural honey beige blonde hair with soft golden blonde highlights, slightly darker shadowed roots, warm tan skin, real skin texture, subtle pores, natural under eye texture, grey closed ribbed tank top, indoor apartment daylight, hands out of frame, no visible arm, 35mm phone camera, realistic amateur photo"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        1
+      ],
+      "text": "dark brown hair, brunette, black hair, yellow bleached hair, platinum blonde, plastic skin, waxy skin, doll face, overly smooth skin, beauty filter, CGI, 3d render, glamour model, fake instagram face, different person, changed facial identity, heavy makeup, selfie arm, visible hand, tilted head, dutch angle, teeth, open mouth, low quality, blurry, distorted anatomy, watermark, text, logo"
+    }
+  },
+  "13": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 832,
+      "height": 1216,
+      "batch_size": 1
+    }
+  },
+  "3": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "2",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "13",
+        0
+      ],
+      "seed": 70083,
+      "steps": 30,
+      "cfg": 6.5,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1
+    }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "3",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "8",
+        0
+      ],
+      "filename_prefix": "anna_sdxlbase_lora_v2"
+    }
+  }
+}

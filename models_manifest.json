@@ -243,6 +243,23 @@
       ]
     },
     {
+      "name": "anna_x_model_v2.safetensors",
+      "type": "lora",
+      "source_url_env": "ANNA_LORA_TEST_ASSET_URL",
+      "decrypt": {
+        "algorithm": "aes-256-cbc",
+        "pbkdf2": true,
+        "iter": 200000,
+        "key_env": "ANNA_LORA_TEST_ASSET_KEY"
+      },
+      "expected_bytes": 456490332,
+      "target_dir": "ComfyUI/models/loras",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_sdxlbase_v2_test"
+      ]
+    },
+    {
       "name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
       "type": "model",
       "source_url": "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors",
@@ -549,6 +566,15 @@
       "required_models": [
         "sd_xl_base_1.0.safetensors",
         "anna_x_model_v1.safetensors"
+      ]
+    },
+    "anna_sdxlbase_v2_test": {
+      "description": "Anna LoRA v2 diagnostic profile on neutral SDXL base for identity, hair, and skin-color testing.",
+      "source_complete": true,
+      "api_prompt": "api_prompts/anna_sdxlbase_lora_v2.json",
+      "required_models": [
+        "sd_xl_base_1.0.safetensors",
+        "anna_x_model_v2.safetensors"
       ]
     },
     "photo_adult_v1": {
