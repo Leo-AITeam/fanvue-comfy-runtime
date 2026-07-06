@@ -125,8 +125,23 @@ write_status true "training_started"
 echo "[anna-lora] starting setup and training"
 bash "$SETUP" "$ARCHIVE_PATH"
 
+OUTPUTS_ARCHIVE="$DIAG_DIR/anna_lora_outputs.tar.gz"
+OUTPUTS_SHA256="$DIAG_DIR/anna_lora_outputs.sha256.txt"
+OUTPUTS_FILE_LIST="$DIAG_DIR/anna_lora_outputs_files.txt"
+
+if [ -d "$OUTPUTS_DIR" ]; then
+  find "$OUTPUTS_DIR" -maxdepth 1 -type f -print | sort > "$OUTPUTS_FILE_LIST"
+  tar -czf "$OUTPUTS_ARCHIVE" -C "$OUTPUTS_DIR" .
+  sha256sum "$OUTPUTS_ARCHIVE" > "$OUTPUTS_SHA256"
+else
+  echo "[anna-lora] outputs directory not found: $OUTPUTS_DIR"
+fi
+
 write_status true "training_finished" ",
-  \"outputs\": \"$OUTPUTS_DIR\""
+  \"outputs\": \"$OUTPUTS_DIR\",
+  \"outputs_archive\": \"$OUTPUTS_ARCHIVE\",
+  \"outputs_sha256\": \"$OUTPUTS_SHA256\",
+  \"outputs_file_list\": \"$OUTPUTS_FILE_LIST\""
 
 echo "[anna-lora] done"
 keepalive
