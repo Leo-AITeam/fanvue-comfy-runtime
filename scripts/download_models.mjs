@@ -76,6 +76,21 @@ function validateFileSize(item, destination) {
   return { ok: true, bytes, expected_bytes: expected || undefined, min_bytes: minimum || undefined };
 }
 
+function sourceUrl(item) {
+  if (item.source_url_env) return process.env[item.source_url_env] || '';
+  return item.source_url || '';
+}
+
+function curlHeaderArgs(item) {
+  const args = [];
+  for (const header of item.headers || []) {
+    const value = header.value_env ? process.env[header.value_env] : header.value;
+    if (!header.name || !value) continue;
+    args.push('-H', `${header.name}: ${header.prefix || ''}${value}`);
+  }
+  return args;
+}
+
 function targetPath(item) {
   const cleanName = String(item.name).replaceAll('\\', '/');
   const targetDir = String(item.target_dir || '').replaceAll('\\', '/');
@@ -88,7 +103,8 @@ function targetPath(item) {
 
 for (const item of models) {
   const destination = targetPath(item);
-  if (!item.source_url) {
+  const resolvedSourceUrl = sourceUrl(item);
+  if (!resolvedSourceUrl) {
     results.push({ name: item.name, status: 'missing_source_url', destination });
     writeReport('downloading', { current_model: { name: item.name, status: 'missing_source_url' } });
     continue;
@@ -111,12 +127,21 @@ for (const item of models) {
     }
   }
   if (dryRun) {
-    results.push({ name: item.name, status: 'dry_run', destination, source_url: item.source_url });
+    results.push({
+      name: item.name,
+      status: 'dry_run',
+      destination,
+      source_url: item.source_url ? item.source_url : undefined,
+      source_url_env: item.source_url_env,
+      decrypt: item.decrypt ? { ...item.decrypt, key_env: item.decrypt.key_env ? '[env]' : undefined } : undefined,
+    });
     writeReport('dry_run_planning', { current_model: { name: item.name, status: 'dry_run' } });
     continue;
   }
 
   fs.mkdirSync(path.dirname(destination), { recursive: true });
+  const encryptedDownload = Boolean(item.decrypt);
+  const downloadDestination = encryptedDownload ? `${destination}.encrypted_download` : destination;
   const configuredAttempts = Number(process.env.FANVUE_DOWNLOAD_ATTEMPTS || 3);
   const maxAttempts = Number.isFinite(configuredAttempts) && configuredAttempts > 0 ? configuredAttempts : 3;
   let finalStatus = { ok: false, bytes: 0, reason: 'not_started' };
@@ -133,13 +158,25 @@ for (const item of models) {
     });
     const curl = spawnSync(
       'curl',
-      ['-L', '--fail', '--retry', '3', '--retry-delay', '2', '-o', destination, item.source_url],
+      [
+        '-L',
+        '--fail',
+        '--retry',
+        '3',
+        '--retry-delay',
+        '2',
+        ...curlHeaderArgs(item),
+        '-o',
+        downloadDestination,
+        resolvedSourceUrl,
+      ],
       { stdio: 'inherit' },
     );
     curlStatus = curl.status || 0;
     if (curl.status !== 0) {
       finalStatus = { ok: false, bytes: 0, reason: 'curl_failed', attempt, curl_status: curl.status };
-      if (fs.existsSync(destination)) fs.unlinkSync(destination);
+      if (fs.existsSync(downloadDestination)) fs.unlinkSync(downloadDestination);
+      if (encryptedDownload && fs.existsSync(destination)) fs.unlinkSync(destination);
       writeReport('downloading', {
         current_model: {
           name: item.name,
@@ -151,6 +188,57 @@ for (const item of models) {
         },
       });
       continue;
+    }
+    if (item.decrypt) {
+      const keyEnv = item.decrypt.key_env;
+      if (!keyEnv || !process.env[keyEnv]) {
+        finalStatus = { ok: false, bytes: 0, reason: 'decrypt_key_missing', attempt, key_env: keyEnv || '' };
+        if (fs.existsSync(downloadDestination)) fs.unlinkSync(downloadDestination);
+        writeReport('downloading', {
+          current_model: {
+            name: item.name,
+            destination,
+            attempt,
+            max_attempts: maxAttempts,
+            status: 'retrying_after_decrypt_key_missing',
+          },
+        });
+        continue;
+      }
+      const decrypt = spawnSync(
+        'openssl',
+        [
+          'enc',
+          '-d',
+          '-aes-256-cbc',
+          '-pbkdf2',
+          '-iter',
+          String(item.decrypt.iter || 200000),
+          '-in',
+          downloadDestination,
+          '-out',
+          destination,
+          '-pass',
+          `env:${keyEnv}`,
+        ],
+        { stdio: 'inherit' },
+      );
+      if (fs.existsSync(downloadDestination)) fs.unlinkSync(downloadDestination);
+      if (decrypt.status !== 0) {
+        finalStatus = { ok: false, bytes: 0, reason: 'decrypt_failed', attempt, decrypt_status: decrypt.status };
+        if (fs.existsSync(destination)) fs.unlinkSync(destination);
+        writeReport('downloading', {
+          current_model: {
+            name: item.name,
+            destination,
+            attempt,
+            max_attempts: maxAttempts,
+            status: 'retrying_after_decrypt_failed',
+            decrypt_status: decrypt.status,
+          },
+        });
+        continue;
+      }
     }
     finalStatus = validateFileSize(item, destination);
     if (finalStatus.ok) break;
