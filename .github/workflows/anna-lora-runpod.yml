@@ -1,0 +1,108 @@
+name: Anna LoRA RunPod Training
+
+on:
+  workflow_dispatch:
+    inputs:
+      gpu_type:
+        description: RunPod GPU type id
+        required: false
+        default: NVIDIA L40S
+      image_name:
+        description: Runtime image
+        required: false
+        default: ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest
+
+jobs:
+  start-runpod-training:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start RunPod pod
+        env:
+          RUNPOD_API_KEY: ${{ secrets.RUNPOD_API_KEY }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          ANNA_LORA_ARCHIVE_KEY: ${{ secrets.ANNA_LORA_ARCHIVE_KEY }}
+          GPU_TYPE: ${{ inputs.gpu_type }}
+          IMAGE_NAME: ${{ inputs.image_name }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import sys
+          import time
+          import urllib.error
+          import urllib.request
+
+          required = ["RUNPOD_API_KEY", "HF_TOKEN", "ANNA_LORA_ARCHIVE_KEY"]
+          missing = [name for name in required if not os.environ.get(name)]
+          if missing:
+              print(json.dumps({"ok": False, "error": "missing_secrets", "missing": missing}, indent=2))
+              sys.exit(1)
+
+          bootstrap_command = "; ".join([
+              "set -euo pipefail",
+              "mkdir -p /workspace/fanvue",
+              "rm -rf /workspace/fanvue/bootstrap",
+              "git clone --depth 1 --branch \"${FANVUE_BOOTSTRAP_REF:-main}\" \"${FANVUE_BOOTSTRAP_REPO:-https://github.com/Leo-AITeam/fanvue-comfy-runtime.git}\" /workspace/fanvue/bootstrap",
+              "bash \"/workspace/fanvue/bootstrap/${FANVUE_BOOTSTRAP_SCRIPT:-runpod/anna_lora_train_entrypoint.sh}\"",
+          ])
+
+          payload = {
+              "name": f"anna-lora-train-v1-{time.strftime('%Y%m%d%H%M%S', time.gmtime())}",
+              "imageName": os.environ.get("IMAGE_NAME") or "ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest",
+              "gpuTypeIds": [os.environ.get("GPU_TYPE") or "NVIDIA L40S"],
+              "gpuCount": 1,
+              "containerDiskInGb": 120,
+              "volumeInGb": 0,
+              "ports": ["8888/http"],
+              "env": {
+                  "FANVUE_BOOTSTRAP_REPO": "https://github.com/Leo-AITeam/fanvue-comfy-runtime.git",
+                  "FANVUE_BOOTSTRAP_REF": "codex/anna-lora-training-v1",
+                  "FANVUE_BOOTSTRAP_SCRIPT": "runpod/anna_lora_train_entrypoint.sh",
+                  "ANNA_LORA_RUN_NAME": "anna_x_model_v1_2026-07-06",
+                  "ANNA_LORA_ARCHIVE_NAME": "anna_x_model_v1_2026-07-06_FULL_WITH_DATASET.tar.gz",
+                  "ANNA_LORA_ARCHIVE_SHA256": "f11ea749381068a7f7a22f421b729a02126b8409646fe6eaeb7b9cf60a174482",
+                  "ANNA_LORA_ARCHIVE_ENC_SHA256": "ae0ff08e7f94fd1450bbb9f8e148447a0d6eb07637b0101bf61a16eeeedbc030",
+                  "ANNA_LORA_ARCHIVE_KEY": os.environ["ANNA_LORA_ARCHIVE_KEY"],
+                  "ANNA_LORA_DIAGNOSTIC_HTTP": "true",
+                  "ANNA_LORA_DIAGNOSTIC_PORT": "8888",
+                  "HF_TOKEN": os.environ["HF_TOKEN"],
+              },
+              "dockerStartCmd": ["bash", "-lc", bootstrap_command],
+          }
+
+          token = os.environ["RUNPOD_API_KEY"]
+          if not token.startswith("Bearer "):
+              token = "Bearer " + token
+
+          request = urllib.request.Request(
+              "https://rest.runpod.io/v1/pods",
+              data=json.dumps(payload).encode("utf-8"),
+              headers={
+                  "Authorization": token,
+                  "Content-Type": "application/json",
+              },
+              method="POST",
+          )
+
+          try:
+              with urllib.request.urlopen(request, timeout=120) as response:
+                  body = json.loads(response.read().decode("utf-8"))
+                  status = response.status
+          except urllib.error.HTTPError as exc:
+              raw = exc.read().decode("utf-8", errors="replace")
+              print(json.dumps({"ok": False, "status": exc.code, "body": raw[:1000]}, indent=2))
+              sys.exit(1)
+
+          pod = body if isinstance(body, dict) and body.get("id") else body.get("pod") or body.get("data") or body
+          pod_id = pod.get("id") if isinstance(pod, dict) else None
+          summary = {
+              "ok": True,
+              "status": status,
+              "pod_id": pod_id,
+              "pod_name": pod.get("name") if isinstance(pod, dict) else None,
+              "desired_status": pod.get("desiredStatus") if isinstance(pod, dict) else None,
+              "diagnostic_status_url": f"https://{pod_id}-8888.proxy.runpod.net/anna_lora_status.json" if pod_id else None,
+              "diagnostic_log_url": f"https://{pod_id}-8888.proxy.runpod.net/anna_lora_train.log" if pod_id else None,
+          }
+          print(json.dumps(summary, indent=2))
+          PY
