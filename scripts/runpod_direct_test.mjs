@@ -284,6 +284,8 @@ function buildCreatePayload() {
       FANVUE_WORKER_FETCH_RETRY_DELAY_MS: String(argValue('worker-fetch-retry-delay-ms', process.env.FANVUE_WORKER_FETCH_RETRY_DELAY_MS || '5000')),
       FANVUE_AUTO_RUN_PROMPT: String(autoRun),
       FANVUE_WORKFLOW_NAME: workflowName || (inputImageName ? 'Face Detailer Smoke' : 'Flux Klein 4B Smoke'),
+      FANVUE_API_PROMPT: process.env.FANVUE_API_PROMPT || '',
+      FANVUE_API_PROMPT_TEMPLATE: process.env.FANVUE_API_PROMPT_TEMPLATE || '',
       FANVUE_INPUT_IMAGE_NAME: inputImageName,
       FANVUE_INPUT_SUBFOLDER: inputSubfolder,
       FANVUE_FILENAME_PREFIX: filenamePrefix,
