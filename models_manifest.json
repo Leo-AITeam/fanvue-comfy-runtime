@@ -222,7 +222,8 @@
       "target_dir": "ComfyUI/models/checkpoints",
       "required_for_first_test": false,
       "test_profiles": [
-        "anna_sdxlbase_test"
+        "anna_sdxlbase_test",
+        "anna_sdxlbase_v2_test"
       ]
     },
     {
