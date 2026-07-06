@@ -12,6 +12,7 @@ ARCHIVE_ENC_SHA256="${ANNA_LORA_ARCHIVE_ENC_SHA256:-c48cecdcadb399751a6aefad36b9
 SETUP_SCRIPT="${ANNA_LORA_SETUP_SCRIPT:-runpod_setup_and_train.sh}"
 OUTPUTS_DIR="${ANNA_LORA_OUTPUTS_DIR:-$ROOT/training_runs/anna_x_model_v1/outputs}"
 KEEPALIVE_AFTER_EXIT="${ANNA_LORA_KEEPALIVE_AFTER_EXIT:-true}"
+OUTPUTS_ARCHIVE_MODE="${ANNA_LORA_OUTPUTS_ARCHIVE_MODE:-all}"
 
 mkdir -p "$ROOT" "$DIAG_DIR"
 touch "$LOG_FILE"
@@ -128,10 +129,20 @@ bash "$SETUP" "$ARCHIVE_PATH"
 OUTPUTS_ARCHIVE="$DIAG_DIR/anna_lora_outputs.tar.gz"
 OUTPUTS_SHA256="$DIAG_DIR/anna_lora_outputs.sha256.txt"
 OUTPUTS_FILE_LIST="$DIAG_DIR/anna_lora_outputs_files.txt"
+FINAL_MODEL_SHA256="$DIAG_DIR/anna_lora_final_model.sha256.txt"
 
 if [ -d "$OUTPUTS_DIR" ]; then
   find "$OUTPUTS_DIR" -maxdepth 1 -type f -print | sort > "$OUTPUTS_FILE_LIST"
-  tar -czf "$OUTPUTS_ARCHIVE" -C "$OUTPUTS_DIR" .
+  FINAL_MODEL="$(find "$OUTPUTS_DIR" -maxdepth 1 -type f -name '*.safetensors' ! -name '*-[0-9][0-9][0-9][0-9][0-9][0-9].safetensors' | sort | head -n 1 || true)"
+  if [ -n "$FINAL_MODEL" ]; then
+    cp "$FINAL_MODEL" "$DIAG_DIR/$(basename "$FINAL_MODEL")"
+    sha256sum "$DIAG_DIR/$(basename "$FINAL_MODEL")" > "$FINAL_MODEL_SHA256"
+  fi
+  if [ "$OUTPUTS_ARCHIVE_MODE" = "final" ] && [ -n "${FINAL_MODEL:-}" ]; then
+    tar -czf "$OUTPUTS_ARCHIVE" -C "$DIAG_DIR" "$(basename "$FINAL_MODEL")" "$(basename "$FINAL_MODEL_SHA256")"
+  else
+    tar -czf "$OUTPUTS_ARCHIVE" -C "$OUTPUTS_DIR" .
+  fi
   sha256sum "$OUTPUTS_ARCHIVE" > "$OUTPUTS_SHA256"
 else
   echo "[anna-lora] outputs directory not found: $OUTPUTS_DIR"
@@ -141,7 +152,8 @@ write_status true "training_finished" ",
   \"outputs\": \"$OUTPUTS_DIR\",
   \"outputs_archive\": \"$OUTPUTS_ARCHIVE\",
   \"outputs_sha256\": \"$OUTPUTS_SHA256\",
-  \"outputs_file_list\": \"$OUTPUTS_FILE_LIST\""
+  \"outputs_file_list\": \"$OUTPUTS_FILE_LIST\",
+  \"final_model_sha256\": \"$FINAL_MODEL_SHA256\""
 
 echo "[anna-lora] done"
 keepalive
