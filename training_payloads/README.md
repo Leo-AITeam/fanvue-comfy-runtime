@@ -1,8 +1,23 @@
 # Anna LoRA Training Payloads
 
-This folder stores the encrypted first Anna identity LoRA training packet.
+This folder stores encrypted Anna identity LoRA training packets.
 
 ## Payload
+
+### v2
+
+- Encrypted file: `anna_x_model_v2_2026-07-06_FULL_WITH_DATASET.tar.gz.enc`
+- Encrypted SHA256: `6a2a8ac6b86a0265a60f015b3baef2b0674b8746e4eba36a1171090d9cb07f5a`
+- Decrypted SHA256: `12c2ee80f75ad304dc34e58f832918b1a87564de9cb4bb5ce954e17f04e7a52a`
+- Decrypted contents: 33 PNG images, 33 identity-focused captions, SDXL LoRA v2 training config, RunPod setup script
+- Main changes from v1:
+  - same trigger token: `anna_x_model`
+  - captions describe variable pose/outfit/framing/expression instead of repeating generic identity labels
+  - network dim/alpha: `64/32`
+  - repeats/epochs: `12/6`
+  - text encoder LR: `0.000005`
+
+### v1
 
 - Encrypted file: `anna_x_model_v1_2026-07-06_FULL_WITH_DATASET.tar.gz.enc`
 - Encrypted SHA256: `ae0ff08e7f94fd1450bbb9f8e148447a0d6eb07637b0101bf61a16eeeedbc030`

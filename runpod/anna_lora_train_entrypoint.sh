@@ -9,6 +9,8 @@ ARCHIVE_NAME="${ANNA_LORA_ARCHIVE_NAME:-anna_x_model_v1_2026-07-06_FULL_WITH_DAT
 ARCHIVE_ENC_NAME="${ANNA_LORA_ARCHIVE_ENC_NAME:-${ARCHIVE_NAME}.enc}"
 ARCHIVE_SHA256="${ANNA_LORA_ARCHIVE_SHA256:-ef2a30aa106e0b7d5fcd3e2bdcda62aa04fabd13fa75cca9fbd6ac2c9d91dc49}"
 ARCHIVE_ENC_SHA256="${ANNA_LORA_ARCHIVE_ENC_SHA256:-c48cecdcadb399751a6aefad36b9de155cf95191733dd3ca70a595a2a54eaabf}"
+SETUP_SCRIPT="${ANNA_LORA_SETUP_SCRIPT:-runpod_setup_and_train.sh}"
+OUTPUTS_DIR="${ANNA_LORA_OUTPUTS_DIR:-$ROOT/training_runs/anna_x_model_v1/outputs}"
 KEEPALIVE_AFTER_EXIT="${ANNA_LORA_KEEPALIVE_AFTER_EXIT:-true}"
 
 mkdir -p "$ROOT" "$DIAG_DIR"
@@ -115,7 +117,7 @@ write_status true "archive_ready" ",
   \"archive_path\": \"$ARCHIVE_PATH\""
 
 tar -xzf "$ARCHIVE_PATH" -C "$ROOT"
-SETUP="$ROOT/$RUN_NAME/runpod_setup_and_train.sh"
+SETUP="$ROOT/$RUN_NAME/$SETUP_SCRIPT"
 chmod +x "$SETUP"
 
 write_status true "training_started"
@@ -124,7 +126,7 @@ echo "[anna-lora] starting setup and training"
 bash "$SETUP" "$ARCHIVE_PATH"
 
 write_status true "training_finished" ",
-  \"outputs\": \"$ROOT/training_runs/anna_x_model_v1/outputs\""
+  \"outputs\": \"$OUTPUTS_DIR\""
 
 echo "[anna-lora] done"
 keepalive
