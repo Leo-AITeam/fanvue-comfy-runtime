@@ -113,6 +113,7 @@ const callbackRetries = Number(env('FANVUE_CALLBACK_RETRIES', '3'));
 const callbackRetryDelayMs = Number(env('FANVUE_CALLBACK_RETRY_DELAY_MS', '5000'));
 const supabaseStatusUpdates = boolEnv('FANVUE_SUPABASE_STATUS_UPDATES', false);
 const runpodSelfStop = boolEnv('FANVUE_RUNPOD_SELF_STOP', false);
+const githubOutputUpload = boolEnv('FANVUE_GITHUB_OUTPUT_UPLOAD', false);
 const workerHeartbeatIntervalMs = Number(env('FANVUE_WORKER_HEARTBEAT_INTERVAL_MS', '60000'));
 const workflowName = env(
   'FANVUE_WORKFLOW_NAME',
@@ -777,6 +778,88 @@ async function sendCallback(report) {
   };
 }
 
+async function githubApiFetch(url, options = {}) {
+  const token = env('GITHUB_TOKEN');
+  if (!token) throw new Error('GITHUB_TOKEN is required for GitHub output upload');
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+      ...(options.headers || {}),
+    },
+  });
+  const text = await response.text();
+  let body = text;
+  try {
+    body = text ? JSON.parse(text) : null;
+  } catch {
+    body = text.slice(0, 1000);
+  }
+  return { response, body };
+}
+
+async function ensureGithubRelease() {
+  const repo = env('FANVUE_GITHUB_OUTPUT_REPO', 'Leo-AITeam/fanvue-comfy-runtime');
+  const tag = env('FANVUE_GITHUB_OUTPUT_TAG', 'anna-runtime-outputs');
+  const releaseName = env('FANVUE_GITHUB_OUTPUT_RELEASE_NAME', 'Anna Runtime Outputs');
+  const encodedTag = encodeURIComponent(tag);
+  const getUrl = `https://api.github.com/repos/${repo}/releases/tags/${encodedTag}`;
+  const existing = await githubApiFetch(getUrl);
+  if (existing.response.ok) return { repo, tag, release: existing.body };
+  if (existing.response.status !== 404) {
+    throw new Error(`GitHub release lookup failed: ${existing.response.status} ${JSON.stringify(existing.body)}`);
+  }
+
+  const created = await githubApiFetch(`https://api.github.com/repos/${repo}/releases`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      tag_name: tag,
+      name: releaseName,
+      draft: false,
+      prerelease: true,
+    }),
+  });
+  if (!created.response.ok) {
+    throw new Error(`GitHub release create failed: ${created.response.status} ${JSON.stringify(created.body)}`);
+  }
+  return { repo, tag, release: created.body };
+}
+
+async function uploadGithubOutputFiles(files) {
+  if (!githubOutputUpload) return { ok: true, status: 'disabled' };
+  const existingFiles = (files || []).filter((file) => file && fs.existsSync(file));
+  if (existingFiles.length === 0) return { ok: false, status: 'no_files' };
+
+  const { release } = await ensureGithubRelease();
+  const uploadUrl = String(release.upload_url || '').replace(/\{\?name,label\}$/, '');
+  const namePrefix = env('FANVUE_GITHUB_OUTPUT_NAME_PREFIX', env('FANVUE_FILENAME_PREFIX', 'fanvue_output'));
+  const uploaded = [];
+  for (const file of existingFiles) {
+    const bytes = fs.readFileSync(file);
+    const assetName = `${namePrefix}_${Date.now()}_${path.basename(file)}`.replace(/[^A-Za-z0-9._-]+/g, '_');
+    const url = `${uploadUrl}?name=${encodeURIComponent(assetName)}`;
+    const result = await githubApiFetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/octet-stream' },
+      body: bytes,
+    });
+    if (!result.response.ok) {
+      throw new Error(`GitHub asset upload failed: ${result.response.status} ${JSON.stringify(result.body)}`);
+    }
+    uploaded.push({
+      source_file: file,
+      asset_name: assetName,
+      bytes: bytes.length,
+      browser_download_url: result.body?.browser_download_url || null,
+      html_url: result.body?.browser_download_url || result.body?.url || null,
+    });
+  }
+  return { ok: true, status: 'uploaded', uploaded };
+}
+
 async function main() {
   const report = {
     ok: false,
@@ -837,6 +920,7 @@ async function main() {
         history,
         duration_ms: Date.now() - startedAt,
       });
+      report.github_upload = await uploadGithubOutputFiles(history.saved_files);
     }
   } catch (error) {
     Object.assign(report, {
