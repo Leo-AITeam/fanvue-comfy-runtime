@@ -1,0 +1,113 @@
+{
+  "3": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "20",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "10",
+        0
+      ],
+      "seed": 2101006,
+      "steps": 26,
+      "cfg": 2.2,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 0.14
+    }
+  },
+  "4": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sd_xl_base_1.0.safetensors"
+    }
+  },
+  "5": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "__INPUT_IMAGE__"
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "20",
+        1
+      ],
+      "text": "anna_x_model, img2img from REF 001, preserve the original photo identity and original camera realism, preserve exact face shape, cheeks, chin, eyes, lips and smile from input image, do not beautify, do not retouch, do not make a new face, keep natural asymmetry, keep original warm tan skin color, preserve matte real skin with pores, faint freckles, tiny moles, subtle uneven skin tone, skin should look like the original phone photo, not glossy, not waxy, not airbrushed, no plastic highlight, no beauty filter, preserve original long hair structure, individual hair strands, natural dark honey beige wheat blonde hair, darker roots, muted wheat golden highlights, sandy beige lengths, keep hair slightly darker than pale blonde, white tank top, domestic apartment background, soft natural window light, raw iPhone photo, hands out of frame, almost original REF 001, preserve native camera skin texture and original hair fibers"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "20",
+        1
+      ],
+      "text": "beauty retouch, airbrushed skin, plastic skin, wax skin, waxy skin, glossy skin, wet skin, oily skin, porcelain skin, doll face, cgi, 3d render, smooth forehead, blurred pores, fake highlight, salon blonde hair, overly shiny hair, plastic hair, wig hair, pale blonde, platinum blonde, white highlights, bleached yellow, orange hair, grey ash hair, brunette, flat hair, different person, changed identity, redesigned face, elongated face, sharp chin, pointed chin, long chin, hollow cheeks, cat eyes, fox eyes, wide-set eyes, filler lips, teeth, open mouth, studio portrait, glamour lighting, visible hand, phone in frame, mirror selfie, watermark, text, logo, deformed face, bad anatomy, low quality"
+    }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "3",
+        0
+      ],
+      "vae": [
+        "4",
+        2
+      ]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "8",
+        0
+      ],
+      "filename_prefix": "anna_v3_001_refimg_2106"
+    }
+  },
+  "20": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "clip": [
+        "4",
+        1
+      ],
+      "lora_name": "anna_x_model_v3.safetensors",
+      "strength_model": 0.22,
+      "strength_clip": 0.18
+    }
+  },
+  "10": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "5",
+        0
+      ],
+      "vae": [
+        "4",
+        2
+      ]
+    }
+  }
+}
