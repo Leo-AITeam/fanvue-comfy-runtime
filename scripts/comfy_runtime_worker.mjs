@@ -920,7 +920,6 @@ async function main() {
         history,
         duration_ms: Date.now() - startedAt,
       });
-      report.github_upload = await uploadGithubOutputFiles(history.saved_files);
     }
   } catch (error) {
     Object.assign(report, {
@@ -976,6 +975,24 @@ async function main() {
       report.ok = false;
       report.status = 'callback_failed';
     }
+  }
+
+  writeJson(reportPath, report);
+  writeJson(mirrorReportPath, report);
+
+  try {
+    const files = [
+      ...(report.history?.saved_files || []),
+      reportPath,
+      mirrorReportPath,
+    ];
+    report.github_upload = await uploadGithubOutputFiles(files);
+  } catch (error) {
+    report.github_upload = {
+      ok: false,
+      status: 'failed',
+      error: error.message,
+    };
   }
 
   writeJson(reportPath, report);

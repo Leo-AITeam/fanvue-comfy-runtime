@@ -229,7 +229,11 @@ function buildCreatePayload() {
   const useTemplate = hasFlag('preinstalled-comfy-template') || process.env.FANVUE_PREINSTALLED_COMFY_TEMPLATE === 'true';
   const imageName = requestedImageName || defaultRuntimeImageName;
   const templateId = argValue('template-id', process.env.RUNPOD_TEMPLATE_ID || (useTemplate ? defaultComfyTemplateId : ''));
-  const useBootstrapFromRepo = useTemplate || imageName === directComfyImageName;
+  const useBootstrapFromRepo =
+    useTemplate ||
+    imageName === directComfyImageName ||
+    hasFlag('bootstrap-from-repo') ||
+    process.env.FANVUE_BOOTSTRAP_FROM_REPO === 'true';
   const explicitGpuList = parseList(argValue('gpu-type-ids', process.env.RUNPOD_GPU_TYPE_IDS || ''));
   const gpu = argValue('gpu', process.env.RUNPOD_GPU_TYPE || '');
   const gpuTypeIds = explicitGpuList.length ? explicitGpuList : (gpu ? [gpu] : defaultGpuTypeIds());
@@ -302,6 +306,11 @@ function buildCreatePayload() {
       FANVUE_SUPABASE_FAILS_JOB: String(argValue('supabase-fails-job', process.env.FANVUE_SUPABASE_FAILS_JOB || 'false')),
       FANVUE_RUNPOD_SELF_STOP: String(argValue('runpod-self-stop', process.env.FANVUE_RUNPOD_SELF_STOP || 'false')),
       FANVUE_RUNPOD_STOP_POLICY: argValue('runpod-stop-policy', process.env.FANVUE_RUNPOD_STOP_POLICY || ''),
+      FANVUE_GITHUB_OUTPUT_UPLOAD: String(process.env.FANVUE_GITHUB_OUTPUT_UPLOAD || 'false'),
+      FANVUE_GITHUB_OUTPUT_REPO: process.env.FANVUE_GITHUB_OUTPUT_REPO || '',
+      FANVUE_GITHUB_OUTPUT_TAG: process.env.FANVUE_GITHUB_OUTPUT_TAG || '',
+      FANVUE_GITHUB_OUTPUT_RELEASE_NAME: process.env.FANVUE_GITHUB_OUTPUT_RELEASE_NAME || '',
+      FANVUE_GITHUB_OUTPUT_NAME_PREFIX: process.env.FANVUE_GITHUB_OUTPUT_NAME_PREFIX || '',
       RUNPOD_API_KEY: process.env.FANVUE_PASS_RUNPOD_KEY_TO_POD === 'true' ? process.env.RUNPOD_API_KEY || '' : '',
       SUPABASE_URL: process.env.SUPABASE_URL || process.env.FANVUE_SUPABASE_URL || '',
       SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || process.env.FANVUE_SUPABASE_ANON_KEY || '',
