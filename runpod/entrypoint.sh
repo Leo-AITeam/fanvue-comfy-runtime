@@ -32,12 +32,19 @@ fanvue_upload_diagnostics() {
   if [ ! -f "$upload_bundle_dir/scripts/github_release_upload.mjs" ]; then
     return 0
   fi
-  node "$upload_bundle_dir/scripts/github_release_upload.mjs" \
-    "$FANVUE_DIR/runtime_boot_report.json" \
-    "$FANVUE_DIR/fanvue_runtime.log" || true
+  local upload_cmd=(
+    node "$upload_bundle_dir/scripts/github_release_upload.mjs"
+    "$FANVUE_DIR/runtime_boot_report.json"
+    "$FANVUE_DIR/fanvue_runtime.log"
+  )
+  if [ "${1:-}" = "wait" ]; then
+    timeout 45s "${upload_cmd[@]}" || true
+  else
+    ( timeout 45s "${upload_cmd[@]}" || true ) &
+  fi
 }
 
-trap fanvue_upload_diagnostics EXIT
+trap 'fanvue_upload_diagnostics wait' EXIT
 fanvue_upload_diagnostics
 
 if [ "${FANVUE_DIAGNOSTIC_HTTP:-true}" = "true" ]; then
