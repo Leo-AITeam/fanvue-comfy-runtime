@@ -423,6 +423,9 @@ async function uploadInputImage() {
     ['inputs', 'source_image_name'],
   ]));
   if (!inputPath && inputName) return inputName;
+  if (inputPath && !path.isAbsolute(inputPath)) {
+    inputPath = bundlePath(inputPath);
+  }
   if (!inputPath && inputUrl) {
     const filenameFromUrl = (() => {
       try {
@@ -451,7 +454,7 @@ async function uploadInputImage() {
 
   const filename = env('FANVUE_UPLOAD_FILENAME', path.basename(inputPath));
   const subfolder = env('FANVUE_INPUT_SUBFOLDER', 'fanvue/runtime');
-  const bytes = fs.readFileSync(inputPath);
+  const bytes = decryptInputBytes(fs.readFileSync(inputPath));
   const form = new FormData();
   form.append('image', new Blob([bytes]), filename);
   form.append('type', 'input');
