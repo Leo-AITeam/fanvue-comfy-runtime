@@ -1,0 +1,102 @@
+{
+  "3": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "20",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "5",
+        0
+      ],
+      "seed": 1501002,
+      "steps": 32,
+      "cfg": 3.9,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1
+    }
+  },
+  "4": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sd_xl_base_1.0.safetensors"
+    }
+  },
+  "5": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 832,
+      "height": 1216,
+      "batch_size": 1
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "20",
+        1
+      ],
+      "text": "anna_x_model, adult woman, realistic unedited iPhone portrait photo, same Anna identity as REF 001, close-up portrait, centered face, straight camera, level head, direct eye contact, warm soft closed-mouth smile like REF 001, slight playful eye squint, soft natural oval face, slightly fuller youthful cheeks, soft wider rounded chin, natural proportional nose with soft rounded tip, blue gray green eyes, natural full lips, natural tan golden skin tone matching REF 001, real human skin texture, fine visible pores, subtle normal skin unevenness, soft matte-satin skin, not retouched, long natural multi-tonal dark honey beige blonde hair matching REF 001, darker blonde roots, golden beige blonde strands, soft ash beige undertone, face framing beige blonde highlights, straight long hair with natural volume, white tank top, casual domestic apartment background, soft natural window light, raw phone photo realism, hands out of frame, no visible arm, slightly stronger Anna face lock, natural cheeks and rounded chin"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "20",
+        1
+      ],
+      "text": "different person, changed facial identity, not Anna, elongated face, long narrow face, sharp angular face, long chin, pointed chin, sharp chin, triangular chin, narrow chin, thin sharp nose, pinched nose, cat eyes, fox eyes, wide-set eyes, dead eyes, frozen smirk, teeth, open mouth, enlarged lips, filler lips, instagram model, glamour portrait, studio portrait, professional lighting, harsh highlight, glossy wet skin, oily face, beauty retouch, airbrushed skin, plastic skin, waxy skin, porcelain skin, doll face, cgi, 3d render, dark brown hair, brunette, black hair, too dark hair, platinum blonde, bleached yellow hair, neon yellow hair, visible hand, hand near hair, phone in frame, mirror selfie, strong head tilt, dutch angle, watermark, text, logo"
+    }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "3",
+        0
+      ],
+      "vae": [
+        "4",
+        2
+      ]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "8",
+        0
+      ],
+      "filename_prefix": "anna_v3_001_posneg_sdxlbase_1502_seed1501002_strength82"
+    }
+  },
+  "20": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "clip": [
+        "4",
+        1
+      ],
+      "lora_name": "anna_x_model_v3.safetensors",
+      "strength_model": 0.82,
+      "strength_clip": 0.74
+    }
+  }
+}
