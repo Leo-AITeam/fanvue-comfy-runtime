@@ -1,0 +1,102 @@
+{
+  "3": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "20",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "5",
+        0
+      ],
+      "seed": 1601002,
+      "steps": 30,
+      "cfg": 3.7,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1
+    }
+  },
+  "4": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sd_xl_base_1.0.safetensors"
+    }
+  },
+  "5": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 832,
+      "height": 1216,
+      "batch_size": 1
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "20",
+        1
+      ],
+      "text": "anna_x_model, adult woman, realistic unedited iPhone portrait photo, same Anna identity as REF 001, close-up portrait, centered face, straight camera, level head, direct eye contact, warm expressive soft closed-mouth smile like REF 001, slight playful eye squint, natural lower eyelids slightly raised, soft clean oval face, balanced natural proportions, mildly defined soft high cheekbones, subtle fullness in the cheeks, not hollow cheeks, smooth continuous jawline, softly rounded delicate chin, wider softer chin, no sharp chin, no pointed chin, large slightly deep-set wide almond eyes, luminous light grey green irises with darker outer ring and subtle hazel flecks, proportional eye distance, natural fine eyelashes, natural light ash brown eyebrows, medium thick soft smooth arch, feathered inner brow hairs, slim straight nose bridge but soft not sharp, refined small subtly rounded nose tip, delicate narrow nostrils, natural proportional nose, naturally full plump lips, soft cupid bow, lower lip slightly fuller, realistic vertical lip lines, satin pink nude lips, warm honey beige golden tan skin tone matching REF 001, uniform face neck shoulders skin tone, hyper realistic matte porous skin texture, visible micro pores on nose cheeks forehead, faint tiny natural freckles across nose bridge and upper cheeks, tiny natural beauty mark on left cheek, subtle normal skin unevenness, no artificial smoothing, no heavy makeup, exceptionally long thick dense hair flowing past chest and shoulders, natural volume, straight silky full bodied hair, clean sharp middle part, realistic flyaway strands at crown, long heavy front sections framing both sides of the face, multi dimensional natural wheat blonde hair base, cool ash blonde undertones, soft sun bleached golden sandy highlights, darker soft ash brown blonde roots, seamless realistic root gradient, face framing beige blonde highlights, hair color close to REF 001 and 067 but slightly darker than overly yellow blonde, white tank top, casual domestic apartment background, soft natural window light, raw phone photo realism, minimal beauty edit, hands out of frame, no visible arm, preserve REF 001 hair color skin tone and face shape"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "20",
+        1
+      ],
+      "text": "different person, changed facial identity, not Anna, elongated face, long narrow face, gaunt cheeks, hollow cheeks, overfilled cheeks, sharp angular face, long chin, pointed chin, sharp chin, triangular chin, narrow chin, cleft chin, dimpled chin, thin sharp nose, pinched nose, overly tiny nose, cat eyes, fox eyes, slanted eyes, wide-set eyes, dead eyes, frozen smirk, asymmetrical eyes, teeth, open mouth, exaggerated lips, filler lips, duck lips, instagram model, glamour portrait, studio portrait, professional lighting, harsh highlight, glossy wet skin, oily face, beauty retouch, airbrushed skin, plastic skin, waxy skin, porcelain skin, doll face, cgi, 3d render, dark brown hair, brunette, black hair, too dark hair, platinum blonde, bleached yellow hair, neon yellow hair, orange hair, flat single-color hair, visible hand, hand near hair, phone in frame, mirror selfie, strong head tilt, dutch angle, watermark, text, logo, deformed face, bad anatomy, low quality"
+    }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "3",
+        0
+      ],
+      "vae": [
+        "4",
+        2
+      ]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "8",
+        0
+      ],
+      "filename_prefix": "anna_v3_001_refined_sdxlbase_1602_seed1601002_strength78"
+    }
+  },
+  "20": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "clip": [
+        "4",
+        1
+      ],
+      "lora_name": "anna_x_model_v3.safetensors",
+      "strength_model": 0.78,
+      "strength_clip": 0.7
+    }
+  }
+}
