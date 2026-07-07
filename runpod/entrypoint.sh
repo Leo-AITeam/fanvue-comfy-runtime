@@ -21,6 +21,25 @@ cat > "$FANVUE_DIR/runtime_boot_report.json" <<JSON
 }
 JSON
 
+fanvue_upload_diagnostics() {
+  if [ "${FANVUE_GITHUB_OUTPUT_UPLOAD:-false}" != "true" ]; then
+    return 0
+  fi
+  if [ -z "${GITHUB_TOKEN:-}" ]; then
+    return 0
+  fi
+  local upload_bundle_dir="${BUNDLE_DIR:-$DEFAULT_BUNDLE_DIR}"
+  if [ ! -f "$upload_bundle_dir/scripts/github_release_upload.mjs" ]; then
+    return 0
+  fi
+  node "$upload_bundle_dir/scripts/github_release_upload.mjs" \
+    "$FANVUE_DIR/runtime_boot_report.json" \
+    "$FANVUE_DIR/fanvue_runtime.log" || true
+}
+
+trap fanvue_upload_diagnostics EXIT
+fanvue_upload_diagnostics
+
 if [ "${FANVUE_DIAGNOSTIC_HTTP:-true}" = "true" ]; then
   python3 -m http.server "${FANVUE_DIAGNOSTIC_PORT:-8888}" --directory "$FANVUE_DIR" &
 fi
@@ -43,24 +62,6 @@ if ! COMFY_DIR="$(resolve_comfy_dir)"; then
 fi
 
 export WORKSPACE_DIR FANVUE_DIR BUNDLE_DIR COMFY_DIR
-
-fanvue_upload_diagnostics() {
-  if [ "${FANVUE_GITHUB_OUTPUT_UPLOAD:-false}" != "true" ]; then
-    return 0
-  fi
-  if [ -z "${GITHUB_TOKEN:-}" ]; then
-    return 0
-  fi
-  if [ ! -f "$BUNDLE_DIR/scripts/github_release_upload.mjs" ]; then
-    return 0
-  fi
-  node "$BUNDLE_DIR/scripts/github_release_upload.mjs" \
-    "$FANVUE_DIR/runtime_boot_report.json" \
-    "$FANVUE_DIR/fanvue_runtime.log" || true
-}
-
-trap fanvue_upload_diagnostics EXIT
-fanvue_upload_diagnostics
 
 if [ -n "$REPO_URL" ]; then
   echo "[fanvue-runpod] Cloning bootstrap repo: $REPO_URL ($REPO_REF)"
