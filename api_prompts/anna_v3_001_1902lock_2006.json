@@ -1,0 +1,102 @@
+{
+  "3": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "20",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "5",
+        0
+      ],
+      "seed": 92002006,
+      "steps": 30,
+      "cfg": 3.3,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1
+    }
+  },
+  "4": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sd_xl_base_1.0.safetensors"
+    }
+  },
+  "5": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 832,
+      "height": 1216,
+      "batch_size": 1
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "20",
+        1
+      ],
+      "text": "anna_x_model, adult woman, realistic unedited iPhone portrait photo, same Anna identity as REF 001, very close to successful 1902 face, preserve 1902 facial identity and expression, do not redesign the face, close-up portrait, centered face, straight camera, level head, direct eye contact, warm soft closed-mouth smile like REF 001, slight playful eye squint, natural relaxed expression, soft natural oval face like REF 001, subtle cheek fullness, compact lower face, chin slightly rounder and softer than 1902, chin visually smaller and less dominant, smooth rounded chin transition, soft jawline, no sharp jaw, no pointed chin, natural proportional nose with soft rounded tip, grey green eyes like REF 001, natural full lips, no glamour makeup, natural tan golden honey skin tone matching REF 001, warm beige golden complexion, face neck and shoulders same tan color, real human skin texture, fine visible pores, subtle normal skin unevenness, soft matte-satin skin, not pale, not porcelain, not airbrushed, very long thick straight hair, hair extends far below the chest and continues out of the lower frame, long heavy front sections over shoulders, full natural hair volume, natural dark honey beige wheat blonde hair matching REF 001 and 067, darker ash blonde roots, beige sandy blonde lengths, warm muted wheat blonde face framing strands, golden wheat blonde highlights, honey wheat highlights, sandy golden beige highlights, sunlit wheat tone, soft ash beige undertone, no pale blonde highlights, no white blonde, no platinum, no bleached yellow, not short hair, white tank top, casual domestic apartment background, soft natural window light, raw phone photo realism, hands out of frame, no visible arm, same 1902 identity, face proportions locked, realistic phone skin"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "20",
+        1
+      ],
+      "text": "different person, changed facial identity, redesigned face, not Anna, generic pretty girl, elongated face, long narrow face, sharp angular face, long chin, pointed chin, sharp chin, triangular chin, narrow chin, prominent chin, heavy chin, strong chin, cleft chin, dimpled chin, square heavy chin, strong jaw shadow, hollow cheeks, gaunt cheeks, thin sharp nose, pinched nose, overly tiny nose, cat eyes, fox eyes, wide-set eyes, dead eyes, frozen smirk, teeth, open mouth, enlarged lips, filler lips, instagram model, glamour portrait, studio portrait, professional lighting, harsh highlight, pale skin, light skin, porcelain skin, washed out skin, cool pink skin, grey skin, glossy wet skin, oily face, beauty retouch, airbrushed skin, plastic skin, waxy skin, doll face, cgi, 3d render, too light blonde hair, pale blonde hair, white blonde highlights, platinum blonde, bleached blonde, bleached yellow hair, neon yellow hair, orange hair, ashy grey blonde, dark brown hair, brunette, black hair, short hair, medium length hair, shoulder length hair, bob haircut, thin flat hair, visible hand, hand near hair, phone in frame, mirror selfie, strong head tilt, dutch angle, watermark, text, logo, bad anatomy, deformed face, low quality"
+    }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "3",
+        0
+      ],
+      "vae": [
+        "4",
+        2
+      ]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "8",
+        0
+      ],
+      "filename_prefix": "anna_v3_001_1902lock_2006"
+    }
+  },
+  "20": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "clip": [
+        "4",
+        1
+      ],
+      "lora_name": "anna_x_model_v3.safetensors",
+      "strength_model": 0.752,
+      "strength_clip": 0.672
+    }
+  }
+}
