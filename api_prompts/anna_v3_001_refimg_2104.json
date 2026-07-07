@@ -1,0 +1,113 @@
+{
+  "3": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "20",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "10",
+        0
+      ],
+      "seed": 2101004,
+      "steps": 26,
+      "cfg": 2.95,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 0.31
+    }
+  },
+  "4": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sd_xl_base_1.0.safetensors"
+    }
+  },
+  "5": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "__INPUT_IMAGE__"
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "20",
+        1
+      ],
+      "text": "anna_x_model, realistic unedited iPhone img2img portrait, preserve the exact person and face geometry from input reference image 001, same woman as REF 001, same soft oval face, same natural cheek fullness, same compact lower face, same softly rounded chin, same grey green eyes, same natural full lips, keep original close-up selfie composition and head angle from the reference, natural warm closed-mouth smile, subtle playful eye squint, natural tan golden honey skin tone matching REF 001, skin must stay warm beige tan and not pale, real human matte-satin skin, visible fine pores, subtle natural skin unevenness, faint freckles and tiny beauty marks, not plastic, not airbrushed, very long thick straight hair, natural dark honey beige wheat blonde hair matching REF 001 and 067, darker ash blonde roots, beige sandy blonde lengths, muted golden wheat highlights, not salon platinum, not too light, white tank top, casual domestic apartment background, soft natural window light, raw phone photo realism, hands out of frame, no visible arm, balanced redraw, preserve exact REF 001 face geometry, less glossy skin"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "20",
+        1
+      ],
+      "text": "different person, changed facial identity, redesigned face, elongated face, long narrow face, sharp angular face, long chin, pointed chin, prominent chin, hollow cheeks, thin sharp nose, cat eyes, fox eyes, wide-set eyes, frozen smirk, teeth, open mouth, filler lips, glamour portrait, studio portrait, professional lighting, pale skin, porcelain skin, washed out skin, glossy wet skin, oily face, beauty retouch, airbrushed skin, plastic skin, waxy skin, doll face, cgi, 3d render, too light blonde hair, white blonde highlights, platinum blonde, bleached yellow hair, orange hair, ashy grey blonde, brunette, short hair, thin flat hair, visible hand, hand near hair, phone in frame, mirror selfie, strong head tilt, dutch angle, watermark, text, logo, bad anatomy, deformed face, low quality"
+    }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "3",
+        0
+      ],
+      "vae": [
+        "4",
+        2
+      ]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "8",
+        0
+      ],
+      "filename_prefix": "anna_v3_001_refimg_2104"
+    }
+  },
+  "20": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "clip": [
+        "4",
+        1
+      ],
+      "lora_name": "anna_x_model_v3.safetensors",
+      "strength_model": 0.58,
+      "strength_clip": 0.5
+    }
+  },
+  "10": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "5",
+        0
+      ],
+      "vae": [
+        "4",
+        2
+      ]
+    }
+  }
+}
