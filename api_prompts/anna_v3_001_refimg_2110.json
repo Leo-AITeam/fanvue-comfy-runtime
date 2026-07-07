@@ -1,0 +1,113 @@
+{
+  "3": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "20",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "10",
+        0
+      ],
+      "seed": 2110001,
+      "steps": 22,
+      "cfg": 1.85,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 0.1
+    }
+  },
+  "4": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sd_xl_base_1.0.safetensors"
+    }
+  },
+  "5": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "__INPUT_IMAGE__"
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "20",
+        1
+      ],
+      "text": "anna_x_model, img2img from REF 001, preserve original camera photo, preserve original face identity and original pixels as much as possible, same face, same cheeks, same chin, same eyes, same smile, same warm tan skin, keep natural pores, tiny freckles, moles, natural uneven skin, no retouching, keep original hair fibers and natural dark honey beige wheat blonde color, darker roots, sandy wheat lengths, no salon shine, no plastic hair, raw iPhone photo, natural indoor light, white tank top, domestic background"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "20",
+        1
+      ],
+      "text": "beauty filter, retouching, airbrushed skin, plastic skin, waxy skin, glossy wet skin, oily shine, fake highlight, porcelain skin, doll face, cgi, 3d render, smooth blurred pores, overprocessed hair, plastic hair, wig hair, salon blonde, platinum blonde, white blonde, bleached yellow, orange hair, different person, redesigned face, elongated face, sharp chin, pointed chin, hollow cheeks, cat eyes, filler lips, glamour portrait, studio lighting, watermark, text, logo"
+    }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "3",
+        0
+      ],
+      "vae": [
+        "4",
+        2
+      ]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "8",
+        0
+      ],
+      "filename_prefix": "anna_v3_001_refimg_2110"
+    }
+  },
+  "20": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "clip": [
+        "4",
+        1
+      ],
+      "lora_name": "anna_x_model_v3.safetensors",
+      "strength_model": 0.12,
+      "strength_clip": 0.08
+    }
+  },
+  "10": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "5",
+        0
+      ],
+      "vae": [
+        "4",
+        2
+      ]
+    }
+  }
+}
