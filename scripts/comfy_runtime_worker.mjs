@@ -22,6 +22,20 @@ function readJson(file) {
   return JSON.parse(fs.readFileSync(file, 'utf8'));
 }
 
+function replacePromptPlaceholders(prompt, replacements) {
+  let replaced = 0;
+  for (const node of Object.values(prompt)) {
+    if (!node || typeof node !== 'object' || !node.inputs) continue;
+    for (const [key, value] of Object.entries(node.inputs)) {
+      if (typeof value === 'string' && Object.prototype.hasOwnProperty.call(replacements, value)) {
+        node.inputs[key] = replacements[value];
+        replaced += 1;
+      }
+    }
+  }
+  return replaced;
+}
+
 function loadGenerationJob() {
   const jobFile = env('FANVUE_JOB_FILE', env('FANVUE_GENERATION_JOB_FILE'));
   if (jobFile) {
@@ -386,12 +400,36 @@ async function waitForComfy() {
 }
 
 async function uploadInputImage() {
-  const inputPath = env('FANVUE_INPUT_IMAGE_PATH', jobString([['inputs', 'input_image_path']]));
+  let inputPath = env('FANVUE_INPUT_IMAGE_PATH', jobString([['inputs', 'input_image_path']]));
+  const inputUrl = env('FANVUE_INPUT_IMAGE_URL', jobString([['inputs', 'input_image_url']]));
   const inputName = env('FANVUE_INPUT_IMAGE_NAME', jobString([
     ['inputs', 'input_image'],
     ['inputs', 'source_image_name'],
   ]));
   if (!inputPath && inputName) return inputName;
+  if (!inputPath && inputUrl) {
+    const filenameFromUrl = (() => {
+      try {
+        return path.basename(new URL(inputUrl).pathname) || 'fanvue_input.png';
+      } catch {
+        return 'fanvue_input.png';
+      }
+    })();
+    const downloadFilename = env('FANVUE_UPLOAD_FILENAME', filenameFromUrl);
+    inputPath = path.join(fanvueDir, 'input_downloads', downloadFilename);
+    fs.mkdirSync(path.dirname(inputPath), { recursive: true });
+    const headers = {};
+    if (env('GITHUB_TOKEN') && /^https:\/\/(api\.)?github\.com\//.test(inputUrl)) {
+      headers.Authorization = `Bearer ${env('GITHUB_TOKEN')}`;
+      headers.Accept = 'application/octet-stream';
+    }
+    const { response } = await fetchWithRetry(inputUrl, { headers });
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`Input image download failed: ${response.status} ${text.slice(0, 500)}`);
+    }
+    fs.writeFileSync(inputPath, Buffer.from(await response.arrayBuffer()));
+  }
   if (!inputPath) return '';
 
   const filename = env('FANVUE_UPLOAD_FILENAME', path.basename(inputPath));
@@ -420,16 +458,7 @@ function buildFaceDetailerPrompt(loadImageName) {
   );
   const resolvedTemplatePath = bundlePath(templatePath);
   const prompt = readJson(resolvedTemplatePath);
-  let replaced = 0;
-  for (const node of Object.values(prompt)) {
-    if (!node || typeof node !== 'object' || !node.inputs) continue;
-    for (const [key, value] of Object.entries(node.inputs)) {
-      if (value === '__INPUT_IMAGE__') {
-        node.inputs[key] = loadImageName;
-        replaced += 1;
-      }
-    }
-  }
+  const replaced = replacePromptPlaceholders(prompt, { __INPUT_IMAGE__: loadImageName });
   if (!replaced) throw new Error('Face Detailer prompt placeholder __INPUT_IMAGE__ was not found');
   if (prompt['9']?.inputs) {
     prompt['9'].inputs.seed = Number(env(
@@ -450,7 +479,7 @@ function buildPrompt(uploadedInputName) {
   if (workflowName === 'Qwen to Face Detailer Chain') {
     throw new Error('Qwen to Face Detailer Chain requires scripts/direct_image_chain_smoke.mjs, not comfy_runtime_worker.mjs');
   }
-  if (uploadedInputName || workflowName === 'Face Detailer Smoke') {
+  if (workflowName === 'Face Detailer Smoke') {
     return buildFaceDetailerPrompt(uploadedInputName || env('FANVUE_INPUT_IMAGE_NAME', jobString([['inputs', 'input_image']])));
   }
   if (workflowName === 'Qwen Image Edit Smoke') {
@@ -591,6 +620,7 @@ function buildPrompt(uploadedInputName) {
   }
   const promptPath = bundlePath(env('FANVUE_API_PROMPT', path.join(bundleDir, 'api_prompts', 'flux2_klein_4b_smoke.json')));
   const prompt = readJson(promptPath);
+  const replaced = uploadedInputName ? replacePromptPlaceholders(prompt, { __INPUT_IMAGE__: uploadedInputName }) : 0;
   if (prompt['4']?.inputs) {
     prompt['4'].inputs.text = env(
       'FANVUE_POSITIVE_PROMPT',
@@ -605,7 +635,7 @@ function buildPrompt(uploadedInputName) {
   }
   return {
     prompt,
-    replaced: 0,
+    replaced,
     templatePath: promptPath,
   };
 }
