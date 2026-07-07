@@ -82,6 +82,7 @@ function redactedCreatePayload(payload) {
     'HF_TOKEN',
     'ANNA_LORA_TEST_ASSET_URL',
     'ANNA_LORA_TEST_ASSET_KEY',
+    'FANVUE_INPUT_IMAGE_KEY',
   ]);
   const env = { ...(payload.env || {}) };
   for (const name of secretEnvNames) {
@@ -291,6 +292,7 @@ function buildCreatePayload() {
       FANVUE_API_PROMPT: process.env.FANVUE_API_PROMPT || '',
       FANVUE_API_PROMPT_TEMPLATE: process.env.FANVUE_API_PROMPT_TEMPLATE || '',
       FANVUE_INPUT_IMAGE_URL: process.env.FANVUE_INPUT_IMAGE_URL || '',
+      FANVUE_INPUT_IMAGE_KEY: process.env.FANVUE_INPUT_IMAGE_KEY || '',
       FANVUE_INPUT_IMAGE_PATH: process.env.FANVUE_INPUT_IMAGE_PATH || '',
       FANVUE_INPUT_IMAGE_NAME: inputImageName,
       FANVUE_INPUT_SUBFOLDER: inputSubfolder,

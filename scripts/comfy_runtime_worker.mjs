@@ -36,6 +36,22 @@ function replacePromptPlaceholders(prompt, replacements) {
   return replaced;
 }
 
+function decryptInputBytes(bytes) {
+  const keyValue = env('FANVUE_INPUT_IMAGE_KEY');
+  if (!keyValue) return bytes;
+  const key = /^[0-9a-f]{64}$/i.test(keyValue)
+    ? Buffer.from(keyValue, 'hex')
+    : Buffer.from(keyValue, 'base64');
+  if (key.length !== 32) throw new Error('FANVUE_INPUT_IMAGE_KEY must decode to 32 bytes');
+  if (bytes.length < 29) throw new Error('Encrypted input image is too small');
+  const iv = bytes.subarray(0, 12);
+  const tag = bytes.subarray(12, 28);
+  const ciphertext = bytes.subarray(28);
+  const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
+  decipher.setAuthTag(tag);
+  return Buffer.concat([decipher.update(ciphertext), decipher.final()]);
+}
+
 function loadGenerationJob() {
   const jobFile = env('FANVUE_JOB_FILE', env('FANVUE_GENERATION_JOB_FILE'));
   if (jobFile) {
@@ -428,7 +444,8 @@ async function uploadInputImage() {
       const text = await response.text();
       throw new Error(`Input image download failed: ${response.status} ${text.slice(0, 500)}`);
     }
-    fs.writeFileSync(inputPath, Buffer.from(await response.arrayBuffer()));
+    const downloadedBytes = Buffer.from(await response.arrayBuffer());
+    fs.writeFileSync(inputPath, decryptInputBytes(downloadedBytes));
   }
   if (!inputPath) return '';
 
