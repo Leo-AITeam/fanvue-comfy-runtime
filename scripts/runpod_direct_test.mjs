@@ -83,6 +83,15 @@ function redactedCreatePayload(payload) {
     'ANNA_LORA_TEST_ASSET_URL',
     'ANNA_LORA_TEST_ASSET_KEY',
     'FANVUE_INPUT_IMAGE_KEY',
+    'PONY_REALISM_V22_ASSET_URL',
+    'PONY_REALISM_V22_ASSET_URLS',
+    'PONY_REALISM_V22_ASSET_KEY',
+    'PONY_REALISM_V23_ASSET_URL',
+    'PONY_REALISM_V23_ASSET_URLS',
+    'PONY_REALISM_V23_ASSET_KEY',
+    'REALVISXL_V50_ASSET_URL',
+    'REALVISXL_V50_ASSET_URLS',
+    'REALVISXL_V50_ASSET_KEY',
   ]);
   const env = { ...(payload.env || {}) };
   for (const name of secretEnvNames) {
@@ -328,6 +337,15 @@ function buildCreatePayload() {
       HF_TOKEN: process.env.HF_TOKEN || '',
       ANNA_LORA_TEST_ASSET_URL: process.env.ANNA_LORA_TEST_ASSET_URL || '',
       ANNA_LORA_TEST_ASSET_KEY: process.env.ANNA_LORA_TEST_ASSET_KEY || '',
+      PONY_REALISM_V22_ASSET_URL: process.env.PONY_REALISM_V22_ASSET_URL || '',
+      PONY_REALISM_V22_ASSET_URLS: process.env.PONY_REALISM_V22_ASSET_URLS || '',
+      PONY_REALISM_V22_ASSET_KEY: process.env.PONY_REALISM_V22_ASSET_KEY || '',
+      PONY_REALISM_V23_ASSET_URL: process.env.PONY_REALISM_V23_ASSET_URL || '',
+      PONY_REALISM_V23_ASSET_URLS: process.env.PONY_REALISM_V23_ASSET_URLS || '',
+      PONY_REALISM_V23_ASSET_KEY: process.env.PONY_REALISM_V23_ASSET_KEY || '',
+      REALVISXL_V50_ASSET_URL: process.env.REALVISXL_V50_ASSET_URL || '',
+      REALVISXL_V50_ASSET_URLS: process.env.REALVISXL_V50_ASSET_URLS || '',
+      REALVISXL_V50_ASSET_KEY: process.env.REALVISXL_V50_ASSET_KEY || '',
     },
   };
   if (useTemplate && templateId) {
