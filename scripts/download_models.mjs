@@ -81,6 +81,17 @@ function sourceUrl(item) {
   return item.source_url || '';
 }
 
+function sourceUrlParts(item) {
+  if (item.source_url_parts_env && process.env[item.source_url_parts_env]) {
+    return process.env[item.source_url_parts_env]
+      .split(/\r?\n|,/)
+      .map((value) => value.trim())
+      .filter(Boolean);
+  }
+  if (Array.isArray(item.source_url_parts)) return item.source_url_parts.filter(Boolean);
+  return [];
+}
+
 function curlHeaderArgs(item) {
   const args = [];
   for (const header of item.headers || []) {
@@ -104,7 +115,8 @@ function targetPath(item) {
 for (const item of models) {
   const destination = targetPath(item);
   const resolvedSourceUrl = sourceUrl(item);
-  if (!resolvedSourceUrl) {
+  const resolvedSourceUrlParts = sourceUrlParts(item);
+  if (!resolvedSourceUrl && resolvedSourceUrlParts.length === 0) {
     results.push({ name: item.name, status: 'missing_source_url', destination });
     writeReport('downloading', { current_model: { name: item.name, status: 'missing_source_url' } });
     continue;
@@ -133,6 +145,8 @@ for (const item of models) {
       destination,
       source_url: item.source_url ? item.source_url : undefined,
       source_url_env: item.source_url_env,
+      source_url_parts_env: item.source_url_parts_env,
+      source_url_parts_count: resolvedSourceUrlParts.length || undefined,
       decrypt: item.decrypt ? { ...item.decrypt, key_env: item.decrypt.key_env ? '[env]' : undefined } : undefined,
     });
     writeReport('dry_run_planning', { current_model: { name: item.name, status: 'dry_run' } });
@@ -156,23 +170,76 @@ for (const item of models) {
         status: 'downloading',
       },
     });
-    const curl = spawnSync(
-      'curl',
-      [
-        '-L',
-        '--fail',
-        '--retry',
-        '3',
-        '--retry-delay',
-        '2',
-        ...curlHeaderArgs(item),
-        '-o',
-        downloadDestination,
-        resolvedSourceUrl,
-      ],
-      { stdio: 'inherit' },
-    );
-    curlStatus = curl.status || 0;
+    let curl = { status: 0 };
+    if (resolvedSourceUrlParts.length > 0) {
+      const partPaths = [];
+      let partFailed = false;
+      for (let index = 0; index < resolvedSourceUrlParts.length; index += 1) {
+        const partPath = `${downloadDestination}.part${String(index + 1).padStart(3, '0')}`;
+        partPaths.push(partPath);
+        curl = spawnSync(
+          'curl',
+          [
+            '-L',
+            '--fail',
+            '--retry',
+            '3',
+            '--retry-delay',
+            '2',
+            ...curlHeaderArgs(item),
+            '-o',
+            partPath,
+            resolvedSourceUrlParts[index],
+          ],
+          { stdio: 'inherit' },
+        );
+        curlStatus = curl.status || 0;
+        if (curl.status !== 0) {
+          partFailed = true;
+          break;
+        }
+      }
+      if (!partFailed) {
+        const out = fs.openSync(downloadDestination, 'w');
+        try {
+          for (const partPath of partPaths) {
+            const input = fs.openSync(partPath, 'r');
+            try {
+              const buffer = Buffer.allocUnsafe(16 * 1024 * 1024);
+              let bytesRead = 0;
+              while ((bytesRead = fs.readSync(input, buffer, 0, buffer.length, null)) > 0) {
+                fs.writeSync(out, buffer, 0, bytesRead);
+              }
+            } finally {
+              fs.closeSync(input);
+            }
+          }
+        } finally {
+          fs.closeSync(out);
+        }
+      }
+      for (const partPath of partPaths) {
+        if (fs.existsSync(partPath)) fs.unlinkSync(partPath);
+      }
+    } else {
+      curl = spawnSync(
+        'curl',
+        [
+          '-L',
+          '--fail',
+          '--retry',
+          '3',
+          '--retry-delay',
+          '2',
+          ...curlHeaderArgs(item),
+          '-o',
+          downloadDestination,
+          resolvedSourceUrl,
+        ],
+        { stdio: 'inherit' },
+      );
+      curlStatus = curl.status || 0;
+    }
     if (curl.status !== 0) {
       finalStatus = { ok: false, bytes: 0, reason: 'curl_failed', attempt, curl_status: curl.status };
       if (fs.existsSync(downloadDestination)) fs.unlinkSync(downloadDestination);

@@ -231,6 +231,7 @@
       "name": "ponyRealism_V23ULTRA.safetensors",
       "type": "model",
       "source_url_env": "PONY_REALISM_V23_ASSET_URL",
+      "source_url_parts_env": "PONY_REALISM_V23_ASSET_URLS",
       "decrypt": {
         "algorithm": "aes-256-cbc",
         "pbkdf2": true,
@@ -251,6 +252,7 @@
       "name": "ponyRealism_V22.safetensors",
       "type": "model",
       "source_url_env": "PONY_REALISM_V22_ASSET_URL",
+      "source_url_parts_env": "PONY_REALISM_V22_ASSET_URLS",
       "decrypt": {
         "algorithm": "aes-256-cbc",
         "pbkdf2": true,
@@ -560,6 +562,7 @@
       "name": "realvisxlV50_v50LightningBakedvae.safetensors",
       "type": "model",
       "source_url_env": "REALVISXL_V50_ASSET_URL",
+      "source_url_parts_env": "REALVISXL_V50_ASSET_URLS",
       "decrypt": {
         "algorithm": "aes-256-cbc",
         "pbkdf2": true,
