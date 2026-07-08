@@ -322,7 +322,8 @@
         "anna_001_ready_v22",
         "anna_001_ready_v23",
         "anna_001_ready_realvisxl",
-        "anna_faceid_compact_realvisxl"
+        "anna_faceid_compact_realvisxl",
+        "anna_faceid_compact_realvisxl_baked"
       ]
     },
     {
@@ -666,7 +667,8 @@
         "anna_001_ready_v22",
         "anna_001_ready_v23",
         "anna_001_ready_realvisxl",
-        "anna_faceid_compact_realvisxl"
+        "anna_faceid_compact_realvisxl",
+        "anna_faceid_compact_realvisxl_baked"
       ],
       "notes": "Public IPAdapter CLIP vision encoder for future identity-lock workflow."
     },
@@ -750,7 +752,8 @@
       "target_dir": "ComfyUI/models/ipadapter",
       "required_for_first_test": false,
       "test_profiles": [
-        "anna_faceid_compact_realvisxl"
+        "anna_faceid_compact_realvisxl",
+        "anna_faceid_compact_realvisxl_baked"
       ],
       "notes": "Public SDXL FaceID Plus V2 IPAdapter model for IPAdapterUnifiedLoaderFaceID preset FACEID PLUS V2."
     },
@@ -762,7 +765,8 @@
       "target_dir": "ComfyUI/models/loras",
       "required_for_first_test": false,
       "test_profiles": [
-        "anna_faceid_compact_realvisxl"
+        "anna_faceid_compact_realvisxl",
+        "anna_faceid_compact_realvisxl_baked"
       ],
       "notes": "Public LoRA paired with SDXL FaceID Plus V2 preset."
     }
