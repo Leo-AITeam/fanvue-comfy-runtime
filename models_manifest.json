@@ -321,7 +321,8 @@
         "anna_001_ready",
         "anna_001_ready_v22",
         "anna_001_ready_v23",
-        "anna_001_ready_realvisxl"
+        "anna_001_ready_realvisxl",
+        "anna_faceid_compact_realvisxl"
       ]
     },
     {
@@ -574,7 +575,8 @@
       "required_for_first_test": false,
       "test_profiles": [
         "anna_001_ready",
-        "anna_001_ready_realvisxl"
+        "anna_001_ready_realvisxl",
+        "anna_faceid_compact_realvisxl"
       ],
       "notes": "Local laptop candidate for Anna 001 realism baseline; source must be an encrypted asset URL."
     },
@@ -644,7 +646,8 @@
         "anna_001_ipadapter",
         "anna_001_ready_v22",
         "anna_001_ready_v23",
-        "anna_001_ready_realvisxl"
+        "anna_001_ready_realvisxl",
+        "anna_faceid_compact_realvisxl"
       ],
       "notes": "Public IPAdapter CLIP vision encoder for future identity-lock workflow."
     },
@@ -719,6 +722,30 @@
         "anna_001_civitai_optional"
       ],
       "notes": "Civitai 411088 placeholder; API returned 403 in Codex environment, fill direct URL if available."
+    },
+    {
+      "name": "ip-adapter-faceid-plusv2_sdxl.bin",
+      "type": "ipadapter",
+      "source_url": "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl.bin",
+      "expected_bytes": 1487555181,
+      "target_dir": "ComfyUI/models/ipadapter",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_faceid_compact_realvisxl"
+      ],
+      "notes": "Public SDXL FaceID Plus V2 IPAdapter model for IPAdapterUnifiedLoaderFaceID preset FACEID PLUS V2."
+    },
+    {
+      "name": "ip-adapter-faceid-plusv2_sdxl_lora.safetensors",
+      "type": "lora",
+      "source_url": "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-plusv2_sdxl_lora.safetensors",
+      "expected_bytes": 371842896,
+      "target_dir": "ComfyUI/models/loras",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_faceid_compact_realvisxl"
+      ],
+      "notes": "Public LoRA paired with SDXL FaceID Plus V2 preset."
     }
   ],
   "custom_node_type_hints": [
@@ -977,6 +1004,18 @@
         "anna_x_model_v3.safetensors",
         "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
         "ip-adapter-plus-face_sdxl_vit-h.safetensors"
+      ]
+    },
+    "anna_faceid_compact_realvisxl": {
+      "description": "Anna compact FaceID RealVisXL Lightning workflow: refs 001+066, Anna v3 LoRA, FaceID Plus V2 identity lock.",
+      "source_complete": false,
+      "api_prompt": "api_prompts/anna_faceid_compact_realvisxl_001_066.json",
+      "required_models": [
+        "realvisxlV50_v50LightningBakedvae.safetensors",
+        "anna_x_model_v3.safetensors",
+        "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+        "ip-adapter-faceid-plusv2_sdxl.bin",
+        "ip-adapter-faceid-plusv2_sdxl_lora.safetensors"
       ]
     }
   }
