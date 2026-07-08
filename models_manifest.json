@@ -665,6 +665,18 @@
       "notes": "Public SDXL IPAdapter Face model for future identity-lock workflow."
     },
     {
+      "name": "ipadapter_faceid.portrait.sdxl.unnorm.bin",
+      "type": "ipadapter",
+      "source_url": "https://huggingface.co/h94/IP-Adapter-FaceID/resolve/main/ip-adapter-faceid-portrait_sdxl_unnorm.bin",
+      "expected_bytes": 1009523411,
+      "target_dir": "ComfyUI/models/ipadapter",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_001_ready_v22"
+      ],
+      "notes": "Public SDXL FaceID portrait unnorm IPAdapter model; renamed to match ComfyUI_IPAdapter_plus preset regex."
+    },
+    {
       "name": "real_skin_slider.safetensors",
       "type": "lora",
       "source_url_env": "CIVITAI_REAL_SKIN_SLIDER_URL",
@@ -941,7 +953,8 @@
         "ponyRealism_V22.safetensors",
         "anna_x_model_v3.safetensors",
         "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
-        "ip-adapter-plus-face_sdxl_vit-h.safetensors"
+        "ip-adapter-plus-face_sdxl_vit-h.safetensors",
+        "ipadapter_faceid.portrait.sdxl.unnorm.bin"
       ]
     },
     "anna_001_ready_v23": {
