@@ -242,7 +242,9 @@
       "target_dir": "ComfyUI/models/checkpoints",
       "required_for_first_test": false,
       "test_profiles": [
-        "anna_pony_v23_test"
+        "anna_pony_v23_test",
+        "anna_001_ready",
+        "anna_001_ready_v23"
       ]
     },
     {
@@ -260,7 +262,9 @@
       "target_dir": "ComfyUI/models/checkpoints",
       "required_for_first_test": false,
       "test_profiles": [
-        "anna_pony_v22_test"
+        "anna_pony_v22_test",
+        "anna_001_ready",
+        "anna_001_ready_v22"
       ]
     },
     {
@@ -311,7 +315,11 @@
       "target_dir": "ComfyUI/models/loras",
       "required_for_first_test": false,
       "test_profiles": [
-        "anna_sdxlbase_v3_test"
+        "anna_sdxlbase_v3_test",
+        "anna_001_ready",
+        "anna_001_ready_v22",
+        "anna_001_ready_v23",
+        "anna_001_ready_realvisxl"
       ]
     },
     {
@@ -547,6 +555,155 @@
         "Wan22_A14B_T2V_LOW_Lightning_4steps_lora_250928_rank64_fp16.safetensors",
         "wan2.2_t2v_lownoise_sidemissionary_v1.0.safetensors"
       ]
+    },
+    {
+      "name": "realvisxlV50_v50LightningBakedvae.safetensors",
+      "type": "model",
+      "source_url_env": "REALVISXL_V50_ASSET_URL",
+      "decrypt": {
+        "algorithm": "aes-256-cbc",
+        "pbkdf2": true,
+        "iter": 200000,
+        "key_env": "REALVISXL_V50_ASSET_KEY"
+      },
+      "expected_bytes": 6938065512,
+      "target_dir": "ComfyUI/models/checkpoints",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_001_ready",
+        "anna_001_ready_realvisxl"
+      ],
+      "notes": "Local laptop candidate for Anna 001 realism baseline; source must be an encrypted asset URL."
+    },
+    {
+      "name": "jibMixRealisticXL_v180SkinSupreme.safetensors",
+      "type": "model",
+      "source_url_env": "JIBMIX_REALISTIC_XL_ASSET_URL",
+      "decrypt": {
+        "algorithm": "aes-256-cbc",
+        "pbkdf2": true,
+        "iter": 200000,
+        "key_env": "JIBMIX_REALISTIC_XL_ASSET_KEY"
+      },
+      "expected_bytes": 6938070306,
+      "target_dir": "ComfyUI/models/checkpoints",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_001_extended"
+      ],
+      "notes": "Optional skin-focused SDXL realism checkpoint from local laptop."
+    },
+    {
+      "name": "Juggernaut_X_RunDiffusion.safetensors",
+      "type": "model",
+      "source_url_env": "JUGGERNAUT_X_RUNDiffusion_ASSET_URL",
+      "decrypt": {
+        "algorithm": "aes-256-cbc",
+        "pbkdf2": true,
+        "iter": 200000,
+        "key_env": "JUGGERNAUT_X_RUNDiffusion_ASSET_KEY"
+      },
+      "expected_bytes": 7105348672,
+      "target_dir": "ComfyUI/models/checkpoints",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_001_extended"
+      ],
+      "notes": "Optional general photoreal SDXL fallback from local laptop."
+    },
+    {
+      "name": "zy_AmateurStyle_v2.safetensors",
+      "type": "lora",
+      "source_url_env": "ZY_AMATEUR_STYLE_V2_ASSET_URL",
+      "decrypt": {
+        "algorithm": "aes-256-cbc",
+        "pbkdf2": true,
+        "iter": 200000,
+        "key_env": "ZY_AMATEUR_STYLE_V2_ASSET_KEY"
+      },
+      "expected_bytes": 456484080,
+      "target_dir": "ComfyUI/models/loras",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_001_optional_loras"
+      ],
+      "notes": "Local amateur/photo realism LoRA; optional because it can change style/identity."
+    },
+    {
+      "name": "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+      "type": "clip_vision",
+      "source_url": "https://huggingface.co/h94/IP-Adapter/resolve/main/models/image_encoder/model.safetensors",
+      "expected_bytes": 2528373448,
+      "target_dir": "ComfyUI/models/clip_vision",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_001_ready",
+        "anna_001_ipadapter",
+        "anna_001_ready_v22",
+        "anna_001_ready_v23",
+        "anna_001_ready_realvisxl"
+      ],
+      "notes": "Public IPAdapter CLIP vision encoder for future identity-lock workflow."
+    },
+    {
+      "name": "ip-adapter-plus-face_sdxl_vit-h.safetensors",
+      "type": "ipadapter",
+      "source_url": "https://huggingface.co/h94/IP-Adapter/resolve/main/sdxl_models/ip-adapter-plus-face_sdxl_vit-h.safetensors",
+      "min_bytes": 800000000,
+      "target_dir": "ComfyUI/models/ipadapter",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_001_ready",
+        "anna_001_ipadapter",
+        "anna_001_ready_v22",
+        "anna_001_ready_v23",
+        "anna_001_ready_realvisxl"
+      ],
+      "notes": "Public SDXL IPAdapter Face model for future identity-lock workflow."
+    },
+    {
+      "name": "real_skin_slider.safetensors",
+      "type": "lora",
+      "source_url_env": "CIVITAI_REAL_SKIN_SLIDER_URL",
+      "target_dir": "ComfyUI/models/loras",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_001_civitai_optional"
+      ],
+      "notes": "Civitai 1486921 placeholder; API returned 403 in Codex environment, fill direct URL if available."
+    },
+    {
+      "name": "illustrious_realism_slider.safetensors",
+      "type": "lora",
+      "source_url_env": "CIVITAI_ILLUSTRIOUS_REALISM_SLIDER_URL",
+      "target_dir": "ComfyUI/models/loras",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_001_civitai_optional"
+      ],
+      "notes": "Civitai 1486904 placeholder; API returned 403 in Codex environment, fill direct URL if available."
+    },
+    {
+      "name": "pony_amateur.safetensors",
+      "type": "lora",
+      "source_url_env": "CIVITAI_PONY_AMATEUR_URL",
+      "target_dir": "ComfyUI/models/loras",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_001_civitai_optional"
+      ],
+      "notes": "Civitai 480835 placeholder; API returned 403 in Codex environment, fill direct URL if available."
+    },
+    {
+      "name": "detailed_perfection_style.safetensors",
+      "type": "lora",
+      "source_url_env": "CIVITAI_DETAILED_PERFECTION_STYLE_URL",
+      "target_dir": "ComfyUI/models/loras",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_001_civitai_optional"
+      ],
+      "notes": "Civitai 411088 placeholder; API returned 403 in Codex environment, fill direct URL if available."
     }
   ],
   "custom_node_type_hints": [
@@ -724,6 +881,86 @@
       "required_models": [
         "ponyRealism_V23ULTRA.safetensors",
         "anna_x_model_v3.safetensors"
+      ]
+    },
+    "anna_001_ready": {
+      "description": "Anna 001 next-day generation core: PonyRealism V22/V23, RealVisXL baseline, Anna v3 LoRA, and IPAdapter Face assets. Civitai sliders are kept optional because Civitai API returned 403.",
+      "source_complete": false,
+      "api_prompts": [
+        "api_prompts/anna_v3_001_pony_v22_2114.json",
+        "api_prompts/anna_v3_001_pony_v23_2115.json",
+        "api_prompts/anna_v3_001_realvisxl_2120.json"
+      ],
+      "required_models": [
+        "ponyRealism_V22.safetensors",
+        "ponyRealism_V23ULTRA.safetensors",
+        "realvisxlV50_v50LightningBakedvae.safetensors",
+        "anna_x_model_v3.safetensors",
+        "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+        "ip-adapter-plus-face_sdxl_vit-h.safetensors"
+      ],
+      "optional_profiles": [
+        "anna_001_optional_loras",
+        "anna_001_civitai_optional",
+        "anna_001_extended"
+      ]
+    },
+    "anna_001_optional_loras": {
+      "description": "Optional local realism/style LoRA pack for Anna 001 experiments.",
+      "source_complete": false,
+      "required_models": [
+        "zy_AmateurStyle_v2.safetensors"
+      ]
+    },
+    "anna_001_civitai_optional": {
+      "description": "Optional Civitai small LoRA/slider placeholders. Direct downloads were blocked by Civitai 403 from this environment.",
+      "source_complete": false,
+      "required_models": [
+        "real_skin_slider.safetensors",
+        "illustrious_realism_slider.safetensors",
+        "pony_amateur.safetensors",
+        "detailed_perfection_style.safetensors"
+      ]
+    },
+    "anna_001_extended": {
+      "description": "Optional extra local checkpoints for Anna 001 realism comparison.",
+      "source_complete": false,
+      "required_models": [
+        "jibMixRealisticXL_v180SkinSupreme.safetensors",
+        "Juggernaut_X_RunDiffusion.safetensors"
+      ]
+    },
+    "anna_001_ready_v22": {
+      "description": "Anna 001 next-day PonyRealism V22 run profile. Downloads only V22 checkpoint, Anna v3 LoRA, and public IPAdapter assets.",
+      "source_complete": false,
+      "api_prompt": "api_prompts/anna_v3_001_pony_v22_2114.json",
+      "required_models": [
+        "ponyRealism_V22.safetensors",
+        "anna_x_model_v3.safetensors",
+        "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+        "ip-adapter-plus-face_sdxl_vit-h.safetensors"
+      ]
+    },
+    "anna_001_ready_v23": {
+      "description": "Anna 001 next-day PonyRealism V23ULTRA run profile. Downloads only V23 checkpoint, Anna v3 LoRA, and public IPAdapter assets.",
+      "source_complete": false,
+      "api_prompt": "api_prompts/anna_v3_001_pony_v23_2115.json",
+      "required_models": [
+        "ponyRealism_V23ULTRA.safetensors",
+        "anna_x_model_v3.safetensors",
+        "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+        "ip-adapter-plus-face_sdxl_vit-h.safetensors"
+      ]
+    },
+    "anna_001_ready_realvisxl": {
+      "description": "Anna 001 next-day RealVisXL photoreal baseline run profile. Downloads only RealVisXL checkpoint, Anna v3 LoRA, and public IPAdapter assets.",
+      "source_complete": false,
+      "api_prompt": "api_prompts/anna_v3_001_realvisxl_2120.json",
+      "required_models": [
+        "realvisxlV50_v50LightningBakedvae.safetensors",
+        "anna_x_model_v3.safetensors",
+        "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+        "ip-adapter-plus-face_sdxl_vit-h.safetensors"
       ]
     }
   }
