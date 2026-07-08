@@ -154,6 +154,18 @@
       "notes": "SDXL ControlNet Union ProMax for landmark/openpose-style face and pose structure control in Anna workflow."
     },
     {
+      "name": "sdpose_wholebody_fp16.safetensors",
+      "type": "model",
+      "source_url": "https://huggingface.co/Comfy-Org/SDPose/resolve/main/checkpoints/sdpose_wholebody_fp16.safetensors",
+      "min_bytes": 1000000000,
+      "target_dir": "ComfyUI/models/checkpoints",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_faceid_compact_realvisxl_baked_landmark"
+      ],
+      "notes": "ComfyUI SDPose wholebody checkpoint required by SDPoseKeypointExtractor for OpenPose-style face/body landmarks."
+    },
+    {
       "name": "depth_anything_v2_vitl.pth",
       "type": "detector_or_upscale",
       "source_url": "https://huggingface.co/AyushSahaUndergrad/Depth-Anything-V2-vitl-checkpoint/resolve/main/depth_anything_v2_vitl.pth",
@@ -1070,7 +1082,8 @@
         "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
         "ip-adapter-faceid-plusv2_sdxl.bin",
         "ip-adapter-faceid-plusv2_sdxl_lora.safetensors",
-        "controlnet-union-sdxl-promax.safetensors"
+        "controlnet-union-sdxl-promax.safetensors",
+        "sdpose_wholebody_fp16.safetensors"
       ]
     }
   }
