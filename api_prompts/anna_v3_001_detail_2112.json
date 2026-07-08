@@ -1,0 +1,143 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "z_image_turbo_bf16.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen_3_4b.safetensors",
+      "type": "lumina2",
+      "device": "default"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "ae.safetensors"
+    }
+  },
+  "4": {
+    "class_type": "SAMLoader",
+    "inputs": {
+      "model_name": "sam_vit_b_01ec64.pth",
+      "device_mode": "Prefer GPU"
+    }
+  },
+  "5": {
+    "class_type": "CLIPSegDetectorProvider",
+    "inputs": {
+      "text": "face",
+      "blur": 7,
+      "threshold": 0.35,
+      "dilation_factor": 4
+    }
+  },
+  "6": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "__INPUT_IMAGE__"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": "realistic unedited iPhone portrait of Anna, preserve the exact same face identity and expression from the input image, preserve face geometry, preserve eyes, cheeks, lips, chin and smile, natural young woman, matte porous skin texture, visible fine skin pores on nose cheeks and forehead, subtle natural under eye texture, tiny natural skin variations, faint small freckles and tiny moles only where already plausible, warm honey beige natural tan skin, no beauty retouch, no airbrushing, natural soft indoor daylight, realistic hair fibers, natural wheat honey beige blonde hair with darker roots, preserve original hair color and shape, raw phone photo realism"
+    }
+  },
+  "8": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": "different person, face drift, changed facial structure, changed smile, changed eyes, elongated face, pointed chin, sharp chin, plastic skin, wax skin, glossy wet skin, porcelain skin, beauty filter, airbrushed, over-smoothed, fake highlight, oily skin, synthetic hair, plastic hair, salon-perfect hair, platinum blonde, yellow bleached hair, dark brunette hair, heavy makeup, glamour lighting, studio photo, cgi, 3d render, doll face, deformed face, blurry eyes, watermark, text, logo"
+    }
+  },
+  "9": {
+    "class_type": "FaceDetailer",
+    "inputs": {
+      "image": [
+        "6",
+        0
+      ],
+      "model": [
+        "1",
+        0
+      ],
+      "clip": [
+        "2",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ],
+      "positive": [
+        "7",
+        0
+      ],
+      "negative": [
+        "8",
+        0
+      ],
+      "bbox_detector": [
+        "5",
+        0
+      ],
+      "sam_model_opt": [
+        "4",
+        0
+      ],
+      "segm_detector_opt": null,
+      "detailer_hook": null,
+      "scheduler_func_opt": null,
+      "guide_size": 768,
+      "guide_size_for": true,
+      "max_size": 1024,
+      "seed": 2112001,
+      "steps": 5,
+      "cfg": 1.05,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "simple",
+      "denoise": 0.08,
+      "feather": 8,
+      "noise_mask": true,
+      "force_inpaint": true,
+      "bbox_threshold": 0.5,
+      "bbox_dilation": 10,
+      "bbox_crop_factor": 3,
+      "sam_detection_hint": "center-1",
+      "sam_dilation": 0,
+      "sam_threshold": 0.93,
+      "sam_bbox_expansion": 0,
+      "sam_mask_hint_threshold": 0.7,
+      "sam_mask_hint_use_negative": "False",
+      "drop_size": 10,
+      "wildcard": "",
+      "cycle": 1,
+      "inpaint_model": false,
+      "noise_mask_feather": 18,
+      "tiled_encode": false,
+      "tiled_decode": false
+    }
+  },
+  "10": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "9",
+        0
+      ],
+      "filename_prefix": "anna_v3_001_detail_2112"
+    }
+  }
+}
