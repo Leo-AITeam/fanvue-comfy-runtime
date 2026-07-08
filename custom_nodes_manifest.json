@@ -57,6 +57,17 @@
       "node_type_hints": [
         "GetImageSize"
       ]
+    },
+    {
+      "name": "ComfyUI_IPAdapter_plus",
+      "repo_url": "https://github.com/cubiq/ComfyUI_IPAdapter_plus.git",
+      "required_for_first_test": true,
+      "node_type_hints": [
+        "IPAdapter",
+        "IPAdapterAdvanced",
+        "IPAdapterUnifiedLoader",
+        "IPAdapterModelLoader"
+      ]
     }
   ],
   "unresolved_node_type_hints": [
