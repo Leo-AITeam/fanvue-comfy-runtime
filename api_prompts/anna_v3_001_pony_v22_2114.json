@@ -1,0 +1,113 @@
+{
+  "3": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "20",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "10",
+        0
+      ],
+      "seed": 2114001,
+      "steps": 20,
+      "cfg": 1.25,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 0.05
+    }
+  },
+  "4": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "ponyRealism_V22.safetensors"
+    }
+  },
+  "5": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "__INPUT_IMAGE__"
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "20",
+        1
+      ],
+      "text": "img2img from REF 001 using PonyRealism checkpoint, preserve original Anna face identity almost unchanged, preserve the same smile, eyes, cheeks, compact softly rounded chin, and natural asymmetry, keep original warm honey beige tan skin color, restore raw phone-photo realism, matte porous real skin, visible fine pores and tiny natural skin variations, no beauty retouch, no plastic highlight, preserve original long wheat honey beige blonde hair with darker roots and natural hair fibers, domestic apartment daylight, white tank top, hands out of frame"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "20",
+        1
+      ],
+      "text": "different person, redesigned face, face drift, elongated face, sharp chin, pointed chin, changed smile, glamour model, instagram face, airbrushed skin, plastic skin, waxy skin, glossy wet skin, fake highlight, porcelain skin, heavy makeup, overprocessed hair, plastic hair, platinum blonde, bleached yellow hair, brunette, CGI, 3d render, doll face, watermark, text, visible hand, selfie arm"
+    }
+  },
+  "8": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "3",
+        0
+      ],
+      "vae": [
+        "4",
+        2
+      ]
+    }
+  },
+  "9": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "8",
+        0
+      ],
+      "filename_prefix": "anna_v3_001_pony_v22_2114"
+    }
+  },
+  "10": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "5",
+        0
+      ],
+      "vae": [
+        "4",
+        2
+      ]
+    }
+  },
+  "20": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "4",
+        0
+      ],
+      "clip": [
+        "4",
+        1
+      ],
+      "lora_name": "anna_x_model_v3.safetensors",
+      "strength_model": 0.035,
+      "strength_clip": 0.015
+    }
+  }
+}

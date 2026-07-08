@@ -228,6 +228,42 @@
       ]
     },
     {
+      "name": "ponyRealism_V23ULTRA.safetensors",
+      "type": "model",
+      "source_url_env": "PONY_REALISM_V23_ASSET_URL",
+      "decrypt": {
+        "algorithm": "aes-256-cbc",
+        "pbkdf2": true,
+        "iter": 200000,
+        "key_env": "PONY_REALISM_V23_ASSET_KEY"
+      },
+      "expected_bytes": 6938040706,
+      "sha256": "06b76e07b79f3955fe7c0beb15b5b6043c895c39cbdb9f66a9c9bed402f5a302",
+      "target_dir": "ComfyUI/models/checkpoints",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_pony_v23_test"
+      ]
+    },
+    {
+      "name": "ponyRealism_V22.safetensors",
+      "type": "model",
+      "source_url_env": "PONY_REALISM_V22_ASSET_URL",
+      "decrypt": {
+        "algorithm": "aes-256-cbc",
+        "pbkdf2": true,
+        "iter": 200000,
+        "key_env": "PONY_REALISM_V22_ASSET_KEY"
+      },
+      "expected_bytes": 7105348856,
+      "sha256": "7c97ecf786a50a54835a22277c35703787b840e98c04c318a4e3fef9d3b463f7",
+      "target_dir": "ComfyUI/models/checkpoints",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_pony_v22_test"
+      ]
+    },
+    {
       "name": "anna_x_model_v1.safetensors",
       "type": "lora",
       "source_url_env": "ANNA_LORA_TEST_ASSET_URL",
@@ -670,6 +706,24 @@
         "Wan22_A14B_T2V_LOW_Lightning_4steps_lora_250928_rank64_fp16.safetensors",
         "wan2.2_t2v_highnoise_sidemissionary_v1.0.safetensors",
         "wan2.2_t2v_lownoise_sidemissionary_v1.0.safetensors"
+      ]
+    },
+    "anna_pony_v22_test": {
+      "description": "Anna v3 LoRA diagnostic profile on local PonyRealism V22 checkpoint for more realistic skin/hair than SDXL base.",
+      "source_complete": true,
+      "api_prompt": "api_prompts/anna_v3_001_pony_v22_2114.json",
+      "required_models": [
+        "ponyRealism_V22.safetensors",
+        "anna_x_model_v3.safetensors"
+      ]
+    },
+    "anna_pony_v23_test": {
+      "description": "Anna v3 LoRA diagnostic profile on local PonyRealism V23ULTRA checkpoint for more realistic skin/hair than SDXL base.",
+      "source_complete": true,
+      "api_prompt": "api_prompts/anna_v3_001_pony_v23_2115.json",
+      "required_models": [
+        "ponyRealism_V23ULTRA.safetensors",
+        "anna_x_model_v3.safetensors"
       ]
     }
   }
