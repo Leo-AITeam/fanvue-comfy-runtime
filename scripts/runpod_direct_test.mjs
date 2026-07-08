@@ -92,6 +92,9 @@ function redactedCreatePayload(payload) {
     'REALVISXL_V50_ASSET_URL',
     'REALVISXL_V50_ASSET_URLS',
     'REALVISXL_V50_ASSET_KEY',
+    'REALVISXL_V50_BAKED_ASSET_URL',
+    'REALVISXL_V50_BAKED_ASSET_URLS',
+    'REALVISXL_V50_BAKED_ASSET_KEY',
   ]);
   const env = { ...(payload.env || {}) };
   for (const name of secretEnvNames) {
@@ -346,6 +349,9 @@ function buildCreatePayload() {
       REALVISXL_V50_ASSET_URL: process.env.REALVISXL_V50_ASSET_URL || '',
       REALVISXL_V50_ASSET_URLS: process.env.REALVISXL_V50_ASSET_URLS || '',
       REALVISXL_V50_ASSET_KEY: process.env.REALVISXL_V50_ASSET_KEY || '',
+      REALVISXL_V50_BAKED_ASSET_URL: process.env.REALVISXL_V50_BAKED_ASSET_URL || '',
+      REALVISXL_V50_BAKED_ASSET_URLS: process.env.REALVISXL_V50_BAKED_ASSET_URLS || '',
+      REALVISXL_V50_BAKED_ASSET_KEY: process.env.REALVISXL_V50_BAKED_ASSET_KEY || '',
     },
   };
   if (useTemplate && templateId) {

@@ -581,6 +581,25 @@
       "notes": "Local laptop candidate for Anna 001 realism baseline; source must be an encrypted asset URL."
     },
     {
+      "name": "realvisxlV50_v50Bakedvae.safetensors",
+      "type": "model",
+      "source_url_env": "REALVISXL_V50_BAKED_ASSET_URL",
+      "source_url_parts_env": "REALVISXL_V50_BAKED_ASSET_URLS",
+      "decrypt": {
+        "algorithm": "aes-256-cbc",
+        "pbkdf2": true,
+        "iter": 200000,
+        "key_env": "REALVISXL_V50_BAKED_ASSET_KEY"
+      },
+      "expected_bytes": 6938065488,
+      "target_dir": "ComfyUI/models/checkpoints",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_faceid_compact_realvisxl_baked"
+      ],
+      "notes": "Normal non-Lightning RealVisXL v5.0 checkpoint for Anna FaceID workflow; used to reduce over-sharpened Lightning look."
+    },
+    {
       "name": "jibMixRealisticXL_v180SkinSupreme.safetensors",
       "type": "model",
       "source_url_env": "JIBMIX_REALISTIC_XL_ASSET_URL",
@@ -1012,6 +1031,18 @@
       "api_prompt": "api_prompts/anna_faceid_compact_realvisxl_001_066.json",
       "required_models": [
         "realvisxlV50_v50LightningBakedvae.safetensors",
+        "anna_x_model_v3.safetensors",
+        "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+        "ip-adapter-faceid-plusv2_sdxl.bin",
+        "ip-adapter-faceid-plusv2_sdxl_lora.safetensors"
+      ]
+    },
+    "anna_faceid_compact_realvisxl_baked": {
+      "description": "Anna compact FaceID normal RealVisXL workflow: refs 001+066, Anna v3 LoRA, FaceID Plus V2 identity lock, non-Lightning checkpoint.",
+      "source_complete": false,
+      "api_prompt": "api_prompts/anna_faceid_compact_realvisxl_baked_001_066.json",
+      "required_models": [
+        "realvisxlV50_v50Bakedvae.safetensors",
         "anna_x_model_v3.safetensors",
         "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
         "ip-adapter-faceid-plusv2_sdxl.bin",

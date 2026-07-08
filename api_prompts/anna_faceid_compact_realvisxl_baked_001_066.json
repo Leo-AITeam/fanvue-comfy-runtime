@@ -1,0 +1,163 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "realvisxlV50_v50Bakedvae.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "LoraLoader",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "clip": [
+        "1",
+        1
+      ],
+      "lora_name": "anna_x_model_v3.safetensors",
+      "strength_model": 0.4,
+      "strength_clip": 0.26
+    }
+  },
+  "3": {
+    "class_type": "IPAdapterUnifiedLoaderFaceID",
+    "inputs": {
+      "model": [
+        "2",
+        0
+      ],
+      "preset": "FACEID PLUS V2",
+      "lora_strength": 0.6,
+      "provider": "CPU"
+    }
+  },
+  "4": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "fanvue/runtime/001.png"
+    }
+  },
+  "5": {
+    "class_type": "IPAdapterFaceID",
+    "inputs": {
+      "model": [
+        "3",
+        0
+      ],
+      "ipadapter": [
+        "3",
+        1
+      ],
+      "image": [
+        "16",
+        0
+      ],
+      "weight": 0.92,
+      "weight_faceidv2": 1.25,
+      "weight_type": "linear",
+      "combine_embeds": "concat",
+      "start_at": 0,
+      "end_at": 0.82,
+      "embeds_scaling": "V only"
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        1
+      ],
+      "text": "anna_x_model, realistic unedited iPhone selfie portrait of the same woman as reference images, strict preservation of facial identity from references, exact same face shape as references, same soft oval rounded face, same youthful soft face, same natural full cheeks, same cheek fullness, same wider soft cheeks, same compact lower face, same short lower third of face, same short rounded chin, same small soft rounded chin, same soft feminine jawline, balanced face proportions, slightly wider face, softly rounded lower face, mouth position matching references, same nose shape as references, same natural lips as references, natural lip size, not enlarged, same muted grey green eyes as references, natural darker grey green eyes, clear natural eyes, sharp natural iris detail, natural catchlight, desaturated natural grey-green iris color, not bright green, not pale grey, not icy blue, not contact lenses, not glassy eyes, new natural iPhone selfie pose, slightly different framing, casual domestic apartment background, grey tank top, warm golden beige tan honey skin tone, skin must stay warm golden beige tan and not pale, real human matte-satin skin, visible fine pores, subtle natural skin unevenness, faint freckles and tiny beauty marks, natural under-eye texture, not retouched, not glossy, not beauty filtered, very long thick straight natural dark honey beige wheat blonde hair, darker ash blonde roots, warm beige sandy blonde lengths, muted golden wheat highlights, subtle yellow beige blonde highlights, natural imperfect hair roots, visible individual hair strands at the crown, slightly messy crown hair, real dry hair texture, natural messy hair strands, flyaway hairs, uneven real hair texture, soft natural window light, raw phone photo realism, low contrast natural phone photo, high detail face, sharp facial details, realistic skin detail, hands out of frame, no visible arm, realistic casual selfie, minimal beauty processing"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        1
+      ],
+      "text": "different person, changed facial identity, redesigned face, face does not match references, older looking face, elongated face, long face, long oval face, long narrow face, vertical stretched face, stretched face, tall face, narrow face, slim face, long lower face, long lower third, long philtrum, low mouth position, narrow lower face, narrow jaw, sharp angular face, long chin, pointed chin, prominent chin, extended chin, hollow cheeks, thin cheeks, gaunt face, model face, mature model face, cat eyes, fox eyes, wide-set eyes, glassy eyes, blurry eyes, foggy eyes, cloudy eyes, unfocused eyes, dull iris, smeared iris, icy blue eyes, pale grey eyes, bright green eyes, emerald eyes, neon eyes, colored contact lenses, artificial iris color, frozen smirk, teeth, open mouth, oversized lips, enlarged lips, filler lips, duck lips, glamour portrait, studio portrait, professional lighting, pale skin, porcelain skin, pink skin, grey skin, washed out skin, overexposed face, glowing face, high contrast skin, glossy wet skin, oily face, beauty filter, instagram filter, overprocessed skin, beauty retouch, airbrushed skin, plastic skin, waxy skin, doll face, cgi, 3d render, low detail face, blurry face, soft face, plastic hair, synthetic hair, overly smooth hair, smooth helmet hair, painted hairline, fake hair part, plastic crown hair, plastic hair roots, painted hair roots, too light blonde hair, white blonde highlights, platinum blonde, ashy grey blonde, grey blonde, silver blonde, cool toned blonde, brunette, short hair, thin flat hair, visible hand, hand near hair, phone in frame, mirror selfie, identical composition, same exact pose, copied photo, watermark, text, logo, bad anatomy, deformed face, low quality"
+    }
+  },
+  "8": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 960,
+      "height": 1152,
+      "batch_size": 1
+    }
+  },
+  "9": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "5",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "8",
+        0
+      ],
+      "seed": 613721376752227,
+      "steps": 34,
+      "cfg": 3.1,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1
+    }
+  },
+  "10": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "9",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    }
+  },
+  "11": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "10",
+        0
+      ],
+      "filename_prefix": "anna_faceid_compact_realvisxl_baked_001_066"
+    }
+  },
+  "12": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "fanvue/runtime/anna_ref_066.png"
+    }
+  },
+  "16": {
+    "class_type": "ImageBatch",
+    "inputs": {
+      "image1": [
+        "4",
+        0
+      ],
+      "image2": [
+        "12",
+        0
+      ]
+    }
+  }
+}
