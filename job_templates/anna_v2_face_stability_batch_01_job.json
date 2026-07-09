@@ -1,0 +1,59 @@
+{
+  "schema_version": "generation_job.v1",
+  "job_id": "job_anna_v2_face_stability_batch_01",
+  "character_id": "character_anna_novari_v2",
+  "fan_id": null,
+  "request_id": "request_anna_v2_face_stability_batch_01",
+  "job_type": "face_variations",
+  "content_tier": "sfw",
+  "priority": 60,
+  "status": "queued",
+  "workflow": {
+    "name": "Anna v2 Face Stability Batch 01",
+    "adapter": "Qwen Image Edit Smoke",
+    "profile": "qwen_edit_smoke",
+    "input_mode": "text_to_image",
+    "prompt_files": [
+      "api_prompts/anna_v2_face_001_no_makeup_daylight.json",
+      "api_prompts/anna_v2_face_002_home_mirror_warm.json",
+      "api_prompts/anna_v2_face_003_odessa_golden_hour.json",
+      "api_prompts/anna_v2_face_004_gym_mirror.json"
+    ]
+  },
+  "inputs": {
+    "positive_prompt": "Anna v2 SFW face-stability prompt pack; see prompt_files",
+    "negative_prompt": "teen-coded, childlike, copied real person identity, old Anna plastic style, waxy skin, broken eyes, distorted face, extra limbs, watermark, low quality",
+    "seed_policy": "fixed seed per prompt for repeatable first pass",
+    "width": 768,
+    "height": 1024,
+    "batch_size": 1,
+    "seed": 2026071001
+  },
+  "output": {
+    "filename_prefix": "anna_v2_face_batch_01",
+    "storage_target": "local_debug",
+    "expected_files": 4
+  },
+  "callback": {
+    "enabled": false,
+    "url_env": null,
+    "auth_header_env": null,
+    "auth_value_env": null,
+    "fails_job": false
+  },
+  "runtime": {
+    "provider": "runpod",
+    "image": "ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest",
+    "disk_gb": 120,
+    "gpu_count": 1,
+    "gpu_type": "NVIDIA L40S",
+    "stop_policy": "manual_debug",
+    "timeout_seconds": 3600
+  },
+  "metadata": {
+    "purpose": "anna_v2_first_face_stability_sfw_test",
+    "created_at": "2026-07-10",
+    "production_ready": false,
+    "requires_manual_qc": true
+  }
+}
