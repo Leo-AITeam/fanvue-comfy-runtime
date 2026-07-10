@@ -403,6 +403,18 @@
       ]
     },
     {
+      "name": "inswapper_128.onnx",
+      "type": "faceswap",
+      "source_url": "https://huggingface.co/ezioruan/inswapper_128.onnx/resolve/main/inswapper_128.onnx",
+      "expected_bytes": 554253681,
+      "target_dir": "ComfyUI/models/insightface",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "qwen_edit_smoke"
+      ],
+      "notes": "ReActor face swap model used for Qwen text2img -> 001 identity transfer tests."
+    },
+    {
       "name": "sam_vit_b_01ec64.pth",
       "type": "detector_or_upscale",
       "source_url": "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth",
