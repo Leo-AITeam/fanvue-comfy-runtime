@@ -73,6 +73,7 @@
       "name": "ComfyUI-PuLID-Flux",
       "repo_url": "https://github.com/balazik/ComfyUI-PuLID-Flux.git",
       "required_for_first_test": false,
+      "patch_pulid_flux_timestep_compat": true,
       "test_profiles": [
         "anna_v2_pulid_flux_ref001"
       ],

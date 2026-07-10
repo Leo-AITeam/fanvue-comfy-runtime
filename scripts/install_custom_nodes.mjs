@@ -178,6 +178,38 @@ function patchClipSegCompat(filePath) {
   fs.writeFileSync(filePath, content);
 }
 
+function patchPulidFluxTimestepCompat(filePath) {
+  let content = fs.readFileSync(filePath, 'utf8');
+  if (content.includes('fanvue-runtime-pulid-flux-timestep-compat')) return;
+
+  const next = content.replace(
+    /def forward_orig\(\r?\n    self,\r?\n    img: Tensor,\r?\n    img_ids: Tensor,\r?\n    txt: Tensor,\r?\n    txt_ids: Tensor,\r?\n    timesteps: Tensor,\r?\n    y: Tensor,\r?\n    guidance: Tensor = None,\r?\n    control=None,\r?\n\) -> Tensor:\r?\n/s,
+    [
+      'def forward_orig(',
+      '    self,',
+      '    img: Tensor,',
+      '    img_ids: Tensor,',
+      '    txt: Tensor,',
+      '    txt_ids: Tensor,',
+      '    timesteps: Tensor,',
+      '    y: Tensor,',
+      '    guidance: Tensor = None,',
+      '    control=None,',
+      '    timestep_zero_index=None,',
+      '    transformer_options=None,',
+      '    attn_mask=None,',
+      '    **kwargs,',
+      ') -> Tensor:',
+      '    # fanvue-runtime-pulid-flux-timestep-compat',
+      ''
+    ].join('\n'),
+  );
+  if (next === content || !next.includes('fanvue-runtime-pulid-flux-timestep-compat')) {
+    throw new Error('PuLID Flux timestep compatibility patch failed');
+  }
+  fs.writeFileSync(filePath, next);
+}
+
 const results = [];
 for (const item of nodes) {
   const destination = path.join(customNodesDir, item.name);
@@ -215,6 +247,16 @@ for (const item of nodes) {
   }
   if (copiedFiles.length > 0) {
     results[results.length - 1].copied_files = copiedFiles;
+  }
+
+  if (!dryRun && item.patch_pulid_flux_timestep_compat) {
+    const pulidFluxPath = path.join(destination, 'pulidflux.py');
+    if (!fs.existsSync(pulidFluxPath)) {
+      console.error(`Missing PuLID Flux file for ${item.name}: ${pulidFluxPath}`);
+      process.exit(45);
+    }
+    patchPulidFluxTimestepCompat(pulidFluxPath);
+    results[results.length - 1].patch_pulid_flux_timestep_compat = 'applied';
   }
 
   const requirements = path.join(destination, 'requirements.txt');
