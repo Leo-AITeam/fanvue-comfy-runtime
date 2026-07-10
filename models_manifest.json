@@ -452,7 +452,7 @@
     {
       "name": "antelopev2.zip",
       "type": "insightface",
-      "source_url": "https://huggingface.co/MonsterMMORPG/tools/resolve/main/antelopev2.zip",
+      "source_url": "https://github.com/deepinsight/insightface/releases/download/v0.7/antelopev2.zip",
       "expected_bytes": 360662982,
       "target_dir": "ComfyUI/models/insightface/models",
       "required_for_first_test": false,
@@ -462,7 +462,14 @@
       "extract": {
         "type": "zip",
         "destination_dir": "ComfyUI/models/insightface/models",
-        "remove_archive": true
+        "remove_archive": true,
+        "expected_files": [
+          "antelopev2/scrfd_10g_bnkps.onnx",
+          "antelopev2/glintr100.onnx",
+          "antelopev2/1k3d68.onnx",
+          "antelopev2/2d106det.onnx",
+          "antelopev2/genderage.onnx"
+        ]
       }
     },
     {

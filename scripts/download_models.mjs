@@ -140,10 +140,43 @@ function extractDownloadedFile(item, destination) {
   };
 }
 
+function extractExpectedPaths(item) {
+  if (!item.extract || !Array.isArray(item.extract.expected_files)) return [];
+  const extractDestination = targetDirPath(item.extract.destination_dir || item.target_dir || '');
+  return item.extract.expected_files.map((file) => path.join(extractDestination, String(file).replaceAll('\\', '/')));
+}
+
+function validateExtractedFiles(item) {
+  const expectedPaths = extractExpectedPaths(item);
+  if (expectedPaths.length === 0) return { ok: false, reason: 'no_extract_expected_files' };
+  const missing = expectedPaths.filter((filePath) => !fs.existsSync(filePath));
+  return {
+    ok: missing.length === 0,
+    expected_files: expectedPaths,
+    missing_files: missing.length > 0 ? missing : undefined,
+    reason: missing.length > 0 ? 'missing_extracted_files' : undefined,
+  };
+}
+
 for (const item of models) {
   const destination = targetPath(item);
   const resolvedSourceUrl = sourceUrl(item);
   const resolvedSourceUrlParts = sourceUrlParts(item);
+  const extractedStatus = validateExtractedFiles(item);
+  if (item.extract && extractedStatus.ok && !fs.existsSync(destination)) {
+    results.push({
+      name: item.name,
+      status: 'extracted_already_exists',
+      destination,
+      extract: {
+        type: item.extract.type,
+        destination: targetDirPath(item.extract.destination_dir || item.target_dir || ''),
+        expected_files: extractedStatus.expected_files,
+      },
+    });
+    writeReport('downloading', { current_model: { name: item.name, status: 'extracted_already_exists' } });
+    continue;
+  }
   if (!resolvedSourceUrl && resolvedSourceUrlParts.length === 0) {
     results.push({ name: item.name, status: 'missing_source_url', destination });
     writeReport('downloading', { current_model: { name: item.name, status: 'missing_source_url' } });
@@ -161,7 +194,24 @@ for (const item of models) {
       results.push({ name: item.name, status: 'existing_invalid_removed', destination, ...validation });
       writeReport('downloading', { current_model: { name: item.name, status: 'existing_invalid_removed' } });
     } else {
+      let extractResult = null;
+      if (item.extract && !dryRun) {
+        try {
+          extractResult = extractDownloadedFile(item, destination);
+        } catch (error) {
+          results.push({
+            name: item.name,
+            status: 'extract_failed',
+            destination,
+            error: error.message,
+            ...validation,
+          });
+          writeReport('failed', { current_model: { name: item.name, status: 'extract_failed' } });
+          process.exit(42);
+        }
+      }
       results.push({ name: item.name, status: 'already_exists', destination, ...validation });
+      if (extractResult) results[results.length - 1].extract = extractResult;
       writeReport('downloading', { current_model: { name: item.name, status: 'already_exists' } });
       continue;
     }
