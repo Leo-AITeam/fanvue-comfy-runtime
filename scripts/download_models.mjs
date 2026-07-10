@@ -128,9 +128,29 @@ function extractDownloadedFile(item, destination) {
   }
   const extractDestination = targetDirPath(item.extract.destination_dir || item.target_dir || '');
   fs.mkdirSync(extractDestination, { recursive: true });
-  const unzip = spawnSync('unzip', ['-o', destination, '-d', extractDestination], { stdio: 'inherit' });
-  if (unzip.status !== 0) {
-    throw new Error(`Failed to extract ${item.name} to ${extractDestination}`);
+  const pythonExtract = spawnSync(
+    'python3',
+    [
+      '-c',
+      [
+        'import sys, zipfile',
+        'archive, destination = sys.argv[1], sys.argv[2]',
+        'with zipfile.ZipFile(archive) as z:',
+        '    z.extractall(destination)',
+      ].join('\n'),
+      destination,
+      extractDestination,
+    ],
+    { stdio: 'inherit' },
+  );
+  if (pythonExtract.status !== 0) {
+    const unzip = spawnSync('unzip', ['-o', destination, '-d', extractDestination], { stdio: 'inherit' });
+    if (unzip.status !== 0) {
+      throw new Error(
+        `Failed to extract ${item.name} to ${extractDestination}; `
+          + `python3_status=${pythonExtract.status ?? 'null'} unzip_status=${unzip.status ?? 'null'}`,
+      );
+    }
   }
   if (item.extract.remove_archive && fs.existsSync(destination)) fs.unlinkSync(destination);
   return {
