@@ -1,0 +1,137 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "qwen_image_edit_2509_fp8_e4m3fn.safetensors",
+      "weight_dtype": "fp8_e4m3fn"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    }
+  },
+  "4": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "__INPUT_IMAGE__"
+    }
+  },
+  "5": {
+    "class_type": "ImageScaleToTotalPixels",
+    "inputs": {
+      "image": [
+        "4",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "megapixels": 1.6,
+      "resolution_steps": 1
+    }
+  },
+  "6": {
+    "class_type": "ModelSamplingAuraFlow",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "shift": 5
+    }
+  },
+  "7": {
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ],
+      "image1": [
+        "5",
+        0
+      ],
+      "prompt": "Use the uploaded reference photo only as identity lock for Anna Novari. Create a new ultra realistic smartphone portrait of the same adult woman, not a copy of the original frame. Preserve exact identity: same face proportions, same lower face, same chin length and shape, same jaw softness, same mouth and lips, same nose, same grey-blue eyes, same natural blonde hair color. Change only pose and expression: slight three-quarter head turn, eyes looking just off camera, subtle relaxed half-smile, natural home daylight, white ribbed tank top, realistic skin texture with fine pores, sharp eyes, sharp face, detailed hair strands. Premium unretouched phone photo, natural depth of field, adult woman, 25 years old."
+    }
+  },
+  "8": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": "same exact photo, identical composition, copied frame, different person, changed identity, face drift, changed chin, long chin, pointy chin, square jaw, heavy jaw, changed lower face, changed mouth, changed lips, changed nose, changed eye shape, blurry face, soft focus face, out of focus, plastic skin, waxy skin, airbrushed, doll face, teenager, teen-coded, childlike, old woman, heavy makeup, overprocessed, deformed face, bad anatomy, text, watermark, logo"
+    }
+  },
+  "9": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 896,
+      "height": 1152,
+      "batch_size": 1
+    }
+  },
+  "10": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "6",
+        0
+      ],
+      "positive": [
+        "7",
+        0
+      ],
+      "negative": [
+        "8",
+        0
+      ],
+      "latent_image": [
+        "9",
+        0
+      ],
+      "seed": 2026071013,
+      "steps": 34,
+      "cfg": 2.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1
+    }
+  },
+  "11": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "10",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "12": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "11",
+        0
+      ],
+      "filename_prefix": "anna_v2_face_013_ref001_qwen_identity_pose_variation"
+    }
+  }
+}

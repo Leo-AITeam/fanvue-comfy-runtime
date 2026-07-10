@@ -1,0 +1,142 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "qwen_image_edit_2509_fp8_e4m3fn.safetensors",
+      "weight_dtype": "fp8_e4m3fn"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
+      "type": "qwen_image",
+      "device": "default"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_vae.safetensors"
+    }
+  },
+  "4": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "__INPUT_IMAGE__"
+    }
+  },
+  "5": {
+    "class_type": "ImageScaleToTotalPixels",
+    "inputs": {
+      "image": [
+        "4",
+        0
+      ],
+      "upscale_method": "lanczos",
+      "megapixels": 1.8,
+      "resolution_steps": 1
+    }
+  },
+  "6": {
+    "class_type": "VAEEncode",
+    "inputs": {
+      "pixels": [
+        "5",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "7": {
+    "class_type": "ModelSamplingAuraFlow",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "shift": 5
+    }
+  },
+  "8": {
+    "class_type": "TextEncodeQwenImageEditPlus",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ],
+      "image1": [
+        "5",
+        0
+      ],
+      "prompt": "Restore and enhance this exact photo of Anna Novari from reference 001. Preserve the exact same person, exact face identity, exact face shape, exact eyes, exact nose, exact lips, exact smile, exact hair style, exact pose, exact outfit, exact background and framing. Improve only technical quality: sharper face details, cleaner natural phone photo, crisp eyes, detailed hair strands, realistic skin texture, fine pores, natural fabric detail. Do not redesign the face. Do not change age, body, expression, hair color, outfit, room, camera angle, or composition."
+    }
+  },
+  "9": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": "different person, changed identity, changed face, changed smile, changed eyes, changed nose, changed lips, changed hair color, changed pose, changed outfit, changed background, old woman, heavy tan, freckles all over, overprocessed, crunchy skin, waxy skin, plastic skin, doll face, beauty filter, airbrushed, blurry face, soft focus face, low quality, deformed face, bad anatomy, text, watermark, logo"
+    }
+  },
+  "10": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "7",
+        0
+      ],
+      "positive": [
+        "8",
+        0
+      ],
+      "negative": [
+        "9",
+        0
+      ],
+      "latent_image": [
+        "6",
+        0
+      ],
+      "seed": 2026071012,
+      "steps": 30,
+      "cfg": 1.15,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 0.14
+    }
+  },
+  "11": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "10",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "12": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "11",
+        0
+      ],
+      "filename_prefix": "anna_v2_face_012_ref001_img2img_restore_lowdenoise"
+    }
+  }
+}
