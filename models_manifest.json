@@ -104,7 +104,8 @@
       "test_profiles": [
         "face_detailer_smoke",
         "first_full",
-        "photo_lifestyle_v1"
+        "photo_lifestyle_v1",
+        "anna_v2_pulid_flux_ref001"
       ]
     },
     {
@@ -403,6 +404,66 @@
         "first_full",
         "qwen_edit_smoke"
       ]
+    },
+    {
+      "name": "flux1-dev-fp8.safetensors",
+      "type": "model",
+      "source_url": "https://huggingface.co/Kijai/flux-fp8/resolve/main/flux1-dev-fp8.safetensors",
+      "target_dir": "ComfyUI/models/diffusion_models",
+      "min_bytes": 11000000000,
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_v2_pulid_flux_ref001"
+      ]
+    },
+    {
+      "name": "t5xxl_fp8_e4m3fn.safetensors",
+      "type": "text_encoder",
+      "source_url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors",
+      "target_dir": "ComfyUI/models/text_encoders",
+      "min_bytes": 4500000000,
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_v2_pulid_flux_ref001"
+      ]
+    },
+    {
+      "name": "clip_l.safetensors",
+      "type": "text_encoder",
+      "source_url": "https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors",
+      "target_dir": "ComfyUI/models/text_encoders",
+      "min_bytes": 200000000,
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_v2_pulid_flux_ref001"
+      ]
+    },
+    {
+      "name": "pulid_flux_v0.9.1.safetensors",
+      "type": "pulid",
+      "source_url": "https://huggingface.co/guozinan/PuLID/resolve/main/pulid_flux_v0.9.1.safetensors",
+      "target_dir": "ComfyUI/models/pulid",
+      "min_bytes": 1000000000,
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_v2_pulid_flux_ref001"
+      ]
+    },
+    {
+      "name": "antelopev2.zip",
+      "type": "insightface",
+      "source_url": "https://huggingface.co/MonsterMMORPG/tools/resolve/main/antelopev2.zip",
+      "expected_bytes": 360662982,
+      "target_dir": "ComfyUI/models/insightface/models",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_v2_pulid_flux_ref001"
+      ],
+      "extract": {
+        "type": "zip",
+        "destination_dir": "ComfyUI/models/insightface/models",
+        "remove_archive": true
+      }
     },
     {
       "name": "inswapper_128.onnx",
@@ -1126,6 +1187,19 @@
         "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
         "ip-adapter-faceid-plusv2_sdxl.bin",
         "ip-adapter-faceid-plusv2_sdxl_lora.safetensors"
+      ]
+    },
+    "anna_v2_pulid_flux_ref001": {
+      "description": "Anna v2 single-reference Flux PuLID calibration profile using reference 001 for stronger identity variation tests.",
+      "source_complete": true,
+      "api_prompt": "job_templates/anna_v2_pulid_flux_ref001_calibration_job.json",
+      "required_models": [
+        "flux1-dev-fp8.safetensors",
+        "t5xxl_fp8_e4m3fn.safetensors",
+        "clip_l.safetensors",
+        "ae.safetensors",
+        "pulid_flux_v0.9.1.safetensors",
+        "antelopev2.zip"
       ]
     }
   }

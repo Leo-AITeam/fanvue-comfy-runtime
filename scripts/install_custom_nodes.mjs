@@ -10,10 +10,14 @@ const dryRun = process.env.FANVUE_NODE_INSTALL_DRY_RUN === 'true';
 const skipAllRequirements = process.env.FANVUE_NODE_SKIP_REQUIREMENTS === 'true';
 
 const manifest = JSON.parse(fs.readFileSync(path.join(bundleDir, 'custom_nodes_manifest.json'), 'utf8'));
-const nodes = (manifest.nodes || []).filter((item) =>
-  testProfile === 'api_smoke' ? false :
-  firstTestOnly ? item.required_for_first_test : true
-);
+function matchesProfile(item) {
+  if (testProfile === 'api_smoke') return false;
+  if (Array.isArray(item.test_profiles) && item.test_profiles.includes(testProfile)) return true;
+  if (firstTestOnly) return Boolean(item.required_for_first_test);
+  return true;
+}
+
+const nodes = (manifest.nodes || []).filter((item) => matchesProfile(item));
 const customNodesDir = path.join(comfyDir, 'custom_nodes');
 fs.mkdirSync(customNodesDir, { recursive: true });
 

@@ -112,6 +112,34 @@ function targetPath(item) {
   return path.join(workspaceDir, targetDir, cleanName);
 }
 
+function targetDirPath(targetDir) {
+  const cleanTargetDir = String(targetDir || '').replaceAll('\\', '/');
+  if (cleanTargetDir === 'ComfyUI') return comfyDir;
+  if (cleanTargetDir.startsWith('ComfyUI/')) {
+    return path.join(comfyDir, cleanTargetDir.slice('ComfyUI/'.length));
+  }
+  return path.join(workspaceDir, cleanTargetDir);
+}
+
+function extractDownloadedFile(item, destination) {
+  if (!item.extract) return null;
+  if (item.extract.type !== 'zip') {
+    throw new Error(`Unsupported extract type for ${item.name}: ${item.extract.type}`);
+  }
+  const extractDestination = targetDirPath(item.extract.destination_dir || item.target_dir || '');
+  fs.mkdirSync(extractDestination, { recursive: true });
+  const unzip = spawnSync('unzip', ['-o', destination, '-d', extractDestination], { stdio: 'inherit' });
+  if (unzip.status !== 0) {
+    throw new Error(`Failed to extract ${item.name} to ${extractDestination}`);
+  }
+  if (item.extract.remove_archive && fs.existsSync(destination)) fs.unlinkSync(destination);
+  return {
+    type: item.extract.type,
+    destination: extractDestination,
+    archive_removed: Boolean(item.extract.remove_archive),
+  };
+}
+
 for (const item of models) {
   const destination = targetPath(item);
   const resolvedSourceUrl = sourceUrl(item);
@@ -315,10 +343,20 @@ for (const item of models) {
     if (fs.existsSync(destination)) fs.unlinkSync(destination);
   }
 
+  let extractResult = null;
+  if (finalStatus.ok) {
+    try {
+      extractResult = extractDownloadedFile(item, destination);
+    } catch (error) {
+      finalStatus = { ok: false, bytes: finalStatus.bytes || 0, reason: 'extract_failed', error: error.message };
+    }
+  }
+
   results.push({
     name: item.name,
     status: finalStatus.ok ? 'downloaded' : 'failed',
     destination,
+    extract: extractResult || undefined,
     ...finalStatus,
   });
   writeReport(finalStatus.ok ? 'downloading' : 'failed', {

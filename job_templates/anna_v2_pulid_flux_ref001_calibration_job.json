@@ -1,27 +1,27 @@
 {
   "schema_version": "generation_job.v1",
-  "job_id": "job_anna_v2_faceid_lustify_ref001_calibration",
+  "job_id": "job_anna_v2_pulid_flux_ref001_calibration",
   "character_id": "character_anna_novari_v2_calibration",
   "fan_id": null,
-  "request_id": "request_anna_v2_faceid_lustify_ref001_calibration",
+  "request_id": "request_anna_v2_pulid_flux_ref001_calibration",
   "job_type": "face_variations",
   "content_tier": "sfw",
-  "priority": 40,
+  "priority": 50,
   "status": "queued",
   "workflow": {
-    "name": "Anna v2 FaceID Lustify ref001 calibration",
-    "profile": "anna_v2_faceid_sdxlbase",
-    "adapter": "Anna v2 FaceID Lustify ref001 calibration",
+    "name": "Anna v2 PuLID Flux ref001 calibration",
+    "profile": "anna_v2_pulid_flux_ref001",
+    "adapter": "Anna v2 PuLID Flux ref001 calibration",
     "input_mode": "image_to_image"
   },
   "inputs": {
-    "positive_prompt": "Anna v2 single-reference identity calibration from synthetic reference 001, adult woman, natural phone-photo realism, new pose and expression, compact softly rounded chin, sharp eyes, natural skin texture",
+    "positive_prompt": "Anna v2 single-reference Flux PuLID identity calibration from synthetic reference 001, adult woman, natural phone-photo realism, changed pose and expression, compact softly rounded chin, sharp eyes, natural skin texture",
     "negative_prompt": "different person, long pointed chin, generic blonde model, blurred face, plastic skin, waxy skin, teen-coded, glamour studio look, duplicate of reference composition",
-    "seed": 202607101601,
+    "seed": 202607101701,
     "prompt_files": [
-      "api_prompts/anna_v2_faceid_lustify_ref001_001_home_3q.json",
-      "api_prompts/anna_v2_faceid_lustify_ref001_002_window_profile.json",
-      "api_prompts/anna_v2_faceid_lustify_ref001_003_bed_down_gaze.json"
+      "api_prompts/anna_v2_pulid_flux_ref001_001_home_3q.json",
+      "api_prompts/anna_v2_pulid_flux_ref001_002_window_side.json",
+      "api_prompts/anna_v2_pulid_flux_ref001_003_bed_down_gaze.json"
     ],
     "requires_input_images": [
       {
@@ -31,7 +31,7 @@
     ]
   },
   "output": {
-    "filename_prefix": "anna_v2_faceid_lustify_ref001_calibration",
+    "filename_prefix": "anna_v2_pulid_flux_ref001_calibration",
     "storage_target": "local_debug",
     "expected_files": 3
   },
@@ -47,7 +47,7 @@
     "image": "ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest",
     "disk_gb": 120,
     "gpu_count": 1,
-    "gpu_type": "NVIDIA A40",
+    "gpu_type": "NVIDIA L40S",
     "stop_policy": "manual_debug",
     "timeout_seconds": 3600
   },
@@ -55,9 +55,9 @@
     "version": "1.0.0",
     "manual_review_required": true,
     "prompt_files": [
-      "api_prompts/anna_v2_faceid_lustify_ref001_001_home_3q.json",
-      "api_prompts/anna_v2_faceid_lustify_ref001_002_window_profile.json",
-      "api_prompts/anna_v2_faceid_lustify_ref001_003_bed_down_gaze.json"
+      "api_prompts/anna_v2_pulid_flux_ref001_001_home_3q.json",
+      "api_prompts/anna_v2_pulid_flux_ref001_002_window_side.json",
+      "api_prompts/anna_v2_pulid_flux_ref001_003_bed_down_gaze.json"
     ],
     "requires_input_images": [
       {
@@ -66,7 +66,7 @@
       }
     ],
     "generation": {
-      "purpose": "single-reference Anna v2 identity calibration with pose variation",
+      "purpose": "single-reference Anna v2 identity calibration with Flux PuLID pose variation",
       "explicitness": "SFW",
     "reference_policy": "use synthetic reference 001 as identity source only",
     "acceptance": [

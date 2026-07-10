@@ -1,0 +1,187 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "flux1-dev-fp8.safetensors",
+      "weight_dtype": "fp8_e4m3fn"
+    }
+  },
+  "2": {
+    "class_type": "DualCLIPLoader",
+    "inputs": {
+      "clip_name1": "t5xxl_fp8_e4m3fn.safetensors",
+      "clip_name2": "clip_l.safetensors",
+      "type": "flux",
+      "device": "default"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "ae.safetensors"
+    }
+  },
+  "4": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "fanvue/runtime/001_ref_full.png"
+    }
+  },
+  "5": {
+    "class_type": "PulidFluxModelLoader",
+    "inputs": {
+      "pulid_file": "pulid_flux_v0.9.1.safetensors"
+    }
+  },
+  "6": {
+    "class_type": "PulidFluxEvaClipLoader",
+    "inputs": {}
+  },
+  "7": {
+    "class_type": "PulidFluxInsightFaceLoader",
+    "inputs": {
+      "provider": "CUDA"
+    }
+  },
+  "8": {
+    "class_type": "ApplyPulidFlux",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "pulid_flux": [
+        "5",
+        0
+      ],
+      "eva_clip": [
+        "6",
+        0
+      ],
+      "face_analysis": [
+        "7",
+        0
+      ],
+      "image": [
+        "4",
+        0
+      ],
+      "weight": 0.9,
+      "start_at": 0,
+      "end_at": 0.9
+    }
+  },
+  "9": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "2",
+        0
+      ],
+      "text": "Ultra realistic candid iPhone photo of Anna Novari, same adult woman as reference image 001, new photo not a duplicate, identity locked to reference. Three-quarter side portrait near a bright apartment window, head turned about 35 degrees toward window, eyes looking outside, calm neutral closed mouth, no big smile. Preserve same soft oval face family, natural cheek fullness, compact lower face, short softly rounded chin, soft feminine jawline, natural nose and lips, grey blue eyes, long honey beige blonde hair with darker roots falling behind one shoulder. Warm beige tan skin, realistic pores and tiny skin imperfections, faint freckles only on nose and cheeks, white ribbed tank top, natural daylight, realistic phone lens, candid framing, sharp eyes and face, matte real skin, no beauty filter, no plastic skin, no glamour studio, no teen-coded look."
+    }
+  },
+  "10": {
+    "class_type": "FluxGuidance",
+    "inputs": {
+      "conditioning": [
+        "9",
+        0
+      ],
+      "guidance": 3.0
+    }
+  },
+  "11": {
+    "class_type": "BasicGuider",
+    "inputs": {
+      "model": [
+        "8",
+        0
+      ],
+      "conditioning": [
+        "10",
+        0
+      ]
+    }
+  },
+  "12": {
+    "class_type": "BasicScheduler",
+    "inputs": {
+      "model": [
+        "8",
+        0
+      ],
+      "scheduler": "beta",
+      "steps": 30,
+      "denoise": 1
+    }
+  },
+  "13": {
+    "class_type": "RandomNoise",
+    "inputs": {
+      "noise_seed": 202607101702
+    }
+  },
+  "14": {
+    "class_type": "KSamplerSelect",
+    "inputs": {
+      "sampler_name": "euler"
+    }
+  },
+  "15": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 896,
+      "height": 1152,
+      "batch_size": 1
+    }
+  },
+  "16": {
+    "class_type": "SamplerCustomAdvanced",
+    "inputs": {
+      "noise": [
+        "13",
+        0
+      ],
+      "guider": [
+        "11",
+        0
+      ],
+      "sampler": [
+        "14",
+        0
+      ],
+      "sigmas": [
+        "12",
+        0
+      ],
+      "latent_image": [
+        "15",
+        0
+      ]
+    }
+  },
+  "17": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "16",
+        0
+      ],
+      "vae": [
+        "3",
+        0
+      ]
+    }
+  },
+  "18": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "17",
+        0
+      ],
+      "filename_prefix": "anna_v2_pulid_flux_ref001_002_window_side"
+    }
+  }
+}

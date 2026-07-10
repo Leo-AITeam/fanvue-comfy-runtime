@@ -68,6 +68,20 @@
         "IPAdapterUnifiedLoader",
         "IPAdapterModelLoader"
       ]
+    },
+    {
+      "name": "ComfyUI-PuLID-Flux",
+      "repo_url": "https://github.com/balazik/ComfyUI-PuLID-Flux.git",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_v2_pulid_flux_ref001"
+      ],
+      "node_type_hints": [
+        "ApplyPulidFlux",
+        "PulidFluxModelLoader",
+        "PulidFluxEvaClipLoader",
+        "PulidFluxInsightFaceLoader"
+      ]
     }
   ],
   "unresolved_node_type_hints": [

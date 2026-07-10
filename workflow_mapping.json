@@ -99,6 +99,24 @@
       },
       "notes": "Validated by scripts/direct_image_chain_smoke.mjs on 2026-06-15. Use Qwen output as Face Detailer input."
     },
+    "Anna v2 FaceID Lustify ref001 calibration": {
+      "job_type": "face_variations",
+      "api_prompt": "api_prompts/anna_v2_faceid_lustify_ref001_001_home_3q.json",
+      "input_mode": "image_to_image",
+      "model_profile": "anna_v2_faceid_sdxlbase",
+      "native_orchestrator_status": "manual_calibration_rejected_identity",
+      "safety": "manual_review_only",
+      "notes": "Direct API prompt calibration batch. Kept for audit history; SDXL FaceID did not preserve Anna 001 identity well enough."
+    },
+    "Anna v2 PuLID Flux ref001 calibration": {
+      "job_type": "face_variations",
+      "api_prompt": "api_prompts/anna_v2_pulid_flux_ref001_001_home_3q.json",
+      "input_mode": "image_to_image",
+      "model_profile": "anna_v2_pulid_flux_ref001",
+      "native_orchestrator_status": "manual_calibration_pending_gpu",
+      "safety": "manual_review_only",
+      "notes": "Direct API prompt calibration batch for single-reference Anna v2 identity preservation with Flux PuLID."
+    },
     "Photo Lifestyle v1": {
       "job_type": "photo",
       "source_workflow": "workflows/z-image-turbo-worfklow.json",
