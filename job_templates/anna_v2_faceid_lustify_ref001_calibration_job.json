@@ -5,7 +5,7 @@
   "job_type": "face_variations",
   "workflow": {
     "name": "Anna v2 FaceID Lustify ref001 calibration",
-    "profile": "anna_v2_clean_faceid_lustify",
+    "profile": "anna_v2_faceid_sdxlbase",
     "adapter": "direct_api_prompt_batch",
     "prompt_files": [
       "api_prompts/anna_v2_faceid_lustify_ref001_001_home_3q.json",
