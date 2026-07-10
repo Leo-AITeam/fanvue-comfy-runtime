@@ -1,0 +1,128 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "lustifySDXLNSFW_ggwpV7.safetensors"
+    }
+  },
+  "3": {
+    "class_type": "IPAdapterUnifiedLoaderFaceID",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "preset": "FACEID PLUS V2",
+      "lora_strength": 0.62,
+      "provider": "CPU"
+    }
+  },
+  "4": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "fanvue/runtime/001_ref_full.png"
+    }
+  },
+  "5": {
+    "class_type": "IPAdapterFaceID",
+    "inputs": {
+      "model": [
+        "3",
+        0
+      ],
+      "ipadapter": [
+        "3",
+        1
+      ],
+      "image": [
+        "4",
+        0
+      ],
+      "weight": 0.96,
+      "weight_faceidv2": 1.3,
+      "weight_type": "linear",
+      "combine_embeds": "average",
+      "start_at": 0,
+      "end_at": 0.86,
+      "embeds_scaling": "V only"
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "ultra realistic raw iPhone portrait photo of the same adult woman as reference 001, Anna Novari identity lock from reference image, new photo not a duplicate, natural Ukrainian European woman mid twenties, same soft oval face, same natural cheek fullness, same compact lower face, same short softly rounded chin, same soft feminine jawline, same natural nose and lips, same grey blue eyes, long thick natural honey beige wheat blonde hair with darker ash blonde roots, warm beige tan skin, visible fine pores, subtle natural uneven skin, faint freckles only on nose and cheeks, tiny beauty mark on collarbone, three quarter head turn about 18 degrees, eyes looking just off camera, relaxed neutral mouth with a very subtle half smile, white ribbed tank top, casual modern apartment daylight near window, natural phone perspective, imperfect candid framing, sharp face, sharp eyes, realistic hair strands and flyaways, matte real skin, no beauty retouch"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "same exact photo as reference, duplicate 001 selfie, copied composition, selfie arm, phone in frame, mirror selfie, different person, identity drift, changed face, elongated face, long face, narrow face, long lower third, long chin, pointed chin, sharp chin, square jaw, heavy jaw, hollow cheeks, model cheekbones, cat eyes, fox eyes, wrong eye color, brown eyes, neon eyes, oversized lips, filler lips, teeth, open mouth, teen, childlike, doll face, plastic skin, waxy skin, glossy oily skin, heavy makeup, beauty filter, airbrushed skin, porcelain skin, overprocessed face, blurry face, soft face, low detail eyes, platinum blonde hair, grey hair, brunette, short hair, flat hair, helmet hair, studio portrait, glamour lighting, CGI, 3d render, anime, illustration, bad anatomy, bad hands, deformed body, watermark, text, logo, low quality"
+    }
+  },
+  "8": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 896,
+      "height": 1152,
+      "batch_size": 1
+    }
+  },
+  "9": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "5",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "8",
+        0
+      ],
+      "seed": 202607101501,
+      "steps": 34,
+      "cfg": 3.0,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1
+    }
+  },
+  "10": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "9",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    }
+  },
+  "11": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "10",
+        0
+      ],
+      "filename_prefix": "anna_v2_faceid_lustify_ref001_001_home_3q"
+    }
+  }
+}

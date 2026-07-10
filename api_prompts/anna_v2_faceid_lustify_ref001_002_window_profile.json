@@ -1,0 +1,128 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "lustifySDXLNSFW_ggwpV7.safetensors"
+    }
+  },
+  "3": {
+    "class_type": "IPAdapterUnifiedLoaderFaceID",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "preset": "FACEID PLUS V2",
+      "lora_strength": 0.58,
+      "provider": "CPU"
+    }
+  },
+  "4": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "fanvue/runtime/001_ref_full.png"
+    }
+  },
+  "5": {
+    "class_type": "IPAdapterFaceID",
+    "inputs": {
+      "model": [
+        "3",
+        0
+      ],
+      "ipadapter": [
+        "3",
+        1
+      ],
+      "image": [
+        "4",
+        0
+      ],
+      "weight": 0.9,
+      "weight_faceidv2": 1.22,
+      "weight_type": "linear",
+      "combine_embeds": "average",
+      "start_at": 0,
+      "end_at": 0.8,
+      "embeds_scaling": "V only"
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "ultra realistic candid iPhone photo of the same adult woman as reference 001, Anna Novari identity lock, new natural photo, not a duplicate, three quarter side portrait near a window, head turned about 35 degrees toward window, eyes looking outside, calm neutral expression, mouth closed, same soft oval face family from reference, compact lower face, small softly rounded chin, soft jawline, natural nose bridge and tip, natural lips, grey blue eyes, long natural honey beige blonde hair with darker roots falling behind one shoulder, warm beige tan skin, visible real pores, faint nose cheek freckles only, white ribbed tank top, casual apartment daylight, realistic phone lens, natural imperfect framing, sharp eyes, matte real skin texture, realistic hair fibers"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "same exact photo as reference, duplicate selfie, front centered clone, different person, identity drift, redesigned face, elongated face, long face, narrow face, long lower third, long chin, pointed chin, sharp chin, heavy jaw, square jaw, hollow cheeks, overly sharp nose, cat eyes, fox eyes, wrong eyes, brown eyes, oversized lips, filler lips, teeth, open mouth, teen, childlike, doll face, plastic skin, waxy skin, airbrushed skin, glossy oily face, beauty retouch, glamour studio, professional portrait, blurry face, soft face, platinum blonde, brunette, short hair, bad anatomy, watermark, text, logo"
+    }
+  },
+  "8": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 896,
+      "height": 1152,
+      "batch_size": 1
+    }
+  },
+  "9": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "5",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "8",
+        0
+      ],
+      "seed": 202607101502,
+      "steps": 34,
+      "cfg": 2.9,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1
+    }
+  },
+  "10": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "9",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    }
+  },
+  "11": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "10",
+        0
+      ],
+      "filename_prefix": "anna_v2_faceid_lustify_ref001_002_window_profile"
+    }
+  }
+}
