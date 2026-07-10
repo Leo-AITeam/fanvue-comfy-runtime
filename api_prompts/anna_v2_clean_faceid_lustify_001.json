@@ -1,0 +1,128 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "lustifySDXLNSFW_ggwpV7.safetensors"
+    }
+  },
+  "3": {
+    "class_type": "IPAdapterUnifiedLoaderFaceID",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "preset": "FACEID PLUS V2",
+      "lora_strength": 0.55,
+      "provider": "CPU"
+    }
+  },
+  "4": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "fanvue/runtime/001.png"
+    }
+  },
+  "5": {
+    "class_type": "IPAdapterFaceID",
+    "inputs": {
+      "model": [
+        "3",
+        0
+      ],
+      "ipadapter": [
+        "3",
+        1
+      ],
+      "image": [
+        "4",
+        0
+      ],
+      "weight": 0.86,
+      "weight_faceidv2": 1.18,
+      "weight_type": "linear",
+      "combine_embeds": "average",
+      "start_at": 0,
+      "end_at": 0.78,
+      "embeds_scaling": "V only"
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "ultra realistic candid iPhone photo of the same adult woman as reference image 001, new photo not a duplicate, natural Ukrainian European woman in her 20s, soft oval face, natural cheek fullness, compact softly rounded chin, natural nose, natural lips, grey blue eyes, long thick natural wheat blonde hair with darker ash blonde roots, warm beige tan skin, visible fine pores, subtle natural skin texture, faint freckles on nose and cheeks, tiny beauty mark on collarbone, alive relaxed expression, three quarter head angle, eyes looking slightly away from camera, soft half smile, white ribbed tank top, casual modern apartment near window, daylight, realistic phone camera lens, natural perspective, imperfect real-life framing, matte skin, real hair strands and flyaways, high detail face, sharp natural eyes, clean realistic anatomy, hands out of frame"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "same exact photo as reference, duplicate pose, copied composition, selfie arm, phone in frame, mirror selfie, different person, identity drift, teen, childlike, doll face, plastic skin, waxy skin, glossy oily skin, heavy makeup, beauty filter, airbrushed skin, porcelain skin, overprocessed face, blurry face, soft face, low detail eyes, glassy eyes, wrong eye color, brown eyes, neon eyes, elongated face, narrow face, hollow cheeks, sharp jaw, pointed chin, oversized lips, filler lips, wrong nose, pale skin, orange skin, platinum blonde hair, grey hair, brunette, short hair, flat hair, helmet hair, studio portrait, glamour lighting, CGI, 3d render, anime, illustration, bad anatomy, bad hands, deformed body, watermark, text, logo, low quality"
+    }
+  },
+  "8": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 1024,
+      "height": 1280,
+      "batch_size": 1
+    }
+  },
+  "9": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "5",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "8",
+        0
+      ],
+      "seed": 240710001,
+      "steps": 32,
+      "cfg": 3.2,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1
+    }
+  },
+  "10": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "9",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    }
+  },
+  "11": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "10",
+        0
+      ],
+      "filename_prefix": "anna_v2_clean_faceid_lustify_001"
+    }
+  }
+}

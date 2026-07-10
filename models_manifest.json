@@ -218,7 +218,8 @@
       "target_dir": "ComfyUI/models/checkpoints",
       "required_for_first_test": true,
       "test_profiles": [
-        "first_full"
+        "first_full",
+        "anna_v2_clean_faceid_lustify"
       ]
     },
     {
@@ -697,7 +698,8 @@
         "anna_001_ready_realvisxl",
         "anna_faceid_compact_realvisxl",
         "anna_faceid_compact_realvisxl_baked",
-        "anna_faceid_compact_realvisxl_baked_landmark"
+        "anna_faceid_compact_realvisxl_baked_landmark",
+        "anna_v2_clean_faceid_lustify"
       ],
       "notes": "Public IPAdapter CLIP vision encoder for future identity-lock workflow."
     },
@@ -783,7 +785,8 @@
       "test_profiles": [
         "anna_faceid_compact_realvisxl",
         "anna_faceid_compact_realvisxl_baked",
-        "anna_faceid_compact_realvisxl_baked_landmark"
+        "anna_faceid_compact_realvisxl_baked_landmark",
+        "anna_v2_clean_faceid_lustify"
       ],
       "notes": "Public SDXL FaceID Plus V2 IPAdapter model for IPAdapterUnifiedLoaderFaceID preset FACEID PLUS V2."
     },
@@ -797,7 +800,8 @@
       "test_profiles": [
         "anna_faceid_compact_realvisxl",
         "anna_faceid_compact_realvisxl_baked",
-        "anna_faceid_compact_realvisxl_baked_landmark"
+        "anna_faceid_compact_realvisxl_baked_landmark",
+        "anna_v2_clean_faceid_lustify"
       ],
       "notes": "Public LoRA paired with SDXL FaceID Plus V2 preset."
     }
@@ -1096,6 +1100,17 @@
         "ip-adapter-faceid-plusv2_sdxl_lora.safetensors",
         "controlnet-union-sdxl-promax.safetensors",
         "sdpose_wholebody_fp16.safetensors"
+      ]
+    },
+    "anna_v2_clean_faceid_lustify": {
+      "description": "Anna v2 clean FaceID test profile: public SDXL photoreal/adult-capable checkpoint plus FaceID Plus V2, using reference 001 only and no old Anna LoRA.",
+      "source_complete": true,
+      "api_prompt": "api_prompts/anna_v2_clean_faceid_lustify_001.json",
+      "required_models": [
+        "lustifySDXLNSFW_ggwpV7.safetensors",
+        "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+        "ip-adapter-faceid-plusv2_sdxl.bin",
+        "ip-adapter-faceid-plusv2_sdxl_lora.safetensors"
       ]
     }
   }
