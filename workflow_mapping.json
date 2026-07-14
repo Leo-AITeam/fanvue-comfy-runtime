@@ -165,6 +165,15 @@
       "native_orchestrator_status": "video_pack_ready_pending_gpu_smoke",
       "safety": "queue_disabled_until_clean_gpu_video_smoke",
       "notes": "Adult-tier video profile for the dedicated video-latest runtime pack. Uses the public source-complete Wan 2.2 stack."
+    },
+    "Anna v2 PuLID Flux master011 calibration": {
+      "job_type": "face_variations",
+      "api_prompt": "api_prompts/anna_v2_pulid_flux_master011_001_front_clean.json",
+      "input_mode": "image_to_image",
+      "model_profile": "anna_v2_pulid_flux_master011",
+      "native_orchestrator_status": "manual_calibration_pending_gpu",
+      "safety": "manual_review_only",
+      "notes": "Direct API prompt calibration batch for selected master011 identity preservation with Flux PuLID. Uses warm tan skin, no freckles, darker natural blonde roots, and micro-turn face-angle tests."
     }
   },
   "replacement_profiles": {

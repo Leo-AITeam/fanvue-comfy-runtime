@@ -1,0 +1,92 @@
+{
+  "schema_version": "generation_job.v1",
+  "job_id": "job_anna_v2_pulid_flux_master011_calibration",
+  "character_id": "character_anna_novari_v2_calibration",
+  "fan_id": null,
+  "request_id": "request_anna_v2_pulid_flux_master011_calibration",
+  "job_type": "face_variations",
+  "content_tier": "sfw",
+  "priority": 50,
+  "status": "queued",
+  "workflow": {
+    "name": "Anna v2 PuLID Flux master011 calibration",
+    "profile": "anna_v2_pulid_flux_master011",
+    "adapter": "Anna v2 PuLID Flux master011 calibration",
+    "input_mode": "image_to_image"
+  },
+  "inputs": {
+    "positive_prompt": "Anna v2 master011 Flux PuLID identity calibration, adult synthetic woman, natural phone-photo realism, subtle pose variation, warm medium golden tan skin, no freckles, darker natural blonde hair with darker roots, softly rounded compact chin, sharp eyes",
+    "negative_prompt": "different person, duplicate of reference composition, long pointed chin, pale skin, freckles, face speckles, red hair, platinum hair, generic blonde model, blurred face, plastic skin, waxy skin, teen-coded, glamour studio look",
+    "seed": 202607140111,
+    "prompt_files": [
+      "api_prompts/anna_v2_pulid_flux_master011_001_front_clean.json",
+      "api_prompts/anna_v2_pulid_flux_master011_002_left_microturn.json",
+      "api_prompts/anna_v2_pulid_flux_master011_003_right_microturn.json"
+    ],
+    "requires_input_images": [
+      {
+        "local_hint": "Anna v2 selected master 011 between-warm full reference",
+        "comfy_image": "fanvue/runtime/anna_v2_master011_full.png"
+      }
+    ]
+  },
+  "output": {
+    "filename_prefix": "anna_v2_pulid_flux_master011_calibration",
+    "storage_target": "local_debug",
+    "expected_files": 3
+  },
+  "callback": {
+    "enabled": false,
+    "url_env": null,
+    "auth_header_env": null,
+    "auth_value_env": null,
+    "fails_job": false
+  },
+  "runtime": {
+    "provider": "runpod",
+    "image": "ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest",
+    "disk_gb": 120,
+    "gpu_count": 1,
+    "gpu_type": "NVIDIA RTX A6000",
+    "stop_policy": "manual_debug",
+    "timeout_seconds": 3600
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "manual_review_required": true,
+    "prompt_files": [
+      "api_prompts/anna_v2_pulid_flux_master011_001_front_clean.json",
+      "api_prompts/anna_v2_pulid_flux_master011_002_left_microturn.json",
+      "api_prompts/anna_v2_pulid_flux_master011_003_right_microturn.json"
+    ],
+    "requires_input_images": [
+      {
+        "local_hint": "Anna v2 selected master 011 between-warm full reference",
+        "comfy_image": "fanvue/runtime/anna_v2_master011_full.png"
+      }
+    ],
+    "generation": {
+      "purpose": "single-reference Anna v2 identity calibration with Flux PuLID pose variation from selected master011",
+      "explicitness": "SFW",
+      "reference_policy": "use synthetic master011 as identity source only",
+      "acceptance": [
+        "same face family as selected master011",
+        "warm medium golden tan skin close to master011",
+        "no freckles or face speckles",
+        "darker natural blonde hair with darker ash-blonde roots",
+        "softly rounded compact chin",
+        "sharp eyes and natural phone-photo skin",
+        "no teen-coded result"
+      ],
+      "reject_if": [
+        "different person",
+        "duplicate of master011 composition",
+        "long or pointed chin",
+        "pale skin or freckles",
+        "generic blonde model face",
+        "blurred face",
+        "glamour studio look"
+      ]
+    }
+  }
+}

@@ -413,7 +413,8 @@
       "min_bytes": 11000000000,
       "required_for_first_test": false,
       "test_profiles": [
-        "anna_v2_pulid_flux_ref001"
+        "anna_v2_pulid_flux_ref001",
+        "anna_v2_pulid_flux_master011"
       ]
     },
     {
@@ -424,7 +425,8 @@
       "min_bytes": 4500000000,
       "required_for_first_test": false,
       "test_profiles": [
-        "anna_v2_pulid_flux_ref001"
+        "anna_v2_pulid_flux_ref001",
+        "anna_v2_pulid_flux_master011"
       ]
     },
     {
@@ -435,7 +437,8 @@
       "min_bytes": 200000000,
       "required_for_first_test": false,
       "test_profiles": [
-        "anna_v2_pulid_flux_ref001"
+        "anna_v2_pulid_flux_ref001",
+        "anna_v2_pulid_flux_master011"
       ]
     },
     {
@@ -446,7 +449,8 @@
       "min_bytes": 1000000000,
       "required_for_first_test": false,
       "test_profiles": [
-        "anna_v2_pulid_flux_ref001"
+        "anna_v2_pulid_flux_ref001",
+        "anna_v2_pulid_flux_master011"
       ]
     },
     {
@@ -457,7 +461,8 @@
       "target_dir": "ComfyUI/models/insightface/models",
       "required_for_first_test": false,
       "test_profiles": [
-        "anna_v2_pulid_flux_ref001"
+        "anna_v2_pulid_flux_ref001",
+        "anna_v2_pulid_flux_master011"
       ],
       "extract": {
         "type": "zip",
@@ -481,7 +486,8 @@
       "required_for_first_test": false,
       "test_profiles": [
         "qwen_edit_smoke",
-        "anna_v2_faceid_realvisxl_civitai_clean_v1"
+        "anna_v2_faceid_realvisxl_civitai_clean_v1",
+        "anna_v2_pulid_flux_master011"
       ],
       "notes": "ReActor face swap model used for Qwen text2img -> 001 identity transfer tests."
     },
@@ -1250,6 +1256,20 @@
         "ae.safetensors",
         "pulid_flux_v0.9.1.safetensors",
         "antelopev2.zip"
+      ]
+    },
+    "anna_v2_pulid_flux_master011": {
+      "description": "Anna v2 master011 Flux PuLID calibration profile for identity-stable face angle tests from selected master 011.",
+      "source_complete": true,
+      "api_prompt": "job_templates/anna_v2_pulid_flux_master011_calibration_job.json",
+      "required_models": [
+        "flux1-dev-fp8.safetensors",
+        "t5xxl_fp8_e4m3fn.safetensors",
+        "clip_l.safetensors",
+        "ae.safetensors",
+        "pulid_flux_v0.9.1.safetensors",
+        "antelopev2.zip",
+        "inswapper_128.onnx"
       ]
     }
   }
