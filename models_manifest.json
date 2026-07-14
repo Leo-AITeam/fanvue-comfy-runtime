@@ -349,6 +349,25 @@
       ]
     },
     {
+      "name": "anna_v2_identity_recommended_v1_2026-07-14.safetensors",
+      "type": "lora",
+      "source_url_env": "ANNA_LORA_TEST_ASSET_URL",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value_env": "GITHUB_TOKEN",
+          "prefix": "Bearer "
+        }
+      ],
+      "expected_bytes": 171969400,
+      "target_dir": "ComfyUI/models/loras",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_v2_pulid_flux_master011"
+      ],
+      "notes": "Anna v2 Flux identity LoRA trained from the recommended 2026-07-14 face dataset; used only for master011 identity stability tests."
+    },
+    {
       "name": "qwen_2.5_vl_7b_fp8_scaled.safetensors",
       "type": "model",
       "source_url": "https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI/resolve/main/split_files/text_encoders/qwen_2.5_vl_7b_fp8_scaled.safetensors",
@@ -1284,6 +1303,7 @@
         "ae.safetensors",
         "pulid_flux_v0.9.1.safetensors",
         "antelopev2.zip",
+        "anna_v2_identity_recommended_v1_2026-07-14.safetensors",
         "inswapper_128.onnx"
       ]
     },

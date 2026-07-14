@@ -101,7 +101,9 @@ function validateModelProfiles() {
   const models = manifest.models || [];
   for (const profile of ['smoke', 'face_detailer_smoke', 'qwen_edit_smoke', 'anna_v2_pulid_flux_ref001', 'anna_v2_pulid_flux_master011', 'photo_lifestyle_v1', 'video_lifestyle_v1', 'video_adult_v1', 'first_full']) {
     const selected = models.filter((item) => modelMatchesProfile(item, profile));
-    const missing = selected.filter((item) => !item.source_url).map((item) => item.name);
+    const missing = selected
+      .filter((item) => !item.source_url && !item.source_url_env && !item.source_url_parts_env)
+      .map((item) => item.name);
     const mustBeComplete = ['smoke', 'face_detailer_smoke', 'qwen_edit_smoke', 'anna_v2_pulid_flux_ref001', 'anna_v2_pulid_flux_master011', 'photo_lifestyle_v1', 'video_lifestyle_v1', 'video_adult_v1'].includes(profile);
     checks.push(result(mustBeComplete ? missing.length === 0 : true, `models.${profile}.source_urls`, {
       selected_model_count: selected.length,
