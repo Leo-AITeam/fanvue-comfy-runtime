@@ -1,0 +1,78 @@
+{
+  "schema_version": "generation_job.v1",
+  "job_id": "job_anna_v2_realvisxl_faceid_canny_pose_v1",
+  "character_id": "character_anna_novari_v2_calibration",
+  "fan_id": null,
+  "request_id": "request_anna_v2_realvisxl_faceid_canny_pose_v1",
+  "job_type": "face_variations",
+  "content_tier": "sfw",
+  "priority": 50,
+  "status": "queued",
+  "workflow": {
+    "name": "Anna v2 RealVisXL FaceID Canny Pose v1",
+    "profile": "anna_v2_realvisxl_faceid_canny_pose_v1",
+    "adapter": "Anna v2 RealVisXL FaceID Canny Pose v1",
+    "input_mode": "image_to_image"
+  },
+  "inputs": {
+    "positive_prompt": "Anna v2 master011 identity plus separate pose-reference Canny ControlNet geometry test.",
+    "negative_prompt": "front facing when pose reference is side view, glamour, plastic, identity drift",
+    "seed": 202607141601,
+    "prompt_files": [
+      "api_prompts/anna_v2_realvisxl_faceid_canny_pose_v1.json"
+    ],
+    "requires_input_images": [
+      {
+        "local_hint": "Anna v2 selected master 011 identity reference",
+        "comfy_image": "fanvue/runtime/anna_v2_master011_identity.jpg"
+      },
+      {
+        "local_hint": "Pose reference image for target head angle",
+        "comfy_image": "fanvue/runtime/anna_v2_pose_reference.jpg"
+      }
+    ]
+  },
+  "output": {
+    "filename_prefix": "anna_v2_realvisxl_faceid_canny_pose_v1",
+    "storage_target": "local_debug",
+    "expected_files": 1
+  },
+  "callback": {
+    "enabled": false,
+    "url_env": null,
+    "auth_header_env": null,
+    "auth_value_env": null,
+    "fails_job": false
+  },
+  "runtime": {
+    "provider": "runpod",
+    "image": "ghcr.io/leo-aiteam/fanvue-comfy-runtime:latest",
+    "disk_gb": 120,
+    "gpu_count": 1,
+    "gpu_type": "NVIDIA RTX A6000",
+    "stop_policy": "manual_debug",
+    "timeout_seconds": 3600
+  },
+  "metadata": {
+    "version": "1.0.0",
+    "manual_review_required": true,
+    "generation": {
+      "purpose": "test whether pose-reference ControlNet can force real non-front Anna v2 face angles",
+      "explicitness": "SFW",
+      "reference_policy": "use synthetic master011 as identity and separate pose image only for geometry",
+      "acceptance": [
+        "actual angle follows pose reference",
+        "not front facing when pose reference is 3/4 or profile",
+        "less glamour than Flux/PuLID outputs",
+        "no freckles",
+        "warm tan skin and darker blonde roots"
+      ],
+      "reject_if": [
+        "front-facing despite side pose reference",
+        "generic beauty model",
+        "plastic or glossy skin",
+        "major identity drift"
+      ]
+    }
+  }
+}

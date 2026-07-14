@@ -1,0 +1,200 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "realvisxlV50_v50Bakedvae.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "IPAdapterUnifiedLoaderFaceID",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "preset": "FACEID PLUS V2",
+      "lora_strength": 0.5,
+      "provider": "CUDA"
+    }
+  },
+  "3": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "fanvue/runtime/anna_v2_master011_identity.jpg"
+    }
+  },
+  "4": {
+    "class_type": "IPAdapterInsightFaceLoader",
+    "inputs": {
+      "provider": "CUDA",
+      "model_name": "antelopev2"
+    }
+  },
+  "5": {
+    "class_type": "IPAdapterFaceID",
+    "inputs": {
+      "model": [
+        "2",
+        0
+      ],
+      "ipadapter": [
+        "2",
+        1
+      ],
+      "image": [
+        "3",
+        0
+      ],
+      "insightface": [
+        "4",
+        0
+      ],
+      "weight": 0.72,
+      "weight_faceidv2": 1.05,
+      "weight_type": "linear",
+      "combine_embeds": "average",
+      "start_at": 0,
+      "end_at": 0.72,
+      "embeds_scaling": "V only"
+    }
+  },
+  "6": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "fanvue/runtime/anna_v2_pose_reference.jpg"
+    }
+  },
+  "7": {
+    "class_type": "Canny",
+    "inputs": {
+      "image": [
+        "6",
+        0
+      ],
+      "low_threshold": 0.22,
+      "high_threshold": 0.68
+    }
+  },
+  "8": {
+    "class_type": "ControlNetLoader",
+    "inputs": {
+      "control_net_name": "controlnet-union-sdxl-promax.safetensors"
+    }
+  },
+  "9": {
+    "class_type": "SetUnionControlNetType",
+    "inputs": {
+      "control_net": [
+        "8",
+        0
+      ],
+      "type": "canny/lineart/anime_lineart/mlsd"
+    }
+  },
+  "10": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "raw unedited smartphone portrait of the same adult synthetic woman as identity reference, documentary realism, true head angle and face direction from pose reference, not front facing unless pose reference is front facing, warm medium golden tan skin, real pores, natural uneven skin texture, no freckles, no face speckles, darker natural blonde hair with darker ash blonde roots, loose natural hair, soft oval face, compact lower face, softly rounded chin, natural lips, grey blue eyes, casual apartment daylight, imperfect phone camera, slight lens noise, natural shadows, no glamour retouch, no studio lighting, no beauty portrait"
+    }
+  },
+  "11": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "front facing pose when pose reference is side view, passport photo, centered glamour portrait, beauty portrait, studio portrait, model portfolio photo, glossy skin, oily skin, airbrushed skin, plastic skin, waxy skin, doll face, cgi, 3d render, freckles, face speckles, pale skin, pink skin, orange skin, platinum blonde hair, white blonde hair, brunette hair, wrong identity, different person, elongated face, pointed chin, sharp jaw, oversized lips, filler lips, blurry face, low detail eyes, bad anatomy, watermark, text, logo"
+    }
+  },
+  "12": {
+    "class_type": "ControlNetApplyAdvanced",
+    "inputs": {
+      "positive": [
+        "10",
+        0
+      ],
+      "negative": [
+        "11",
+        0
+      ],
+      "control_net": [
+        "9",
+        0
+      ],
+      "image": [
+        "7",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ],
+      "strength": 0.82,
+      "start_percent": 0,
+      "end_percent": 0.78
+    }
+  },
+  "13": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 960,
+      "height": 1152,
+      "batch_size": 1
+    }
+  },
+  "14": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "5",
+        0
+      ],
+      "positive": [
+        "12",
+        0
+      ],
+      "negative": [
+        "12",
+        1
+      ],
+      "latent_image": [
+        "13",
+        0
+      ],
+      "seed": 202607141601,
+      "steps": 34,
+      "cfg": 2.7,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1
+    }
+  },
+  "15": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "14",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    }
+  },
+  "16": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "15",
+        0
+      ],
+      "filename_prefix": "anna_v2_realvisxl_faceid_canny_pose_v1"
+    }
+  }
+}
