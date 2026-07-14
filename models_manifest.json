@@ -694,7 +694,8 @@
       "required_for_first_test": false,
       "test_profiles": [
         "anna_faceid_compact_realvisxl_baked",
-        "anna_faceid_compact_realvisxl_baked_landmark"
+        "anna_faceid_compact_realvisxl_baked_landmark",
+        "anna_v2_faceid_realvisxl_clean_v1"
       ],
       "notes": "Normal non-Lightning RealVisXL v5.0 checkpoint for Anna FaceID workflow; used to reduce over-sharpened Lightning look."
     },
@@ -769,6 +770,7 @@
         "anna_faceid_compact_realvisxl_baked",
         "anna_faceid_compact_realvisxl_baked_landmark",
         "anna_v2_clean_faceid_lustify",
+        "anna_v2_faceid_realvisxl_clean_v1",
         "anna_v2_faceid_sdxlbase"
       ],
       "notes": "Public IPAdapter CLIP vision encoder for future identity-lock workflow."
@@ -857,6 +859,7 @@
         "anna_faceid_compact_realvisxl_baked",
         "anna_faceid_compact_realvisxl_baked_landmark",
         "anna_v2_clean_faceid_lustify",
+        "anna_v2_faceid_realvisxl_clean_v1",
         "anna_v2_faceid_sdxlbase"
       ],
       "notes": "Public SDXL FaceID Plus V2 IPAdapter model for IPAdapterUnifiedLoaderFaceID preset FACEID PLUS V2."
@@ -873,6 +876,7 @@
         "anna_faceid_compact_realvisxl_baked",
         "anna_faceid_compact_realvisxl_baked_landmark",
         "anna_v2_clean_faceid_lustify",
+        "anna_v2_faceid_realvisxl_clean_v1",
         "anna_v2_faceid_sdxlbase"
       ],
       "notes": "Public LoRA paired with SDXL FaceID Plus V2 preset."
@@ -1180,6 +1184,17 @@
       "api_prompt": "api_prompts/anna_v2_clean_faceid_lustify_001.json",
       "required_models": [
         "lustifySDXLNSFW_ggwpV7.safetensors",
+        "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+        "ip-adapter-faceid-plusv2_sdxl.bin",
+        "ip-adapter-faceid-plusv2_sdxl_lora.safetensors"
+      ]
+    },
+    "anna_v2_faceid_realvisxl_clean_v1": {
+      "description": "Anna v2 clean RealVisXL FaceID profile: no old Anna LoRA, one approved master-face reference, FaceID Plus V2 identity lock.",
+      "source_complete": true,
+      "api_prompt": "api_prompts/anna_v2_faceid_realvisxl_clean_v1.json",
+      "required_models": [
+        "realvisxlV50_v50Bakedvae.safetensors",
         "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
         "ip-adapter-faceid-plusv2_sdxl.bin",
         "ip-adapter-faceid-plusv2_sdxl_lora.safetensors"
