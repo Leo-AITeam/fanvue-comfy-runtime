@@ -700,6 +700,18 @@
       "notes": "Normal non-Lightning RealVisXL v5.0 checkpoint for Anna FaceID workflow; used to reduce over-sharpened Lightning look."
     },
     {
+      "name": "realvisxlV50_v50Bakedvae_civitai.safetensors",
+      "type": "model",
+      "source_url": "https://civitai.com/api/download/models/789646?type=Model&format=SafeTensor&size=full&fp=fp32",
+      "min_bytes": 6900000000,
+      "target_dir": "ComfyUI/models/checkpoints",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_v2_faceid_realvisxl_civitai_clean_v1"
+      ],
+      "notes": "Public Civitai RealVisXL v5.0 BakedVAE checkpoint for Anna v2 clean FaceID tests; avoids private encrypted asset keys."
+    },
+    {
       "name": "jibMixRealisticXL_v180SkinSupreme.safetensors",
       "type": "model",
       "source_url_env": "JIBMIX_REALISTIC_XL_ASSET_URL",
@@ -771,6 +783,7 @@
         "anna_faceid_compact_realvisxl_baked_landmark",
         "anna_v2_clean_faceid_lustify",
         "anna_v2_faceid_realvisxl_clean_v1",
+        "anna_v2_faceid_realvisxl_civitai_clean_v1",
         "anna_v2_faceid_sdxlbase"
       ],
       "notes": "Public IPAdapter CLIP vision encoder for future identity-lock workflow."
@@ -860,6 +873,7 @@
         "anna_faceid_compact_realvisxl_baked_landmark",
         "anna_v2_clean_faceid_lustify",
         "anna_v2_faceid_realvisxl_clean_v1",
+        "anna_v2_faceid_realvisxl_civitai_clean_v1",
         "anna_v2_faceid_sdxlbase"
       ],
       "notes": "Public SDXL FaceID Plus V2 IPAdapter model for IPAdapterUnifiedLoaderFaceID preset FACEID PLUS V2."
@@ -877,6 +891,7 @@
         "anna_faceid_compact_realvisxl_baked_landmark",
         "anna_v2_clean_faceid_lustify",
         "anna_v2_faceid_realvisxl_clean_v1",
+        "anna_v2_faceid_realvisxl_civitai_clean_v1",
         "anna_v2_faceid_sdxlbase"
       ],
       "notes": "Public LoRA paired with SDXL FaceID Plus V2 preset."
@@ -1195,6 +1210,17 @@
       "api_prompt": "api_prompts/anna_v2_faceid_realvisxl_clean_v1.json",
       "required_models": [
         "realvisxlV50_v50Bakedvae.safetensors",
+        "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+        "ip-adapter-faceid-plusv2_sdxl.bin",
+        "ip-adapter-faceid-plusv2_sdxl_lora.safetensors"
+      ]
+    },
+    "anna_v2_faceid_realvisxl_civitai_clean_v1": {
+      "description": "Anna v2 clean RealVisXL FaceID profile using public Civitai RealVisXL v5.0 BakedVAE, no old Anna LoRA, one approved master-face reference.",
+      "source_complete": true,
+      "api_prompt": "api_prompts/anna_v2_faceid_realvisxl_civitai_clean_v1.json",
+      "required_models": [
+        "realvisxlV50_v50Bakedvae_civitai.safetensors",
         "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
         "ip-adapter-faceid-plusv2_sdxl.bin",
         "ip-adapter-faceid-plusv2_sdxl_lora.safetensors"

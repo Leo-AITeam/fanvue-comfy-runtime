@@ -1,0 +1,128 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "realvisxlV50_v50Bakedvae_civitai.safetensors"
+    }
+  },
+  "3": {
+    "class_type": "IPAdapterUnifiedLoaderFaceID",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "preset": "FACEID PLUS V2",
+      "lora_strength": 0.58,
+      "provider": "CPU"
+    }
+  },
+  "4": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "fanvue/runtime/anna_v2_master_face.jpg"
+    }
+  },
+  "5": {
+    "class_type": "IPAdapterFaceID",
+    "inputs": {
+      "model": [
+        "3",
+        0
+      ],
+      "ipadapter": [
+        "3",
+        1
+      ],
+      "image": [
+        "4",
+        0
+      ],
+      "weight": 0.9,
+      "weight_faceidv2": 1.22,
+      "weight_type": "linear",
+      "combine_embeds": "average",
+      "start_at": 0,
+      "end_at": 0.82,
+      "embeds_scaling": "V only"
+    }
+  },
+  "6": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "ultra realistic candid iPhone portrait of the same adult woman as the reference image, new photo not a duplicate, natural Ukrainian European woman in her 20s, stable soft oval face, natural cheek fullness, compact softly rounded chin, natural nose, natural lips, grey blue eyes, long thick natural darker wheat blonde hair with darker ash blonde roots, uniform warm golden beige tan skin matching the reference, no freckles, clean real skin with visible fine pores and subtle natural texture, matte-satin skin, alive relaxed expression, high detail face, sharp natural eyes, real hair strands and flyaways, phone camera realism, natural perspective, soft daylight, casual modern apartment near window, white ribbed tank top, hands out of frame, clean realistic anatomy"
+    }
+  },
+  "7": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "same exact photo as reference, duplicate pose, copied composition, different person, identity drift, teen, childlike, doll face, plastic skin, waxy skin, glossy oily skin, heavy makeup, beauty filter, airbrushed skin, porcelain skin, pale skin, white skin, washed out skin, pink skin, overexposed face, orange skin, freckles, freckled face, speckles, moles on face, skin spots, acne, dirty skin, blurry face, soft face, low detail eyes, wrong eye color, brown eyes, neon eyes, elongated face, narrow face, hollow cheeks, sharp jaw, pointed chin, oversized lips, filler lips, wrong nose, platinum blonde hair, white blonde hair, grey blonde hair, brunette, short hair, flat hair, helmet hair, studio portrait, glamour lighting, CGI, 3d render, anime, illustration, bad anatomy, bad hands, deformed body, watermark, text, logo, low quality"
+    }
+  },
+  "8": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 960,
+      "height": 1152,
+      "batch_size": 1
+    }
+  },
+  "9": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "5",
+        0
+      ],
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "latent_image": [
+        "8",
+        0
+      ],
+      "seed": 260714011,
+      "steps": 34,
+      "cfg": 3.0,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1
+    }
+  },
+  "10": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "9",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    }
+  },
+  "11": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "10",
+        0
+      ],
+      "filename_prefix": "anna_v2_faceid_realvisxl_civitai_clean_v1"
+    }
+  }
+}
