@@ -480,7 +480,8 @@
       "target_dir": "ComfyUI/models/insightface",
       "required_for_first_test": false,
       "test_profiles": [
-        "qwen_edit_smoke"
+        "qwen_edit_smoke",
+        "anna_v2_faceid_realvisxl_civitai_clean_v1"
       ],
       "notes": "ReActor face swap model used for Qwen text2img -> 001 identity transfer tests."
     },
@@ -1223,7 +1224,8 @@
         "realvisxlV50_v50Bakedvae_civitai.safetensors",
         "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
         "ip-adapter-faceid-plusv2_sdxl.bin",
-        "ip-adapter-faceid-plusv2_sdxl_lora.safetensors"
+        "ip-adapter-faceid-plusv2_sdxl_lora.safetensors",
+        "inswapper_128.onnx"
       ]
     },
     "anna_v2_faceid_sdxlbase": {
