@@ -151,7 +151,8 @@
       "test_profiles": [
         "first_full",
         "anna_faceid_compact_realvisxl_baked_landmark",
-        "anna_v2_realvisxl_faceid_canny_pose_v1"
+        "anna_v2_realvisxl_faceid_canny_pose_v1",
+        "anna_v2_lustify_faceid_canny_pose_v1"
       ],
       "expected_bytes": 2513342408,
       "notes": "SDXL ControlNet Union ProMax for landmark/openpose-style face and pose structure control in Anna workflow."
@@ -222,7 +223,8 @@
       "required_for_first_test": true,
       "test_profiles": [
         "first_full",
-        "anna_v2_clean_faceid_lustify"
+        "anna_v2_clean_faceid_lustify",
+        "anna_v2_lustify_faceid_canny_pose_v1"
       ]
     },
     {
@@ -465,7 +467,8 @@
       "test_profiles": [
         "anna_v2_pulid_flux_ref001",
         "anna_v2_pulid_flux_master011",
-        "anna_v2_realvisxl_faceid_canny_pose_v1"
+        "anna_v2_realvisxl_faceid_canny_pose_v1",
+        "anna_v2_lustify_faceid_canny_pose_v1"
       ],
       "extract": {
         "type": "zip",
@@ -491,7 +494,8 @@
         "qwen_edit_smoke",
         "anna_v2_faceid_realvisxl_civitai_clean_v1",
         "anna_v2_pulid_flux_master011",
-        "anna_v2_realvisxl_faceid_canny_pose_v1"
+        "anna_v2_realvisxl_faceid_canny_pose_v1",
+        "anna_v2_lustify_faceid_canny_pose_v1"
       ],
       "notes": "ReActor face swap model used for Qwen text2img -> 001 identity transfer tests."
     },
@@ -797,7 +801,8 @@
         "anna_v2_faceid_realvisxl_clean_v1",
         "anna_v2_faceid_realvisxl_civitai_clean_v1",
         "anna_v2_faceid_sdxlbase",
-        "anna_v2_realvisxl_faceid_canny_pose_v1"
+        "anna_v2_realvisxl_faceid_canny_pose_v1",
+        "anna_v2_lustify_faceid_canny_pose_v1"
       ],
       "notes": "Public IPAdapter CLIP vision encoder for future identity-lock workflow."
     },
@@ -888,7 +893,8 @@
         "anna_v2_faceid_realvisxl_clean_v1",
         "anna_v2_faceid_realvisxl_civitai_clean_v1",
         "anna_v2_faceid_sdxlbase",
-        "anna_v2_realvisxl_faceid_canny_pose_v1"
+        "anna_v2_realvisxl_faceid_canny_pose_v1",
+        "anna_v2_lustify_faceid_canny_pose_v1"
       ],
       "notes": "Public SDXL FaceID Plus V2 IPAdapter model for IPAdapterUnifiedLoaderFaceID preset FACEID PLUS V2."
     },
@@ -907,7 +913,8 @@
         "anna_v2_faceid_realvisxl_clean_v1",
         "anna_v2_faceid_realvisxl_civitai_clean_v1",
         "anna_v2_faceid_sdxlbase",
-        "anna_v2_realvisxl_faceid_canny_pose_v1"
+        "anna_v2_realvisxl_faceid_canny_pose_v1",
+        "anna_v2_lustify_faceid_canny_pose_v1"
       ],
       "notes": "Public LoRA paired with SDXL FaceID Plus V2 preset."
     }
@@ -1286,6 +1293,20 @@
       "api_prompt": "api_prompts/anna_v2_realvisxl_faceid_canny_pose_v1.json",
       "required_models": [
         "realvisxlV50_v50Bakedvae.safetensors",
+        "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+        "ip-adapter-faceid-plusv2_sdxl.bin",
+        "ip-adapter-faceid-plusv2_sdxl_lora.safetensors",
+        "controlnet-union-sdxl-promax.safetensors",
+        "antelopev2.zip",
+        "inswapper_128.onnx"
+      ]
+    },
+    "anna_v2_lustify_faceid_canny_pose_v1": {
+      "description": "Anna v2 public Lustify SDXL FaceID plus Canny ControlNet pose-reference workflow for real face-angle tests from master011.",
+      "source_complete": true,
+      "api_prompt": "api_prompts/anna_v2_lustify_faceid_canny_pose_v1.json",
+      "required_models": [
+        "lustifySDXLNSFW_ggwpV7.safetensors",
         "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
         "ip-adapter-faceid-plusv2_sdxl.bin",
         "ip-adapter-faceid-plusv2_sdxl_lora.safetensors",
