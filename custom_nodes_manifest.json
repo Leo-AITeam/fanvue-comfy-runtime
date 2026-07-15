@@ -71,6 +71,17 @@
       ]
     },
     {
+      "name": "efficiency-nodes-comfyui",
+      "repo_url": "https://github.com/jags111/efficiency-nodes-comfyui.git",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "dataset_lab_v1"
+      ],
+      "node_type_hints": [
+        "KSampler (Efficient)"
+      ]
+    },
+    {
       "name": "ComfyUI_IPAdapter_plus",
       "repo_url": "https://github.com/cubiq/ComfyUI_IPAdapter_plus.git",
       "required_for_first_test": true,
