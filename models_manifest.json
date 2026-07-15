@@ -862,7 +862,8 @@
       "target_dir": "ComfyUI/models/ipadapter",
       "required_for_first_test": false,
       "test_profiles": [
-        "anna_001_ready_v22"
+        "anna_001_ready_v22",
+        "anna_v2_realvisxl_faceid_civitai_canny_pose_v1"
       ],
       "notes": "Public SDXL FaceID portrait unnorm IPAdapter model; renamed to match ComfyUI_IPAdapter_plus preset regex."
     },
@@ -1331,6 +1332,7 @@
         "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
         "ip-adapter-faceid-plusv2_sdxl.bin",
         "ip-adapter-faceid-plusv2_sdxl_lora.safetensors",
+        "ipadapter_faceid.portrait.sdxl.unnorm.bin",
         "controlnet-union-sdxl-promax.safetensors",
         "antelopev2.zip",
         "inswapper_128.onnx"
