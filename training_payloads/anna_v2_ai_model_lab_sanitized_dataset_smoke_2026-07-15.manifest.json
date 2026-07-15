@@ -1,0 +1,42 @@
+{
+  "run_name": "anna_v2_ai_model_lab_sanitized_dataset_smoke_2026-07-15",
+  "created_at": "2026-07-15",
+  "purpose": "SFW identity dataset smoke test for Anna v2",
+  "source_material_folder": "/Users/leonid1/Documents/ПроэктХ/Новая папка 2",
+  "master_image": "inputs/anna_v2_master_011_between_warm.jpg",
+  "workflow": "anna_v2_dataset_creator_v3_sanitized_smoke.workflow.json",
+  "upstream_workflow": "upstream/ai_model_lab_dataset_creator_v3.original.json",
+  "image_count_target": 12,
+  "content_level": "SFW identity only",
+  "do_not_use": [
+    "hardcore",
+    "NSFW",
+    "nude",
+    "bikini",
+    "lingerie",
+    "large breasts",
+    "old Anna identity",
+    "real person identity copying"
+  ],
+  "qc_pass_criteria": {
+    "sharp_min": 5,
+    "identity_stable_min": 4,
+    "angle_variation_min": 3,
+    "must_have": [
+      "warm tan skin",
+      "no freckles",
+      "natural darker blonde hair with darker roots",
+      "slightly rounded chin",
+      "realistic skin texture"
+    ]
+  },
+  "archive_sha256": "7e09e86092aa7e27dda98a8ffb8cda625134090a765e70f46c0a18870ea9ad4a",
+  "runtime_supported_workflow": "anna_v2_dataset_creator_v3_sanitized_smoke.runtime_supported.workflow.json",
+  "runtime_supported_models": [
+    "flux-2-klein-4b.safetensors",
+    "qwen_3_4b.safetensors",
+    "z_image_turbo_bf16.safetensors",
+    "ae.safetensors",
+    "flux2-vae.safetensors"
+  ]
+}
