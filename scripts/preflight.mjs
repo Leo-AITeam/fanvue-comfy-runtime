@@ -27,11 +27,14 @@ function matchesProfile(item) {
 }
 
 const selectedModels = (models.models || []).filter((item) => matchesProfile(item));
-const missingModelUrls = selectedModels.filter((item) => !item.source_url && !item.source_url_env);
-const selectedNodes = (nodes.nodes || []).filter((item) =>
-  testProfile === 'api_smoke' ? false :
-  firstTestOnly ? item.required_for_first_test : true
+const missingModelUrls = selectedModels.filter((item) =>
+  !item.source_url
+  && !item.source_url_env
+  && !item.source_url_parts
+  && !item.source_url_parts_env
+  && !item.git_clone_url
 );
+const selectedNodes = (nodes.nodes || []).filter((item) => matchesProfile(item));
 const missingNodeRepos = selectedNodes.filter((item) => !item.repo_url);
 
 const result = {
