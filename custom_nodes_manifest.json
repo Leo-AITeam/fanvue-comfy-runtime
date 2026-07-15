@@ -76,7 +76,8 @@
       "patch_pulid_flux_timestep_compat": true,
       "test_profiles": [
         "anna_v2_pulid_flux_ref001",
-        "anna_v2_pulid_flux_master011"
+        "anna_v2_pulid_flux_master011",
+        "anna_v2_pulid_flux_master011_nolora"
       ],
       "node_type_hints": [
         "ApplyPulidFlux",

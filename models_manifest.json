@@ -106,7 +106,8 @@
         "first_full",
         "photo_lifestyle_v1",
         "anna_v2_pulid_flux_ref001",
-        "anna_v2_pulid_flux_master011"
+        "anna_v2_pulid_flux_master011",
+        "anna_v2_pulid_flux_master011_nolora"
       ]
     },
     {
@@ -438,7 +439,8 @@
       "required_for_first_test": false,
       "test_profiles": [
         "anna_v2_pulid_flux_ref001",
-        "anna_v2_pulid_flux_master011"
+        "anna_v2_pulid_flux_master011",
+        "anna_v2_pulid_flux_master011_nolora"
       ]
     },
     {
@@ -450,7 +452,8 @@
       "required_for_first_test": false,
       "test_profiles": [
         "anna_v2_pulid_flux_ref001",
-        "anna_v2_pulid_flux_master011"
+        "anna_v2_pulid_flux_master011",
+        "anna_v2_pulid_flux_master011_nolora"
       ]
     },
     {
@@ -462,7 +465,8 @@
       "required_for_first_test": false,
       "test_profiles": [
         "anna_v2_pulid_flux_ref001",
-        "anna_v2_pulid_flux_master011"
+        "anna_v2_pulid_flux_master011",
+        "anna_v2_pulid_flux_master011_nolora"
       ]
     },
     {
@@ -474,7 +478,8 @@
       "required_for_first_test": false,
       "test_profiles": [
         "anna_v2_pulid_flux_ref001",
-        "anna_v2_pulid_flux_master011"
+        "anna_v2_pulid_flux_master011",
+        "anna_v2_pulid_flux_master011_nolora"
       ]
     },
     {
@@ -488,7 +493,8 @@
         "anna_v2_pulid_flux_ref001",
         "anna_v2_pulid_flux_master011",
         "anna_v2_realvisxl_faceid_canny_pose_v1",
-        "anna_v2_lustify_faceid_canny_pose_v1"
+        "anna_v2_lustify_faceid_canny_pose_v1",
+        "anna_v2_pulid_flux_master011_nolora"
       ],
       "extract": {
         "type": "zip",
@@ -515,7 +521,8 @@
         "anna_v2_faceid_realvisxl_civitai_clean_v1",
         "anna_v2_pulid_flux_master011",
         "anna_v2_realvisxl_faceid_canny_pose_v1",
-        "anna_v2_lustify_faceid_canny_pose_v1"
+        "anna_v2_lustify_faceid_canny_pose_v1",
+        "anna_v2_pulid_flux_master011_nolora"
       ],
       "notes": "ReActor face swap model used for Qwen text2img -> 001 identity transfer tests."
     },
@@ -1332,6 +1339,20 @@
         "ip-adapter-faceid-plusv2_sdxl.bin",
         "ip-adapter-faceid-plusv2_sdxl_lora.safetensors",
         "controlnet-union-sdxl-promax.safetensors",
+        "antelopev2.zip",
+        "inswapper_128.onnx"
+      ]
+    },
+    "anna_v2_pulid_flux_master011_nolora": {
+      "description": "Anna v2 master011 Flux PuLID calibration profile without private Anna LoRA asset; uses only source-complete public Flux/PuLID/InsightFace models.",
+      "source_complete": true,
+      "api_prompt": "job_templates/anna_v2_pulid_flux_master011_calibration_job.json",
+      "required_models": [
+        "flux1-dev-fp8.safetensors",
+        "t5xxl_fp8_e4m3fn.safetensors",
+        "clip_l.safetensors",
+        "ae.safetensors",
+        "pulid_flux_v0.9.1.safetensors",
         "antelopev2.zip",
         "inswapper_128.onnx"
       ]
