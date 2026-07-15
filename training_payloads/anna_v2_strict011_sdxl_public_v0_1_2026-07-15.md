@@ -1,7 +1,7 @@
 # anna_v2_strict011_sdxl_public_v0_1_2026-07-15
 
 - Archive file: `anna_v2_strict011_sdxl_public_v0_1_2026-07-15_FULL_WITH_DATASET.tar.gz`
-- Archive SHA256: `a543c07dd8e2a4ba35a947540b844a4448c15338f7368619821dbd3c7474ea7e`
+- Archive SHA256: `4afa0e546f0317f1e4a14f181b87affd8495d2ccc5ea3ded711d0bf3bf667df5`
 - Images: 5
 - Trigger: `annav2strict011`
 - Base checkpoint: public `lustifySDXLNSFW_ggwpV7.safetensors`
