@@ -85,6 +85,19 @@
         "PulidFluxEvaClipLoader",
         "PulidFluxInsightFaceLoader"
       ]
+    },
+    {
+      "name": "comfyui_controlnet_aux",
+      "repo_url": "https://github.com/Fannovel16/comfyui_controlnet_aux.git",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "anna_v2_realvisxl_faceid_civitai_canny_pose_v1"
+      ],
+      "node_type_hints": [
+        "Canny",
+        "OpenposePreprocessor",
+        "DWPreprocessor"
+      ]
     }
   ],
   "unresolved_node_type_hints": [

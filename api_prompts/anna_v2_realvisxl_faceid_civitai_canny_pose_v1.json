@@ -1,0 +1,200 @@
+{
+  "1": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "realvisxlV50_v50Bakedvae_civitai.safetensors"
+    }
+  },
+  "2": {
+    "class_type": "IPAdapterUnifiedLoaderFaceID",
+    "inputs": {
+      "model": [
+        "1",
+        0
+      ],
+      "preset": "FACEID PLUS V2",
+      "lora_strength": 0.72,
+      "provider": "CUDA"
+    }
+  },
+  "3": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "fanvue/runtime/anna_v2_master011_identity.jpg"
+    }
+  },
+  "4": {
+    "class_type": "IPAdapterInsightFaceLoader",
+    "inputs": {
+      "provider": "CUDA",
+      "model_name": "antelopev2"
+    }
+  },
+  "5": {
+    "class_type": "IPAdapterFaceID",
+    "inputs": {
+      "model": [
+        "2",
+        0
+      ],
+      "ipadapter": [
+        "2",
+        1
+      ],
+      "image": [
+        "3",
+        0
+      ],
+      "insightface": [
+        "4",
+        0
+      ],
+      "weight": 1.08,
+      "weight_faceidv2": 1.5,
+      "weight_type": "linear",
+      "combine_embeds": "average",
+      "start_at": 0,
+      "end_at": 0.9,
+      "embeds_scaling": "V only"
+    }
+  },
+  "6": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "fanvue/runtime/anna_v2_pose_reference.jpg"
+    }
+  },
+  "7": {
+    "class_type": "Canny",
+    "inputs": {
+      "image": [
+        "6",
+        0
+      ],
+      "low_threshold": 0.22,
+      "high_threshold": 0.68
+    }
+  },
+  "8": {
+    "class_type": "ControlNetLoader",
+    "inputs": {
+      "control_net_name": "controlnet-union-sdxl-promax.safetensors"
+    }
+  },
+  "9": {
+    "class_type": "SetUnionControlNetType",
+    "inputs": {
+      "control_net": [
+        "8",
+        0
+      ],
+      "type": "canny/lineart/anime_lineart/mlsd"
+    }
+  },
+  "10": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "realistic unedited iPhone portrait of the same adult woman as the identity reference, Anna v2 identity locked, follow the head angle and face direction from the pose reference, not front facing unless the pose reference is front facing, ordinary phone selfie not a fashion model, soft oval face, natural cheek fullness, compact softly rounded chin, same natural nose and same natural lips as identity reference, grey blue eyes, long darker wheat blonde hair with darker ash blonde roots, loose natural hair, warm golden beige tanned skin like the identity reference, no freckles, no face speckles, clean real skin with natural pores and very subtle uneven texture, matte natural skin, casual apartment daylight, high neck simple grey cotton t shirt, shoulders mostly covered, face is the subject, sharp eyes, realistic hair strands"
+    }
+  },
+  "11": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": [
+        "1",
+        1
+      ],
+      "text": "front facing pose when pose reference is side view, different person, identity drift, model face, runway model, supermodel, glamour portrait, studio portrait, beauty portrait, professional photoshoot, beauty filter, face app, retouched skin, airbrushed skin, plastic skin, waxy skin, glossy oily skin, porcelain skin, pale skin, white skin, pink skin, washed out skin, overexposed face, orange fake tan, freckles, freckled face, speckles, moles on face, acne, dirty skin, heavy makeup, eyeliner, contouring, oversized lips, filler lips, sharp jaw, pointed chin, elongated face, narrow face, hollow cheeks, wrong nose, wrong eye shape, wrong eye color, brown eyes, platinum blonde, white blonde, brunette, short hair, cleavage, lingerie, necklace, jewelry, duplicate exact identity reference, same exact crop, childlike, teen, anime, cgi, 3d render, illustration, blurry, low quality, watermark, text, logo"
+    }
+  },
+  "12": {
+    "class_type": "ControlNetApplyAdvanced",
+    "inputs": {
+      "positive": [
+        "10",
+        0
+      ],
+      "negative": [
+        "11",
+        0
+      ],
+      "control_net": [
+        "9",
+        0
+      ],
+      "image": [
+        "7",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ],
+      "strength": 0.66,
+      "start_percent": 0,
+      "end_percent": 0.72
+    }
+  },
+  "13": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 896,
+      "height": 1152,
+      "batch_size": 1
+    }
+  },
+  "14": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": [
+        "5",
+        0
+      ],
+      "positive": [
+        "12",
+        0
+      ],
+      "negative": [
+        "12",
+        1
+      ],
+      "latent_image": [
+        "13",
+        0
+      ],
+      "seed": 260715201,
+      "steps": 36,
+      "cfg": 2.4,
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1
+    }
+  },
+  "15": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": [
+        "14",
+        0
+      ],
+      "vae": [
+        "1",
+        2
+      ]
+    }
+  },
+  "16": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "15",
+        0
+      ],
+      "filename_prefix": "anna_v2_realvisxl_faceid_civitai_canny_pose_v1"
+    }
+  }
+}

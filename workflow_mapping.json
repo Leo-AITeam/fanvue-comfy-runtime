@@ -192,6 +192,15 @@
       "native_orchestrator_status": "manual_calibration_pending_gpu",
       "safety": "manual_review_only",
       "notes": "Two-image calibration workflow: master011 identity reference plus separate pose reference via Canny ControlNet Union. Intended to test real 3/4 and profile head angles, not production posting."
+    },
+    "Anna v2 Civitai RealVisXL FaceID Canny Pose v1": {
+      "job_type": "face_variations",
+      "api_prompt": "api_prompts/anna_v2_realvisxl_faceid_civitai_canny_pose_v1.json",
+      "input_mode": "image_to_image",
+      "model_profile": "anna_v2_realvisxl_faceid_civitai_canny_pose_v1",
+      "native_orchestrator_status": "manual_calibration_pending_gpu",
+      "safety": "manual_review_only",
+      "notes": "Public Civitai two-image calibration workflow: master011 identity reference plus separate pose reference via Canny ControlNet Union. Intended to test real non-front Anna v2 face angles without private checkpoint secrets."
     }
   },
   "replacement_profiles": {
