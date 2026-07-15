@@ -396,6 +396,9 @@
         "photo_lifestyle_v1",
         "smoke",
         "dataset_lab_v1"
+      ],
+      "symlink_targets": [
+        "ComfyUI/models/clip/qwen_3_4b.safetensors"
       ]
     },
     {
@@ -665,7 +668,11 @@
       "target_dir": "ComfyUI/models/diffusion_models",
       "required_for_first_test": false,
       "test_profiles": [
-        "smoke"
+        "smoke",
+        "dataset_lab_v1"
+      ],
+      "symlink_targets": [
+        "ComfyUI/models/unet/flux-2-klein-4b.safetensors"
       ]
     },
     {
@@ -962,9 +969,7 @@
       "target_dir": "ComfyUI/models/diffusion_models",
       "min_bytes": 8000000000,
       "required_for_first_test": false,
-      "test_profiles": [
-        "dataset_lab_v1"
-      ],
+      "test_profiles": [],
       "headers": [
         {
           "name": "Authorization",
@@ -983,9 +988,7 @@
       "target_dir": "ComfyUI/models/text_encoders",
       "min_bytes": 10000000000,
       "required_for_first_test": false,
-      "test_profiles": [
-        "dataset_lab_v1"
-      ],
+      "test_profiles": [],
       "symlink_targets": [
         "ComfyUI/models/clip/qwen_3_8b_fp8mixed.safetensors"
       ]

@@ -334,7 +334,7 @@
         }
       },
       "widgets_values": [
-        "qwen_3_8b_fp8mixed.safetensors",
+        "qwen_3_4b.safetensors",
         "flux2",
         "default"
       ],
@@ -1498,7 +1498,7 @@
         }
       },
       "widgets_values": [
-        "flux-2-klein-9b-fp8.safetensors",
+        "flux-2-klein-4b.safetensors",
         "default"
       ],
       "color": "#222",
