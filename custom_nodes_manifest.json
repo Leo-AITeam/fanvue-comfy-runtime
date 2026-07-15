@@ -5,7 +5,10 @@
     {
       "name": "ComfyUI-Manager",
       "repo_url": "https://github.com/ltdrdata/ComfyUI-Manager.git",
-      "required_for_first_test": true
+      "required_for_first_test": true,
+      "test_profiles": [
+        "dataset_lab_v1"
+      ]
     },
     {
       "name": "rgthree-comfy",
@@ -15,6 +18,9 @@
         "Fast Groups Bypasser (rgthree)",
         "Image Comparer (rgthree)",
         "Label (rgthree)"
+      ],
+      "test_profiles": [
+        "dataset_lab_v1"
       ]
     },
     {
@@ -48,6 +54,9 @@
       "required_for_first_test": false,
       "node_type_hints": [
         "PathchSageAttentionKJ"
+      ],
+      "test_profiles": [
+        "dataset_lab_v1"
       ]
     },
     {
@@ -56,6 +65,9 @@
       "required_for_first_test": false,
       "node_type_hints": [
         "GetImageSize"
+      ],
+      "test_profiles": [
+        "dataset_lab_v1"
       ]
     },
     {
@@ -97,6 +109,40 @@
         "Canny",
         "OpenposePreprocessor",
         "DWPreprocessor"
+      ]
+    },
+    {
+      "name": "ComfyUI-Florence2",
+      "repo_url": "https://github.com/kijai/ComfyUI-Florence2.git",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "dataset_lab_v1"
+      ],
+      "node_type_hints": [
+        "Florence2ModelLoader",
+        "Florence2Run"
+      ]
+    },
+    {
+      "name": "ComfyUI-WD14-Tagger",
+      "repo_url": "https://github.com/pythongosssss/ComfyUI-WD14-Tagger.git",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "dataset_lab_v1"
+      ],
+      "node_type_hints": [
+        "WD14Tagger|pysssss"
+      ]
+    },
+    {
+      "name": "ComfyUI-Custom-Scripts",
+      "repo_url": "https://github.com/pythongosssss/ComfyUI-Custom-Scripts.git",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "dataset_lab_v1"
+      ],
+      "node_type_hints": [
+        "StringFunction|pysssss"
       ]
     }
   ],

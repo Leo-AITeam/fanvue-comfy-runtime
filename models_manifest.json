@@ -214,7 +214,8 @@
       "required_for_first_test": true,
       "test_profiles": [
         "first_full",
-        "smoke"
+        "smoke",
+        "dataset_lab_v1"
       ]
     },
     {
@@ -393,7 +394,8 @@
         "face_detailer_smoke",
         "first_full",
         "photo_lifestyle_v1",
-        "smoke"
+        "smoke",
+        "dataset_lab_v1"
       ]
     },
     {
@@ -952,6 +954,52 @@
         "anna_v2_realvisxl_faceid_civitai_canny_pose_v1"
       ],
       "notes": "Public LoRA paired with SDXL FaceID Plus V2 preset."
+    },
+    {
+      "name": "flux-2-klein-9b-fp8.safetensors",
+      "type": "model",
+      "source_url": "https://huggingface.co/black-forest-labs/FLUX.2-klein-9b-fp8/resolve/main/flux-2-klein-9b-fp8.safetensors",
+      "target_dir": "ComfyUI/models/diffusion_models",
+      "min_bytes": 8000000000,
+      "required_for_first_test": false,
+      "test_profiles": [
+        "dataset_lab_v1"
+      ],
+      "headers": [
+        {
+          "name": "Authorization",
+          "prefix": "Bearer ",
+          "value_env": "HF_TOKEN"
+        }
+      ],
+      "symlink_targets": [
+        "ComfyUI/models/unet/flux-2-klein-9b-fp8.safetensors"
+      ]
+    },
+    {
+      "name": "qwen_3_8b_fp8mixed.safetensors",
+      "type": "text_encoder",
+      "source_url": "https://huggingface.co/Comfy-Org/flux2-klein-9B/resolve/main/split_files/text_encoders/qwen_3_8b_fp8mixed.safetensors",
+      "target_dir": "ComfyUI/models/text_encoders",
+      "min_bytes": 10000000000,
+      "required_for_first_test": false,
+      "test_profiles": [
+        "dataset_lab_v1"
+      ],
+      "symlink_targets": [
+        "ComfyUI/models/clip/qwen_3_8b_fp8mixed.safetensors"
+      ]
+    },
+    {
+      "name": "Florence-2-SD3-Captioner",
+      "type": "hf_repo",
+      "git_clone_url": "https://huggingface.co/gokaygokay/Florence-2-SD3-Captioner",
+      "target_dir": "ComfyUI/models/LLM",
+      "required_for_first_test": false,
+      "test_profiles": [
+        "dataset_lab_v1"
+      ],
+      "min_file_count": 3
     }
   ],
   "custom_node_type_hints": [

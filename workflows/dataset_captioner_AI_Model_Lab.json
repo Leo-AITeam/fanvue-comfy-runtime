@@ -1,0 +1,548 @@
+{
+  "id": "fe2fe77a-dc5d-4244-bf8f-2cb1a379eabf",
+  "revision": 0,
+  "last_node_id": 25,
+  "last_link_id": 25,
+  "nodes": [
+    {
+      "id": 13,
+      "type": "WD14Tagger|pysssss",
+      "pos": [
+        1037.5546744652827,
+        58.61325074284396
+      ],
+      "size": [
+        276.810546875,
+        570
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 4,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 12
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "shape": 6,
+          "type": "STRING",
+          "links": [
+            14,
+            17
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "pythongosssss/ComfyUI-WD14-Tagger",
+        "ver": "1.0.1",
+        "Node name for S&R": "WD14Tagger|pysssss",
+        "cnr_id": "comfyui-wd14-tagger",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.6.2",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "wd-v1-4-moat-tagger-v2",
+        0.35,
+        0.85,
+        false,
+        false,
+        ""
+      ]
+    },
+    {
+      "id": 14,
+      "type": "Florence2Run",
+      "pos": [
+        974.8340546158975,
+        699.9122593136295
+      ],
+      "size": [
+        400,
+        364
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 13
+        },
+        {
+          "name": "florence2_model",
+          "type": "FL2MODEL",
+          "link": 21
+        }
+      ],
+      "outputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "links": null
+        },
+        {
+          "name": "mask",
+          "type": "MASK",
+          "links": null
+        },
+        {
+          "name": "caption",
+          "type": "STRING",
+          "links": [
+            15,
+            25
+          ]
+        },
+        {
+          "name": "data",
+          "type": "JSON",
+          "links": null
+        }
+      ],
+      "properties": {
+        "aux_id": "kijai/ComfyUI-Florence2",
+        "ver": "1.0.6",
+        "Node name for S&R": "Florence2Run",
+        "cnr_id": "comfyui-florence2",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.6.2",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "",
+        "more_detailed_caption",
+        true,
+        false,
+        1024,
+        3,
+        true,
+        "",
+        833508461894676,
+        "randomize"
+      ]
+    },
+    {
+      "id": 20,
+      "type": "SaveImageTextDataSetToFolder",
+      "pos": [
+        1832.8353832542791,
+        706.5062809196943
+      ],
+      "size": [
+        354.4908203125,
+        106
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 18
+        },
+        {
+          "name": "texts",
+          "type": "STRING",
+          "widget": {
+            "name": "texts"
+          },
+          "link": 23
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.4.0",
+        "Node name for S&R": "SaveImageTextDataSetToFolder",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "texts": true
+          },
+          "version": "7.6.2",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "",
+        "florence dataset",
+        "fl"
+      ]
+    },
+    {
+      "id": 17,
+      "type": "PreviewAny",
+      "pos": [
+        1409.0049578252356,
+        1030.5974476903134
+      ],
+      "size": [
+        395.1756072443179,
+        227.61615545099426
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 15
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.4.0",
+        "Node name for S&R": "PreviewAny",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.6.2",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": 15,
+      "type": "Florence2ModelLoader",
+      "pos": [
+        635.6029341920193,
+        724.5453600609825
+      ],
+      "size": [
+        295.484375,
+        130
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "lora",
+          "shape": 7,
+          "type": "PEFTLORA",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "florence2_model",
+          "type": "FL2MODEL",
+          "links": [
+            21
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "kijai/ComfyUI-Florence2",
+        "ver": "1.0.6",
+        "Node name for S&R": "Florence2ModelLoader",
+        "cnr_id": "comfyui-florence2",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.6.2",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "Florence-2-SD3-Captioner",
+        "fp16",
+        "sdpa",
+        false
+      ]
+    },
+    {
+      "id": 16,
+      "type": "PreviewAny",
+      "pos": [
+        1551.1347247819124,
+        57.60081898104296
+      ],
+      "size": [
+        446.36363636363626,
+        238.7272727272727
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 4,
+      "inputs": [
+        {
+          "name": "source",
+          "type": "*",
+          "link": 14
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.4.0",
+        "Node name for S&R": "PreviewAny",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.6.2",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "id": 18,
+      "type": "SaveImageTextDataSetToFolder",
+      "pos": [
+        1556.5979864995352,
+        348.47442579395226
+      ],
+      "size": [
+        354.4908203125,
+        106
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 4,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 16
+        },
+        {
+          "name": "texts",
+          "type": "STRING",
+          "widget": {
+            "name": "texts"
+          },
+          "link": 17
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.4.0",
+        "Node name for S&R": "SaveImageTextDataSetToFolder",
+        "ue_properties": {
+          "widget_ue_connectable": {
+            "texts": true
+          },
+          "version": "7.6.2",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "",
+        "wd14 dataset",
+        "wd"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "LoadImageDataSetFromFolder",
+      "pos": [
+        623.5809701260657,
+        416.5437168190692
+      ],
+      "size": [
+        312.1490234375,
+        58
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "images",
+          "shape": 6,
+          "type": "IMAGE",
+          "links": [
+            12,
+            13,
+            16,
+            18
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.4.0",
+        "Node name for S&R": "LoadImageDataSetFromFolder",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "version": "7.6.2",
+          "input_ue_unconnectable": {}
+        }
+      },
+      "widgets_values": [
+        "m1na"
+      ]
+    },
+    {
+      "id": 25,
+      "type": "StringFunction|pysssss",
+      "pos": [
+        1405.6918905224832,
+        702.5737001432252
+      ],
+      "size": [
+        400,
+        274.00000000000006
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "text_b",
+          "shape": 7,
+          "type": "STRING",
+          "widget": {
+            "name": "text_b"
+          },
+          "link": 25
+        }
+      ],
+      "outputs": [
+        {
+          "name": "STRING",
+          "type": "STRING",
+          "links": [
+            23
+          ]
+        }
+      ],
+      "properties": {
+        "aux_id": "pythongosssss/ComfyUI-Custom-Scripts",
+        "ver": "609f3afaa74b2f88ef9ce8d939626065e3247469",
+        "Node name for S&R": "StringFunction|pysssss",
+        "ue_properties": {
+          "widget_ue_connectable": {},
+          "input_ue_unconnectable": {},
+          "version": "7.6.2"
+        }
+      },
+      "widgets_values": [
+        "append",
+        "yes",
+        "m1na, ",
+        "text_b",
+        ""
+      ]
+    }
+  ],
+  "links": [
+    [
+      12,
+      10,
+      0,
+      13,
+      0,
+      "IMAGE"
+    ],
+    [
+      13,
+      10,
+      0,
+      14,
+      0,
+      "IMAGE"
+    ],
+    [
+      14,
+      13,
+      0,
+      16,
+      0,
+      "STRING"
+    ],
+    [
+      15,
+      14,
+      2,
+      17,
+      0,
+      "STRING"
+    ],
+    [
+      16,
+      10,
+      0,
+      18,
+      0,
+      "IMAGE"
+    ],
+    [
+      17,
+      13,
+      0,
+      18,
+      1,
+      "STRING"
+    ],
+    [
+      18,
+      10,
+      0,
+      20,
+      0,
+      "IMAGE"
+    ],
+    [
+      21,
+      15,
+      0,
+      14,
+      1,
+      "FL2MODEL"
+    ],
+    [
+      23,
+      25,
+      0,
+      20,
+      1,
+      "STRING"
+    ],
+    [
+      25,
+      14,
+      2,
+      25,
+      0,
+      "STRING"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {
+    "ds": {
+      "scale": 1,
+      "offset": [
+        -165.9911273369097,
+        -55.618881510618166
+      ]
+    },
+    "workflowRendererVersion": "LG",
+    "frontendVersion": "1.38.14",
+    "ue_links": [],
+    "links_added_by_ue": []
+  },
+  "version": 0.4
+}

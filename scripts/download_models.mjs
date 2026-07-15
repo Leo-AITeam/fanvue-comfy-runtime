@@ -166,6 +166,71 @@ function extractExpectedPaths(item) {
   return item.extract.expected_files.map((file) => path.join(extractDestination, String(file).replaceAll('\\', '/')));
 }
 
+function createSymlinkTargets(item, destination) {
+  const targets = Array.isArray(item.symlink_targets) ? item.symlink_targets : [];
+  const results = [];
+  for (const rawTarget of targets) {
+    const target = targetPath({ name: path.basename(String(rawTarget).replaceAll('\\', '/')), target_dir: path.dirname(String(rawTarget).replaceAll('\\', '/')) });
+    fs.mkdirSync(path.dirname(target), { recursive: true });
+    if (fs.existsSync(target)) {
+      results.push({ target, status: 'already_exists' });
+      continue;
+    }
+    try {
+      fs.symlinkSync(destination, target);
+      results.push({ target, status: 'symlinked' });
+    } catch (error) {
+      fs.copyFileSync(destination, target);
+      results.push({ target, status: 'copied_after_symlink_failed', error: error.message });
+    }
+  }
+  return results;
+}
+
+function ensureGitLfs() {
+  const hasGitLfs = spawnSync('git', ['lfs', 'version'], { stdio: 'ignore' }).status === 0;
+  if (!hasGitLfs) {
+    spawnSync('apt-get', ['update'], { stdio: 'inherit' });
+    const apt = spawnSync('apt-get', ['install', '-y', 'git-lfs'], { stdio: 'inherit' });
+    if (apt.status !== 0) throw new Error('Failed to install git-lfs');
+  }
+  const lfs = spawnSync('git', ['lfs', 'install'], { stdio: 'inherit' });
+  if (lfs.status !== 0) throw new Error('git lfs install failed');
+}
+
+function validateGitRepo(item, destination) {
+  if (!fs.existsSync(destination) || !fs.statSync(destination).isDirectory()) {
+    return { ok: false, reason: 'missing_repo_dir', file_count: 0 };
+  }
+  let fileCount = 0;
+  const stack = [destination];
+  while (stack.length) {
+    const dir = stack.pop();
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (entry.name === '.git') continue;
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) stack.push(full);
+      else fileCount += 1;
+    }
+  }
+  const minFileCount = Number(item.min_file_count || 1);
+  return { ok: fileCount >= minFileCount, reason: fileCount >= minFileCount ? undefined : 'min_file_count_mismatch', file_count: fileCount, min_file_count: minFileCount };
+}
+
+function cloneGitRepo(item, destination) {
+  const url = item.git_clone_url;
+  if (!url) return { ok: false, reason: 'missing_git_clone_url' };
+  const existing = validateGitRepo(item, destination);
+  if (existing.ok) return { ok: true, status: 'already_exists', destination, ...existing };
+  ensureGitLfs();
+  if (fs.existsSync(destination)) fs.rmSync(destination, { recursive: true, force: true });
+  fs.mkdirSync(path.dirname(destination), { recursive: true });
+  const clone = spawnSync('git', ['clone', '--depth', '1', url, destination], { stdio: 'inherit' });
+  if (clone.status !== 0) return { ok: false, reason: 'git_clone_failed', git_status: clone.status || 1 };
+  const validation = validateGitRepo(item, destination);
+  return { ok: validation.ok, status: validation.ok ? 'cloned' : 'clone_invalid', destination, ...validation };
+}
+
 function validateExtractedFiles(item) {
   const expectedPaths = extractExpectedPaths(item);
   if (expectedPaths.length === 0) return { ok: false, reason: 'no_extract_expected_files' };
@@ -180,6 +245,15 @@ function validateExtractedFiles(item) {
 
 for (const item of models) {
   const destination = targetPath(item);
+  if (item.type === 'hf_repo' || item.git_clone_url) {
+    const repoResult = dryRun
+      ? { ok: true, status: 'dry_run', destination, git_clone_url: item.git_clone_url }
+      : cloneGitRepo(item, destination);
+    results.push({ name: item.name, ...repoResult });
+    writeReport(dryRun || repoResult.ok ? 'downloading' : 'failed', { current_model: { name: item.name, ...repoResult } });
+    if (!dryRun && !repoResult.ok) process.exit(repoResult.git_status || 41);
+    continue;
+  }
   const resolvedSourceUrl = sourceUrl(item);
   const resolvedSourceUrlParts = sourceUrlParts(item);
   const extractedStatus = validateExtractedFiles(item);
@@ -231,6 +305,8 @@ for (const item of models) {
         }
       }
       results.push({ name: item.name, status: 'already_exists', destination, ...validation });
+      const symlinkResults = createSymlinkTargets(item, destination);
+      if (symlinkResults.length) results[results.length - 1].symlink_targets = symlinkResults;
       if (extractResult) results[results.length - 1].extract = extractResult;
       writeReport('downloading', { current_model: { name: item.name, status: 'already_exists' } });
       continue;
@@ -422,11 +498,13 @@ for (const item of models) {
     }
   }
 
+  const downloadedSymlinkResults = finalStatus.ok ? createSymlinkTargets(item, destination) : [];
   results.push({
     name: item.name,
     status: finalStatus.ok ? 'downloaded' : 'failed',
     destination,
     extract: extractResult || undefined,
+    symlink_targets: downloadedSymlinkResults.length ? downloadedSymlinkResults : undefined,
     ...finalStatus,
   });
   writeReport(finalStatus.ok ? 'downloading' : 'failed', {
