@@ -165,7 +165,8 @@
       "target_dir": "ComfyUI/models/checkpoints",
       "required_for_first_test": false,
       "test_profiles": [
-        "anna_faceid_compact_realvisxl_baked_landmark"
+        "anna_faceid_compact_realvisxl_baked_landmark",
+        "anna_v2_realvisxl_faceid_canny_pose_v1"
       ],
       "notes": "ComfyUI SDPose wholebody checkpoint required by SDPoseKeypointExtractor for OpenPose-style face/body landmarks."
     },
