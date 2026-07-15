@@ -1548,8 +1548,8 @@
         }
       },
       "widgets_values": [
-        "auto",
-        true
+        "disabled",
+        false
       ]
     },
     {
@@ -2763,7 +2763,7 @@
         }
       },
       "widgets_values": [
-        "z-image-turbo-fp8-e4m3fn.safetensors",
+        "flux-2-klein-4b.safetensors",
         "default"
       ],
       "color": "#222",
@@ -2808,7 +2808,7 @@
         }
       },
       "widgets_values": [
-        "ultrafluxVAEImproved_v10.safetensors"
+        "flux2-vae.safetensors"
       ],
       "color": "#222",
       "bgcolor": "#000"
@@ -2856,7 +2856,7 @@
       },
       "widgets_values": [
         "qwen_3_4b.safetensors",
-        "lumina2",
+        "flux2",
         "default"
       ],
       "color": "#222",
@@ -2905,8 +2905,8 @@
         }
       },
       "widgets_values": [
-        "auto",
-        true
+        "disabled",
+        false
       ]
     },
     {
@@ -2949,7 +2949,7 @@
         }
       },
       "widgets_values": [
-        "Create_a_single_202603202244.png",
+        "011_source.png",
         "image"
       ]
     },
